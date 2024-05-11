@@ -1,6 +1,9 @@
 import { InterviewResponse, InterviewResponseRecord } from "./types.js"
 
-export class InterviewStateRecordStore {
+/**
+ * Stores {@link InterviewResponseRecord} objects.
+ */
+export class InterviewResponseRecordStore {
   private records = new Map<string, InterviewResponseRecord>()
 
   constructor(
@@ -18,10 +21,19 @@ export class InterviewStateRecordStore {
     }
   }
 
+  /**
+   * Get a record by id.
+   */
   get(state: string): InterviewResponseRecord | null {
     return this.records.get(state) ?? null
   }
 
+  /**
+   * Add a record.
+   * @param response - the response
+   * @param prev - the previous record id
+   * @returns the added record
+   */
   add(response: InterviewResponse, prev?: string): InterviewResponseRecord {
     const record = { response, prev, title: getTitle(response) }
     this.records.set(response.state, record)

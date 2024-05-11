@@ -1,4 +1,4 @@
-import { Schema } from "./schema-types.js"
+import { Schema } from "./schema/types.js"
 
 export type InterviewResponse =
   | IncompleteInterviewResponse

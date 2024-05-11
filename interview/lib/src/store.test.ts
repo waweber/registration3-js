@@ -1,4 +1,4 @@
-import { InterviewStateRecordStore } from "./store.js"
+import { InterviewResponseRecordStore } from "./store.js"
 
 test("store create/iterate works", () => {
   const items = [
@@ -24,14 +24,14 @@ test("store create/iterate works", () => {
       },
     },
   ]
-  const store = new InterviewStateRecordStore(10, items)
+  const store = new InterviewResponseRecordStore(10, items)
 
   const out = Array.from(store)
   expect(out).toStrictEqual(items)
 })
 
 test("store add works", () => {
-  const store = new InterviewStateRecordStore(10)
+  const store = new InterviewResponseRecordStore(10)
   const resp = store.add(
     {
       state: "1",
@@ -87,7 +87,7 @@ test("store add works", () => {
 })
 
 test("store get works", () => {
-  const store = new InterviewStateRecordStore(10, [
+  const store = new InterviewResponseRecordStore(10, [
     {
       response: {
         state: "1",
@@ -108,7 +108,7 @@ test("store get works", () => {
 })
 
 test("store trims size", () => {
-  const store = new InterviewStateRecordStore(10)
+  const store = new InterviewResponseRecordStore(10)
   for (let i = 0; i < 20; i++) {
     store.add({ state: `${i}`, completed: false, update_url: "" })
     const arr = Array.from(store)
