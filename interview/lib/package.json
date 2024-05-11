@@ -8,6 +8,9 @@
   },
   "keywords": [],
   "author": "",
+  "exports": {
+    ".": "./dist/src/index.js"
+  },
   "dependencies": {
     "email-validator": "^2.0.4",
     "psl": "^1.9.0",
