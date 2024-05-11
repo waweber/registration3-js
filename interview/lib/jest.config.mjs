@@ -22,6 +22,7 @@ const config = {
       },
     ],
   },
+  rootDir: "src",
 }
 
 export default config

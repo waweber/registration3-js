@@ -2,8 +2,8 @@ import { Meta, StoryObj } from "@storybook/react"
 import { ObjectField } from "./ObjectField.js"
 import { Schema } from "@open-event-systems/interview-lib"
 import { useState } from "react"
-import { makeFieldState } from "../../../state/field.js"
 import { FieldContextProvider } from "../context.js"
+import { makeFormState } from "../../../state/form.js"
 
 const meta: Meta<typeof ObjectField> = {
   component: ObjectField,
@@ -33,11 +33,11 @@ export const Default: StoryObj<typeof ObjectField> = {
       required: ["first_name", "last_name"],
     }
 
-    const [state] = useState(() => makeFieldState(schema))
+    const [state] = useState(() => makeFormState(schema))
 
     return (
-      <FieldContextProvider value={state}>
-        <ObjectField />
+      <FieldContextProvider state={state} schema={schema}>
+        <ObjectField {...args} />
       </FieldContextProvider>
     )
   },

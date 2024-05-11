@@ -8,8 +8,8 @@ export type SchemaTypes =
   | "object"
   | "null"
 
-export type Schema = {
-  type?: SchemaTypes | SchemaTypes[]
+export type Schema = Readonly<{
+  type?: SchemaTypes | readonly SchemaTypes[]
   title?: string
   description?: string
   "x-type"?: string
@@ -17,7 +17,7 @@ export type Schema = {
   "x-autoComplete"?: string
   "x-component"?: string
   const?: unknown
-  oneOf?: Schema[]
+  oneOf?: readonly Schema[]
   default?: unknown
   minLength?: number
   maxLength?: number
@@ -31,14 +31,16 @@ export type Schema = {
   maxItems?: number
   items?: Schema
   uniqueItems?: boolean
-  properties?: Record<string, Schema>
-  required?: string[]
-}
+  properties?: { readonly [prop: string]: Schema }
+  required?: readonly string[]
+}>
 
-export type ValidationError = {
-  errors: string[]
-  children?: ValidationError[] | Record<string, ValidationError>
-}
+export type ValidationError = Readonly<{
+  errors: readonly string[]
+  children?:
+    | readonly ValidationError[]
+    | { readonly [prop: string]: ValidationError }
+}>
 
 export type ValidationResult =
   | {

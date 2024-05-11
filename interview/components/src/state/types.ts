@@ -1,16 +1,24 @@
-import {
-  Schema,
-  ValidationError,
-  ValidationResult,
-} from "@open-event-systems/interview-lib"
+import { Schema, ValidationError } from "@open-event-systems/interview-lib"
 
-export type FieldState<T> = {
+export type ScalarFieldValue = string | number | boolean | null
+export type NestedValue<T = ScalarFieldValue> =
+  | T
+  | NestedValue<T>[]
+  | { [key: string]: NestedValue<T> }
+
+export type Path = (string | number)[]
+
+export type FormState = {
   readonly schema: Schema
-  readonly value: T | null | undefined
-  readonly validationValue: T | null | undefined
-  readonly touched: boolean
-  readonly error: string | null
-  setValue(v: T | null): void
-  setTouched(): void
-  getChildValidationError(key: string | number): ValidationError | null
+  get value(): NestedValue | undefined
+  get touched(): NestedValue<boolean>
+  get validationError(): ValidationError | null
+
+  getValue(path: Path): NestedValue | undefined
+  setValue(path: Path, value: NestedValue): void
+
+  getTouched(path: Path): boolean
+  setTouched(path: Path): void
+
+  getError(path: Path): string | null
 }

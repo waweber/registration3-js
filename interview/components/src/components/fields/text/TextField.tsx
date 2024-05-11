@@ -8,6 +8,7 @@ export type TextFieldProps = TextInputProps & {}
 export const TextField = observer((props: TextFieldProps) => {
   const {
     className,
+    name,
     label,
     inputMode,
     autoComplete,
@@ -19,27 +20,31 @@ export const TextField = observer((props: TextFieldProps) => {
     ...other
   } = useProps("TextField", {}, props)
 
-  const ctx = useFieldContext<string>()
+  const [state, schema, path] = useFieldContext()
   const strValue =
-    value != null ? value : ctx != null ? ctx.value || "" : undefined
+    value != null
+      ? value
+      : state
+        ? (state.getValue(path) as string | null) || ""
+        : undefined
 
   return (
     <TextInput
       className={clsx("TextField-root", className)}
-      label={label ?? (ctx ? ctx.schema.title : undefined)}
+      label={label ?? (schema ? schema.title : undefined)}
       value={strValue}
-      onChange={
-        onChange ?? (ctx ? (v) => ctx.setValue(v.target.value) : undefined)
-      }
+      onChange={onChange ?? ((v) => state?.setValue(path, v.target.value))}
       onBlur={(e) => {
-        ctx?.setTouched()
+        state?.setTouched(path)
         onBlur && onBlur(e)
       }}
-      error={error ?? (ctx?.touched && ctx.error ? ctx.error : undefined)}
-      inputMode={
-        inputMode ?? (ctx?.schema["x-inputMode"] as TextFieldProps["inputMode"])
+      error={
+        error ?? (state?.getTouched(path) ? state.getError(path) : undefined)
       }
-      autoComplete={autoComplete ?? ctx?.schema["x-autoComplete"]}
+      inputMode={
+        inputMode ?? (schema["x-inputMode"] as TextFieldProps["inputMode"])
+      }
+      autoComplete={autoComplete ?? schema["x-autoComplete"]}
       {...other}
     />
   )

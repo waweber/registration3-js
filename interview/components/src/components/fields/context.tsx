@@ -1,16 +1,40 @@
 import { ReactNode, createContext, useContext } from "react"
-import { FieldState } from "../../state/types.js"
+import { FormState, Path } from "../../state/types.js"
+import { Schema } from "@open-event-systems/interview-lib"
 
-const FieldContext = createContext<FieldState<unknown> | null>(null)
+const FieldContext = createContext<
+  [FormState, Schema, Path] | [null, Record<string, never>, []]
+>([null, {}, []])
 
 export const FieldContextProvider = ({
-  value,
+  state,
+  schema,
+  pathItem,
   children,
 }: {
-  value: FieldState<unknown>
+  state?: FormState
+  schema?: Schema
+  pathItem?: string | number
   children?: ReactNode
-}) => <FieldContext.Provider value={value}>{children}</FieldContext.Provider>
+}) => {
+  const [curState, curSchema, curPath] = useFieldContext()
+  const newState = state ?? curState
+  let newValue: [FormState, Schema, Path] | [null, Record<string, never>, []]
 
-export const useFieldContext = <T,>(): FieldState<T> | null => {
-  return useContext(FieldContext) as FieldState<T> | null
+  if (newState) {
+    const newPath = pathItem != null ? [...curPath, pathItem] : curPath
+    newValue = [newState, schema ?? curSchema, newPath]
+  } else {
+    newValue = [null, {}, []]
+  }
+
+  return (
+    <FieldContext.Provider value={newValue}>{children}</FieldContext.Provider>
+  )
+}
+
+export const useFieldContext = ():
+  | [FormState, Schema, Path]
+  | [null, Record<string, never>, []] => {
+  return useContext(FieldContext)
 }
