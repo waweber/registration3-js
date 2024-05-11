@@ -4,19 +4,16 @@ import {
   getValidator,
 } from "@open-event-systems/interview-lib"
 import { FormState, NestedValue, Path } from "./types.js"
-import {
-  makeAutoObservable,
-  observable,
-  computed,
-  action,
-  IObservableValue,
-} from "mobx"
+import { makeAutoObservable, observable } from "mobx"
 
-export const makeFormState = (schema: Schema): FormState => {
+export const makeFormState = (
+  schema: Schema,
+  initialValue?: NestedValue,
+): FormState => {
   const validator = getValidator(schema)
   const state = {
     schema: schema,
-    value: undefined,
+    value: getInitialValue(schema, initialValue),
     touched: false,
     get validationError() {
       const res = validator(this.value)
@@ -57,6 +54,30 @@ export const makeFormState = (schema: Schema): FormState => {
     value: observable.deep,
     touched: observable.deep,
   })
+}
+
+const getInitialValue = (
+  schema: Schema,
+  initialValue?: NestedValue | undefined,
+): NestedValue | undefined => {
+  if (initialValue !== undefined) {
+    return initialValue
+  }
+
+  if (schema.default !== undefined) {
+    return schema.default as NestedValue
+  }
+
+  if (schema.properties) {
+    const defaultObj: NestedValue = {}
+    for (const key of Object.keys(schema.properties)) {
+      const propDefault = getInitialValue(schema.properties[key])
+      if (propDefault !== undefined) {
+        defaultObj[key] = propDefault
+      }
+    }
+    return defaultObj
+  }
 }
 
 const getPath = <T>(

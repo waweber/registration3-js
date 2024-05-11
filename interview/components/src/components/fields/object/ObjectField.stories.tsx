@@ -42,3 +42,71 @@ export const Default: StoryObj<typeof ObjectField> = {
     )
   },
 }
+
+export const With_Initial_Value: StoryObj<typeof ObjectField> = {
+  render(args) {
+    const schema: Schema = {
+      title: "Fields",
+      type: "object",
+      properties: {
+        first_name: {
+          type: "string",
+          title: "First Name",
+          minLength: 2,
+          maxLength: 16,
+        },
+        last_name: {
+          type: "string",
+          title: "Last Name",
+          minLength: 2,
+          maxLength: 16,
+        },
+      },
+      required: ["first_name", "last_name"],
+    }
+
+    const [state] = useState(() =>
+      makeFormState(schema, { first_name: "Test", last_name: "Person" }),
+    )
+
+    return (
+      <FieldContextProvider state={state} schema={schema}>
+        <ObjectField {...args} />
+      </FieldContextProvider>
+    )
+  },
+}
+
+export const With_Schema_Default: StoryObj<typeof ObjectField> = {
+  render(args) {
+    const schema: Schema = {
+      title: "Fields",
+      type: "object",
+      properties: {
+        first_name: {
+          type: "string",
+          title: "First Name",
+          minLength: 2,
+          maxLength: 16,
+          default: "Fname",
+        },
+        last_name: {
+          type: "string",
+          title: "Last Name",
+          minLength: 2,
+          maxLength: 16,
+          default: "Lname",
+        },
+      },
+      required: ["first_name", "last_name"],
+    }
+
+    const [state] = useState(() => makeFormState(schema))
+
+    return (
+      <FieldContextProvider state={state} schema={schema}>
+        <ObjectField {...args} />
+      </FieldContextProvider>
+    )
+  },
+}

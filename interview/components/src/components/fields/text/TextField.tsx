@@ -3,12 +3,11 @@ import clsx from "clsx"
 import { useFieldContext } from "../context.js"
 import { observer } from "mobx-react-lite"
 
-export type TextFieldProps = TextInputProps & {}
+export type TextFieldProps = TextInputProps
 
 export const TextField = observer((props: TextFieldProps) => {
   const {
     className,
-    name,
     label,
     inputMode,
     autoComplete,
@@ -16,7 +15,6 @@ export const TextField = observer((props: TextFieldProps) => {
     error,
     onChange,
     onBlur,
-    maxLength,
     ...other
   } = useProps("TextField", {}, props)
 

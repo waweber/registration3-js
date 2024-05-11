@@ -1,15 +1,15 @@
 import { Stack, StackProps, useProps } from "@mantine/core"
 import clsx from "clsx"
 import { FieldContextProvider, useFieldContext } from "../context.js"
-import { useState } from "react"
 import { TextField } from "../text/TextField.js"
 
-export type ObjectFieldProps = StackProps & {}
+export type ObjectFieldProps = StackProps
 
 export const ObjectField = (props: ObjectFieldProps) => {
   const { className, ...other } = useProps("ObjectField", {}, props)
 
-  const [state, schema, path] = useFieldContext()
+  const ctx = useFieldContext()
+  const schema = ctx[1]
 
   const properties = schema.properties ?? {}
 
