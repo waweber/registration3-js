@@ -1,0 +1,21 @@
+.Content-root {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.Content-title {
+    margin: 0 var(--mantine-spacing-xs);
+}
+
+.Content-content {
+    flex-grow: 1;
+    padding: var(--mantine-spacing-xs);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.Content-footer {
+    padding: var(--mantine-spacing-xs);
+}

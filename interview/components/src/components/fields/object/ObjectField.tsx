@@ -1,7 +1,7 @@
 import { Stack, StackProps, useProps } from "@mantine/core"
 import clsx from "clsx"
 import { FieldContextProvider, useFieldContext } from "../context.js"
-import { TextField } from "../text/TextField.js"
+import { Field } from "../Field.js"
 
 export type ObjectFieldProps = StackProps
 
@@ -16,8 +16,7 @@ export const ObjectField = (props: ObjectFieldProps) => {
   const children = Object.keys(properties).map((key) => {
     return (
       <FieldContextProvider key={key} pathItem={key} schema={properties[key]}>
-        {/* TODO */}
-        <TextField />
+        <Field />
       </FieldContextProvider>
     )
   })
