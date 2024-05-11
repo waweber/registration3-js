@@ -110,6 +110,45 @@ test("empty trimmed strings coerce to null", () => {
   }
 })
 
+describe("number validators", () => {
+  const schema: Schema = {
+    type: "number",
+    minimum: 1.0,
+    maximum: 5.5,
+  }
+
+  const intSchema: Schema = {
+    type: "integer",
+    minimum: 1,
+    maximum: 5,
+  }
+
+  test.each([
+    ["", false],
+    [1.0, true],
+    [5.5, true],
+    [5.6, false],
+    [0.0, false],
+  ])("input = %s, valid = %s", (input, expected) => {
+    const v = getValidator(schema)
+    const res = v(input)
+    expect(res.success).toBe(expected)
+  })
+
+  test.each([
+    ["", false],
+    [1, true],
+    [5, true],
+    [0, false],
+    [6, false],
+    [2.5, false],
+  ])("input = %s, valid = %s", (input, expected) => {
+    const v = getValidator(intSchema)
+    const res = v(input)
+    expect(res.success).toBe(expected)
+  })
+})
+
 describe("object validators", () => {
   const schema: Schema = {
     type: "object",
@@ -138,6 +177,33 @@ describe("object validators", () => {
     [{ b: "b", c: "1" }, true],
     [{ a: 1, b: "b", c: "1" }, false],
     [{ a: 1, c: "1" }, false],
+  ])("input = %s, valid = %s", (input, expected) => {
+    const v = getValidator(schema)
+    const res = v(input)
+    expect(res.success).toBe(expected)
+  })
+})
+
+describe("array validators", () => {
+  const schema: Schema = {
+    type: "array",
+    items: {
+      type: ["string", "number"],
+    },
+    minItems: 1,
+    maxItems: 2,
+  }
+
+  test.each([
+    [null, false],
+    ["", false],
+    ["bad", false],
+    [{}, false],
+    [[], false],
+    [["a", "b"], true],
+    [["a", 1], true],
+    [["a", 1, 2], false],
+    [["a", true], false],
   ])("input = %s, valid = %s", (input, expected) => {
     const v = getValidator(schema)
     const res = v(input)

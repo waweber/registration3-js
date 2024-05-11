@@ -27,14 +27,14 @@ export const getStringValidator = (schema: Schema): z.ZodType<string> => {
     const dateFormat = handleDateFormat(schema)
     res = res.pipe(dateFormat)
   } else if (schema.format == "email") {
-    res = res.pipe(handleEmailFormat(schema))
+    res = res.pipe(handleEmailFormat())
   }
 
   return res
 }
 
 const handleDateFormat = (schema: Schema): z.ZodType<string> => {
-  let v = z
+  const v = z
     .string()
     .transform(parseDate)
     .refine((v) => !isNaN(v.getTime()), "Invalid date")
@@ -64,7 +64,7 @@ const parseDate = (s: string): Date => {
   return new Date(s.substring(0, 10) + "T00:00:00")
 }
 
-const handleEmailFormat = (schema: Schema): z.ZodType<string> => {
+const handleEmailFormat = (): z.ZodType<string> => {
   return z.string().refine(validateEmail, "Invalid email")
 }
 

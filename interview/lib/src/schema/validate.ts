@@ -1,3 +1,5 @@
+import { getArrayValidator } from "./array.js"
+import { getNumberValidator } from "./number.js"
 import { getObjectValidator } from "./object.js"
 import { getStringValidator } from "./string.js"
 import {
@@ -78,6 +80,14 @@ export const getValidationSchema = (schema: Schema): z.ZodType<unknown> => {
       z.unknown().refine((v) => typeof v != "string"),
     ),
   )
+  s = s.and(
+    getArrayValidator(schema).or(z.unknown().refine((v) => !Array.isArray(v))),
+  )
+  s = s.and(
+    getNumberValidator(schema).or(
+      z.unknown().refine((v) => typeof v != "number"),
+    ),
+  )
 
   if (schema.properties) {
     s = s.and(
@@ -135,6 +145,6 @@ const getConstValidator = (value: unknown): z.ZodType<unknown> => {
 }
 
 const getOneOfValidator = (oneOf: Schema[]): z.ZodType<unknown> => {
-  let s: z.ZodType<unknown> = z.never()
+  const s: z.ZodType<unknown> = z.never()
   return oneOf.reduce((s, v) => s.or(getValidationSchema(v)), s)
 }
