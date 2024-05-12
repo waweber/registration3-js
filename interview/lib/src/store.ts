@@ -11,8 +11,8 @@ const DEFAULT_MAX_SIZE = 100
  * Make a {@link InterviewResponseStore}.
  */
 export const makeInterviewResponseStore = (
-  maxSize = DEFAULT_MAX_SIZE,
   records?: Iterable<InterviewResponseRecord>,
+  maxSize = DEFAULT_MAX_SIZE,
 ): InterviewResponseStore => {
   return new StoreImpl(maxSize, records)
 }

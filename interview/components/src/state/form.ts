@@ -15,12 +15,14 @@ export const makeFormState = (
     schema: schema,
     value: getInitialValue(schema, initialValue),
     touched: false,
+    get validationResult() {
+      return validator(this.value)
+    },
     get validationError() {
-      const res = validator(this.value)
-      if (res.success) {
+      if (this.validationResult.success) {
         return null
       } else {
-        return res
+        return this.validationResult
       }
     },
     getValue(path) {

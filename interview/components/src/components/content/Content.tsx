@@ -11,7 +11,7 @@ import { ComponentPropsWithoutRef, ReactNode } from "react"
 
 export type ContentProps = BoxProps &
   Omit<ComponentPropsWithoutRef<"form">, "title"> & {
-    classes?: {
+    classNames?: {
       root?: string
       header?: string
       title?: string
@@ -25,8 +25,15 @@ export type ContentProps = BoxProps &
   }
 
 export const Content = (props: ContentProps) => {
-  const { className, title, TitleProps, classes, footer, children, ...other } =
-    useProps("Content", {}, props)
+  const {
+    className,
+    title,
+    TitleProps,
+    classNames: classes,
+    footer,
+    children,
+    ...other
+  } = useProps("Content", {}, props)
 
   return (
     <Box

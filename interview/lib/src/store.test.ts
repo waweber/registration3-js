@@ -24,14 +24,14 @@ test("store create/iterate works", () => {
       },
     },
   ]
-  const store = makeInterviewResponseStore(10, items)
+  const store = makeInterviewResponseStore(items, 10)
 
   const out = Array.from(store)
   expect(out).toStrictEqual(items)
 })
 
 test("store add works", () => {
-  const store = makeInterviewResponseStore(10)
+  const store = makeInterviewResponseStore([], 10)
   const resp = store.add(
     {
       state: "1",
@@ -87,15 +87,18 @@ test("store add works", () => {
 })
 
 test("store get works", () => {
-  const store = makeInterviewResponseStore(10, [
-    {
-      response: {
-        state: "1",
-        completed: false,
-        update_url: "",
+  const store = makeInterviewResponseStore(
+    [
+      {
+        response: {
+          state: "1",
+          completed: false,
+          update_url: "",
+        },
       },
-    },
-  ])
+    ],
+    10,
+  )
 
   const out = store.get("1")
   expect(out).toStrictEqual({
@@ -108,15 +111,18 @@ test("store get works", () => {
 })
 
 test("store saves user response", () => {
-  const store = makeInterviewResponseStore(10, [
-    {
-      response: {
-        state: "1",
-        completed: false,
-        update_url: "",
+  const store = makeInterviewResponseStore(
+    [
+      {
+        response: {
+          state: "1",
+          completed: false,
+          update_url: "",
+        },
       },
-    },
-  ])
+    ],
+    10,
+  )
 
   const res = store.saveUserResponse("1", { test: true })
   expect(res).toStrictEqual({
@@ -132,7 +138,7 @@ test("store saves user response", () => {
 })
 
 test("store trims size", () => {
-  const store = makeInterviewResponseStore(10)
+  const store = makeInterviewResponseStore([], 10)
   for (let i = 0; i < 20; i++) {
     store.add({ state: `${i}`, completed: false, update_url: "" })
     const arr = Array.from(store)

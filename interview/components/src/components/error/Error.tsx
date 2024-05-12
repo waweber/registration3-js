@@ -1,15 +1,16 @@
 import { Box, Button, Group } from "@mantine/core"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 import { InterviewComponentProps } from "../types.js"
+import { InterviewContext } from "../interview/Context.js"
 
 export type ErrorProps = InterviewComponentProps & {
   title: string
   message: string
-  onClose?: () => void
 }
 
 export const Error = (props: ErrorProps) => {
-  const { title, message, onClose, children } = props
+  const { title, message, children } = props
+  const context = useContext(InterviewContext)
 
   const componentProps = useMemo(
     () => ({
@@ -22,19 +23,15 @@ export const Error = (props: ErrorProps) => {
       Controls() {
         return (
           <Group preventGrowOverflow={false} justify="flex-end">
-            <Button onClick={() => onClose && onClose()} variant="outline">
+            <Button onClick={() => context.onClose()} variant="outline">
               Close
             </Button>
           </Group>
         )
       },
     }),
-    [title, message, onClose],
+    [title, message, context.onClose],
   )
 
-  return children({
-    ...componentProps,
-    onSubmit: () => void 0,
-    submitting: false,
-  })
+  return children(componentProps)
 }

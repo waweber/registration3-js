@@ -1,4 +1,8 @@
-import { Schema, ValidationError } from "@open-event-systems/interview-lib"
+import {
+  Schema,
+  ValidationError,
+  ValidationResult,
+} from "@open-event-systems/interview-lib"
 
 export type ScalarFieldValue = string | number | boolean | null
 export type NestedValue<T = ScalarFieldValue> =
@@ -12,6 +16,7 @@ export type FormState = {
   readonly schema: Schema
   get value(): NestedValue | undefined
   get touched(): NestedValue<boolean>
+  get validationResult(): ValidationResult
   get validationError(): ValidationError | null
 
   getValue(path: Path): NestedValue | undefined
