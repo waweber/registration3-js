@@ -4,35 +4,35 @@ export type InterviewResponse =
   | IncompleteInterviewResponse
   | CompletedInterviewResponse
 
-export type IncompleteInterviewResponse = {
+export type IncompleteInterviewResponse = Readonly<{
   state: string
   completed: false
   update_url: string
   content?: InterviewContent
-}
+}>
 
-export type CompletedInterviewResponse = {
+export type CompletedInterviewResponse = Readonly<{
   state: string
   target?: string
   completed: true
-}
+}>
 
 export type InterviewContent = AskResult | ExitResult
 
-export type AskResult = {
+export type AskResult = Readonly<{
   type: "question"
   schema: Schema
-}
+}>
 
-export type ExitResult = {
+export type ExitResult = Readonly<{
   type: "exit"
   title: string
   description?: string
-}
+}>
 
-export type InterviewResponseRecord = {
+export type InterviewResponseRecord = Readonly<{
   response: InterviewResponse
   title?: string
   prev?: string
-  responses?: Record<string, unknown>
-}
+  userResponse?: Record<string, unknown>
+}>

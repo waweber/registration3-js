@@ -86,7 +86,7 @@ const getPath = <T>(
 ): NestedValue<T> | undefined => {
   let cur = root
   for (const p of path) {
-    if (cur == null) {
+    if (cur == null || typeof cur != "object") {
       return cur
     }
 

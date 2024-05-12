@@ -41,6 +41,26 @@ export class InterviewResponseRecordStore {
     return record
   }
 
+  /**
+   * Save the user responses for a record.
+   * @param state - the state value
+   * @param userResponse - the response value
+   * @returns the updated record, or null if it does not exist
+   */
+  saveUserResponse(
+    state: string,
+    userResponse: Record<string, unknown>,
+  ): InterviewResponseRecord | null {
+    const cur = this.records.get(state)
+    if (!cur) {
+      return null
+    }
+
+    const updated = { ...cur, userResponse: userResponse }
+    this.records.set(state, updated)
+    return updated
+  }
+
   private trim() {
     while (this.records.size > this.maxSize) {
       const res = this.records.keys().next()

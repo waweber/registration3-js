@@ -57,12 +57,12 @@ const formatError = (err: z.ZodFormattedError<unknown>): ValidationError => {
     }
   }
 
-  const res: ValidationError = {
+  let res: ValidationError = {
     errors: err._errors,
   }
 
   if (children) {
-    res.children = children
+    res = { ...res, children }
   }
 
   return res
@@ -109,9 +109,9 @@ export const getValidationSchema = (schema: Schema): z.ZodType<unknown> => {
 }
 
 const getTypeValidator = (
-  type: SchemaTypes | SchemaTypes[],
+  type: SchemaTypes | readonly SchemaTypes[],
 ): z.ZodType<unknown> => {
-  const typesArr = Array.isArray(type) ? type : [type]
+  const typesArr: readonly SchemaTypes[] = Array.isArray(type) ? type : [type]
   const tests = typesArr.map((t) => typeTests[t])
   return z
     .unknown()
@@ -127,7 +127,7 @@ const getNullValidator = (schema: Schema): z.ZodType<unknown> => {
     )
 }
 
-const includesNull = (t: SchemaTypes | SchemaTypes[]) => {
+const includesNull = (t: SchemaTypes | readonly SchemaTypes[]) => {
   return (Array.isArray(t) && t.includes("null")) || t == "null"
 }
 
@@ -144,7 +144,7 @@ const getConstValidator = (value: unknown): z.ZodType<unknown> => {
   return z.unknown().refine((v) => v == value, "Invalid value")
 }
 
-const getOneOfValidator = (oneOf: Schema[]): z.ZodType<unknown> => {
+const getOneOfValidator = (oneOf: readonly Schema[]): z.ZodType<unknown> => {
   const s: z.ZodType<unknown> = z.never()
   return oneOf.reduce((s, v) => s.or(getValidationSchema(v)), s)
 }

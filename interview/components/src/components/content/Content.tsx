@@ -7,34 +7,40 @@ import {
   useProps,
 } from "@mantine/core"
 import clsx from "clsx"
-import { ReactNode } from "react"
+import { ComponentPropsWithoutRef, ReactNode } from "react"
 
-export type ContentProps = BoxProps & {
-  classes?: {
-    root?: string
-    header?: string
-    title?: string
-    content?: string
-    footer?: string
+export type ContentProps = BoxProps &
+  Omit<ComponentPropsWithoutRef<"form">, "title"> & {
+    classes?: {
+      root?: string
+      header?: string
+      title?: string
+      content?: string
+      footer?: string
+    }
+    title?: ReactNode
+    TitleProps?: TitleProps
+    footer?: ReactNode
+    children?: ReactNode
   }
-  TitleProps?: TitleProps
-  footer?: ReactNode
-  children?: ReactNode
-}
 
 export const Content = (props: ContentProps) => {
-  const { className, TitleProps, classes, footer, children, ...other } =
+  const { className, title, TitleProps, classes, footer, children, ...other } =
     useProps("Content", {}, props)
 
   return (
-    <Box className={clsx("Content-root", className, classes?.root)} {...other}>
+    <Box
+      component="form"
+      className={clsx("Content-root", className, classes?.root)}
+      {...other}
+    >
       <Box className={clsx("Content-header", classes?.header)}>
         <Title
           className={clsx("Content-title", classes?.title)}
           order={3}
           {...TitleProps}
         >
-          Full name
+          {title}
         </Title>
         <Divider />
       </Box>

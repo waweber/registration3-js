@@ -8,7 +8,9 @@ export const getStringValidator = (schema: Schema): z.ZodType<string> => {
   if (schema.minLength != null) {
     strSchema = strSchema.min(
       schema.minLength,
-      `Must be at least ${schema.minLength} characters`,
+      schema.minLength == 1
+        ? "Required"
+        : `Must be at least ${schema.minLength} characters`,
     )
   }
   if (schema.maxLength != null) {
