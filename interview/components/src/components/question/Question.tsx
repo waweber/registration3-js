@@ -1,23 +1,11 @@
-import {
-  Box,
-  BoxProps,
-  Button,
-  Group,
-  Stack,
-  Title,
-  useProps,
-} from "@mantine/core"
-import {
-  AskResult,
-  IncompleteInterviewResponse,
-  Schema,
-} from "@open-event-systems/interview-lib"
-import clsx from "clsx"
+import { Box, Button, Group, Stack } from "@mantine/core"
+import { Schema } from "@open-event-systems/interview-lib"
 import { makeFormState } from "../../state/form.js"
 import { useMemo, useState } from "react"
 import { ObjectField } from "../fields/object/ObjectField.js"
 import { FieldContextProvider } from "../fields/context.js"
-import { InterviewComponentProps, InterviewRenderProps } from "../types.js"
+import { InterviewComponentProps } from "../types.js"
+import clsx from "clsx"
 
 export type QuestionProps = InterviewComponentProps & {
   schema: Schema
@@ -35,7 +23,7 @@ export const Question = (props: QuestionProps) => {
       },
       Content() {
         return (
-          <Stack>
+          <Stack className={clsx("Question-content")}>
             <Box>{state.schema.description}</Box>
             <ObjectField />
           </Stack>

@@ -8,16 +8,14 @@ export default meta
 
 export const Default: StoryObj<typeof Content> = {
   args: {
+    title: "Title",
+    footer: "Footer",
     style: {
       height: 400,
       width: 300,
     },
   },
   render(args) {
-    return (
-      <Content {...args} footer="Footer">
-        Content
-      </Content>
-    )
+    return <Content {...args}>Content</Content>
   },
 }

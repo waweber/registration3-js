@@ -1,9 +1,23 @@
-import { InterviewResponse, InterviewResponseRecord } from "./types.js"
+import {
+  InterviewResponse,
+  InterviewResponseRecord,
+  InterviewResponseStore,
+  UserResponse,
+} from "./types.js"
+
+const DEFAULT_MAX_SIZE = 100
 
 /**
- * Stores {@link InterviewResponseRecord} objects.
+ * Make a {@link InterviewResponseStore}.
  */
-export class InterviewResponseRecordStore {
+export const makeInterviewResponseStore = (
+  maxSize = DEFAULT_MAX_SIZE,
+  records?: Iterable<InterviewResponseRecord>,
+): InterviewResponseStore => {
+  return new StoreImpl(maxSize, records)
+}
+
+class StoreImpl {
   private records = new Map<string, InterviewResponseRecord>()
 
   constructor(
@@ -21,19 +35,10 @@ export class InterviewResponseRecordStore {
     }
   }
 
-  /**
-   * Get a record by id.
-   */
   get(state: string): InterviewResponseRecord | null {
     return this.records.get(state) ?? null
   }
 
-  /**
-   * Add a record.
-   * @param response - the response
-   * @param prev - the previous record id
-   * @returns the added record
-   */
   add(response: InterviewResponse, prev?: string): InterviewResponseRecord {
     const record = { response, prev, title: getTitle(response) }
     this.records.set(response.state, record)
@@ -41,15 +46,9 @@ export class InterviewResponseRecordStore {
     return record
   }
 
-  /**
-   * Save the user responses for a record.
-   * @param state - the state value
-   * @param userResponse - the response value
-   * @returns the updated record, or null if it does not exist
-   */
   saveUserResponse(
     state: string,
-    userResponse: Record<string, unknown>,
+    userResponse: UserResponse,
   ): InterviewResponseRecord | null {
     const cur = this.records.get(state)
     if (!cur) {

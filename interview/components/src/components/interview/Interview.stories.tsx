@@ -10,7 +10,7 @@ const meta: Meta<typeof Interview> = {
 
 export default meta
 
-export const Default: StoryObj<typeof Interview> = {
+export const Question: StoryObj<typeof Interview> = {
   render() {
     const response: InterviewResponse = {
       completed: false,
@@ -47,6 +47,62 @@ export const Default: StoryObj<typeof Interview> = {
           >
             <Content />
             <LoadingOverlay visible={submitting} />
+          </ContentComponent>
+        )}
+      </Interview>
+    )
+  },
+}
+
+export const Exit: StoryObj<typeof Interview> = {
+  render() {
+    const response: InterviewResponse = {
+      completed: false,
+      update_url: "",
+      state: "2",
+      content: {
+        type: "exit",
+        title: "Not Applicable",
+        description: "You are not eligible to complete this form.",
+      },
+    }
+    return (
+      <Interview response={response}>
+        {({ Title, Content, Controls }) => (
+          <ContentComponent
+            title={<Title />}
+            footer={<Controls />}
+            style={{ width: 400, height: 400 }}
+          >
+            <Content />
+          </ContentComponent>
+        )}
+      </Interview>
+    )
+  },
+}
+
+export const Error: StoryObj<typeof Interview> = {
+  render() {
+    const response: InterviewResponse = {
+      completed: false,
+      update_url: "",
+      state: "1-error",
+      content: {
+        type: "error",
+        title: "Error",
+        description: "There was an error, please go back and try again.",
+      },
+    }
+    return (
+      <Interview response={response}>
+        {({ Title, Content, Controls }) => (
+          <ContentComponent
+            title={<Title />}
+            footer={<Controls />}
+            style={{ width: 400, height: 400 }}
+          >
+            <Content />
           </ContentComponent>
         )}
       </Interview>

@@ -1,24 +1,32 @@
-import { InterviewResponseRecordStore } from "./store.js"
-import { IncompleteInterviewResponse, InterviewResponse } from "./types.js"
+import {
+  IncompleteInterviewResponse,
+  InterviewAPI,
+  InterviewResponse,
+  InterviewResponseStore,
+  UserResponse,
+} from "./types.js"
 
 type FetchFunc = (
   url: RequestInfo | URL,
   init?: RequestInit,
 ) => Promise<Response>
 
-export class InterviewAPI {
+export const makeInterviewAPI = (
+  store: InterviewResponseStore,
+  fetchFunc: FetchFunc = fetch,
+): InterviewAPI => {
+  return new InterviewAPIImpl(store, fetchFunc)
+}
+
+class InterviewAPIImpl {
   constructor(
-    private store: InterviewResponseRecordStore,
+    private store: InterviewResponseStore,
     private fetch: FetchFunc = fetch,
   ) {}
 
-  async start(response: InterviewResponse): Promise<InterviewResponse> {
-    return await this.update(response)
-  }
-
-  private async update(
+  async update(
     response: InterviewResponse,
-    userResponse?: Record<string, unknown>,
+    userResponse?: UserResponse,
   ): Promise<InterviewResponse> {
     while (!response.completed && !response.content) {
       const next = await this.updateOnce(response, userResponse)
@@ -30,7 +38,7 @@ export class InterviewAPI {
 
   private async updateOnce(
     response: IncompleteInterviewResponse,
-    userResponse?: Record<string, unknown>,
+    userResponse?: UserResponse,
   ): Promise<InterviewResponse> {
     const body = {
       state: response.state,
@@ -44,9 +52,70 @@ export class InterviewAPI {
       },
       body: JSON.stringify(body),
     })
-    // TODO errors
-    const newResp: InterviewResponse = await res.json()
+    let newResp: InterviewResponse
+    if (!res.ok) {
+      newResp = await handleError(response, res)
+    } else {
+      newResp = await res.json()
+    }
     this.store.add(newResp, response.state)
     return newResp
   }
+}
+
+const handleError = async (
+  prev: InterviewResponse,
+  resp: Response,
+): Promise<IncompleteInterviewResponse> => {
+  let title: string | undefined
+  let message: string | undefined
+  try {
+    ;[title, message] = await parseError(resp)
+  } catch (_) {
+    // ignore
+  }
+  const defaults = defaultErrorMessages[String(resp.status)] ?? [
+    undefined,
+    undefined,
+  ]
+  title = title || defaults[0] || "Error"
+  message =
+    message || defaults[1] || "An error occurred. Please go back and try again."
+  return {
+    state: `${prev.state}-error`,
+    completed: false,
+    update_url: "",
+    content: {
+      type: "error",
+      title: title,
+      description: message,
+    },
+  }
+}
+
+const parseError = async (resp: Response) => {
+  const bodyJson = await resp.json()
+  let title: string | undefined
+  let message: string | undefined
+  if (typeof bodyJson == "object" && bodyJson) {
+    if ("description" in bodyJson) {
+      title = bodyJson.description
+    }
+    if ("message" in bodyJson) {
+      message = bodyJson.message
+    }
+  }
+  return [title, message]
+}
+
+const defaultErrorMessages: Record<string, [string, string] | undefined> = {
+  "404": [
+    "Expired",
+    "Your session may have timed out, or the form may have changed or is no longer available.",
+  ],
+  "409": [
+    "Conflict",
+    "Information was updated while completing the form. Please start over to use the updated information.",
+  ],
+  "422": ["Error", "Please go back and check your responses, then try again."],
 }
