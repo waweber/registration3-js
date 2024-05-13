@@ -115,7 +115,7 @@ const getTypeValidator = (
   const tests = typesArr.map((t) => typeTests[t])
   return z
     .unknown()
-    .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value?")
+    .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value")
 }
 
 const getNullValidator = (schema: Schema): z.ZodType<unknown> => {
@@ -141,7 +141,10 @@ const typeTests = {
 } satisfies { [K in SchemaTypes]: (v: unknown) => boolean }
 
 const getConstValidator = (value: unknown): z.ZodType<unknown> => {
-  return z.unknown().refine((v) => v == value, "Invalid value")
+  return z
+    .unknown()
+    .refine((v) => v !== null || value === null, "Required")
+    .refine((v) => v === null || v === value, "Invalid value")
 }
 
 const getOneOfValidator = (oneOf: readonly Schema[]): z.ZodType<unknown> => {

@@ -33,6 +33,7 @@ export type Schema = Readonly<{
   uniqueItems?: boolean
   properties?: { readonly [prop: string]: Schema }
   required?: readonly string[]
+  "x-primary"?: boolean
 }>
 
 export type ValidationError = Readonly<{

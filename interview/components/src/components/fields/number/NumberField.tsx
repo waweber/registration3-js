@@ -20,7 +20,9 @@ export const NumberField = observer((props: NumberFieldProps) => {
 
   const [state, schema, path] = useFieldContext()
 
-  let numVal = value ?? state?.value
+  let numVal =
+    value ??
+    ((state ? state.value ?? "" : undefined) as string | number | undefined)
 
   if (typeof numVal == "string") {
     if (numVal != "") {
@@ -49,8 +51,7 @@ export const NumberField = observer((props: NumberFieldProps) => {
       min={schema.minimum}
       max={schema.maximum}
       step={isInt ? 1 : undefined}
-      {...other}
-      value={value}
+      value={numVal}
       onChange={
         onChange ??
         ((v) => {
@@ -69,6 +70,7 @@ export const NumberField = observer((props: NumberFieldProps) => {
       error={
         error ?? (state?.getTouched(path) ? state.getError(path) : undefined)
       }
+      {...other}
     />
   )
 })
