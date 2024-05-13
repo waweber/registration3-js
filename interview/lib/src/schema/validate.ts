@@ -115,7 +115,7 @@ const getTypeValidator = (
   const tests = typesArr.map((t) => typeTests[t])
   return z
     .unknown()
-    .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value")
+    .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value?")
 }
 
 const getNullValidator = (schema: Schema): z.ZodType<unknown> => {
@@ -134,7 +134,7 @@ const includesNull = (t: SchemaTypes | readonly SchemaTypes[]) => {
 const typeTests = {
   string: (v) => typeof v == "string",
   number: (v) => typeof v == "number",
-  integer: (v) => typeof v == "number" && Number.isInteger(v),
+  integer: (v) => typeof v == "number",
   array: (v) => Array.isArray(v),
   object: (v) => typeof v == "object" && v !== null,
   null: (v) => v === null,
