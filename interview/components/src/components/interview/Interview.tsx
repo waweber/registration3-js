@@ -55,7 +55,8 @@ export const Interview = (props: InterviewProps) => {
         api
           .update(response, userResponse)
           .then((res) => {
-            return onUpdate && onUpdate(res)
+            const record = store.add(res, response.state)
+            return onUpdate && onUpdate(record)
           })
           .then(() => {
             setSubmitting(false)

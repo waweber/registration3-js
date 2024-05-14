@@ -87,10 +87,10 @@ export type InterviewAPI = {
    * Update an interview.
    * @param response - the interview response object
    * @param userResponse - the user response
-   * @returns a promise that will resolve with the next interview response record
+   * @returns a promise that will resolve with the next interview response
    */
   update(
     response: InterviewResponse,
     userResponse?: UserResponse,
-  ): Promise<InterviewResponseRecord>
+  ): Promise<InterviewResponse>
 }

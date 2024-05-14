@@ -1,39 +1,34 @@
-import {
-  InterviewAPI,
-  InterviewResponse,
-  InterviewResponseRecord,
-  UserResponse,
-} from "./types.js"
+import { InterviewAPI, InterviewResponse, UserResponse } from "./types.js"
 
 /**
  * Create a mock API.
  */
 export const makeMockAPI = (
-  getNextRecord: (
+  getNextResponse: (
     curResponse: InterviewResponse,
     userResponse?: UserResponse,
-  ) => Promise<InterviewResponseRecord | null>,
+  ) =>
+    | Promise<InterviewResponse | null | undefined>
+    | InterviewResponse
+    | null
+    | undefined,
 ): InterviewAPI => {
   return {
     async update(response, userResponse) {
-      const nextRecord = await getNextRecord(response, userResponse)
-      if (!nextRecord) {
+      const nextResponse = await getNextResponse(response, userResponse)
+      if (!nextResponse) {
         return {
-          title: "Error",
-          prev: response.state,
-          response: {
-            completed: false,
-            update_url: "",
-            state: `${response.state}-error`,
-            content: {
-              title: "Error",
-              type: "error",
-              description: "Response not found",
-            },
+          completed: false,
+          update_url: "",
+          state: `${response.state}-error`,
+          content: {
+            title: "Error",
+            type: "error",
+            description: "Response not found",
           },
         }
       }
-      return nextRecord
+      return nextResponse
     },
   }
 }

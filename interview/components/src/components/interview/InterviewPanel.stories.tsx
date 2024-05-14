@@ -93,14 +93,14 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
     "1": "2",
   }
   const [store] = useState(() => makeInterviewResponseStore(records))
-  const getNextRecord = async (
+  const getNextResponse = async (
     resp: InterviewResponse,
     userResponse?: UserResponse,
   ) => {
     const nextState = nextStateMap[resp.state]
-    return nextState ? store.get(nextState) : null
+    return nextState ? store.get(nextState)?.response ?? null : null
   }
-  const [mockApi] = useState(() => makeMockAPI(getNextRecord))
+  const [mockApi] = useState(() => makeMockAPI(getNextResponse))
   const [recordId, setRecordId] = useState(props.recordId)
   const [latestRecordId, setLatestRecordId] = useState(props.latestRecordId)
 

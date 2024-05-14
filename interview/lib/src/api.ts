@@ -2,8 +2,6 @@ import {
   IncompleteInterviewResponse,
   InterviewAPI,
   InterviewResponse,
-  InterviewResponseRecord,
-  InterviewResponseStore,
   UserResponse,
 } from "./types.js"
 
@@ -13,39 +11,30 @@ type FetchFunc = (
 ) => Promise<Response>
 
 export const makeInterviewAPI = (
-  store: InterviewResponseStore,
   fetchFunc: FetchFunc = fetch,
 ): InterviewAPI => {
-  return new InterviewAPIImpl(store, fetchFunc)
+  return new InterviewAPIImpl(fetchFunc)
 }
 
 class InterviewAPIImpl {
-  constructor(
-    private store: InterviewResponseStore,
-    private fetch: FetchFunc = fetch,
-  ) {}
+  constructor(private fetch: FetchFunc = fetch) {}
 
   async update(
     response: InterviewResponse,
     userResponse?: UserResponse,
-  ): Promise<InterviewResponseRecord> {
-    let curRecord = this.store.get(response.state)
-    if (!curRecord) {
-      curRecord = this.store.add(response)
-    }
-
-    while (!curRecord.response.completed && !curRecord.response.completed) {
-      const next = await this.updateOnce(curRecord.response, userResponse)
+  ): Promise<InterviewResponse> {
+    while (!response.completed && !response.completed) {
+      const next = await this.updateOnce(response, userResponse)
       userResponse = undefined
-      curRecord = next
+      response = next
     }
-    return curRecord
+    return response
   }
 
   private async updateOnce(
     response: IncompleteInterviewResponse,
     userResponse?: UserResponse,
-  ): Promise<InterviewResponseRecord> {
+  ): Promise<InterviewResponse> {
     const body = {
       state: response.state,
       responses: userResponse,
@@ -64,8 +53,7 @@ class InterviewAPIImpl {
     } else {
       newResp = await res.json()
     }
-    const newRecord = this.store.add(newResp, response.state)
-    return newRecord
+    return newResp
   }
 }
 
