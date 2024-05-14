@@ -2,6 +2,7 @@ import {
   IncompleteInterviewResponse,
   InterviewAPI,
   InterviewResponse,
+  InterviewResponseRecord,
   InterviewResponseStore,
   UserResponse,
 } from "./types.js"
@@ -27,19 +28,24 @@ class InterviewAPIImpl {
   async update(
     response: InterviewResponse,
     userResponse?: UserResponse,
-  ): Promise<InterviewResponse> {
-    while (!response.completed && !response.content) {
-      const next = await this.updateOnce(response, userResponse)
-      userResponse = undefined
-      response = next
+  ): Promise<InterviewResponseRecord> {
+    let curRecord = this.store.get(response.state)
+    if (!curRecord) {
+      curRecord = this.store.add(response)
     }
-    return response
+
+    while (!curRecord.response.completed && !curRecord.response.completed) {
+      const next = await this.updateOnce(curRecord.response, userResponse)
+      userResponse = undefined
+      curRecord = next
+    }
+    return curRecord
   }
 
   private async updateOnce(
     response: IncompleteInterviewResponse,
     userResponse?: UserResponse,
-  ): Promise<InterviewResponse> {
+  ): Promise<InterviewResponseRecord> {
     const body = {
       state: response.state,
       responses: userResponse,
@@ -58,8 +64,8 @@ class InterviewAPIImpl {
     } else {
       newResp = await res.json()
     }
-    this.store.add(newResp, response.state)
-    return newResp
+    const newRecord = this.store.add(newResp, response.state)
+    return newRecord
   }
 }
 

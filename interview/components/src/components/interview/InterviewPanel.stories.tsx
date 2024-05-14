@@ -1,8 +1,11 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { Interview } from "./Interview.js"
 import {
+  InterviewResponse,
   InterviewResponseRecord,
+  UserResponse,
   makeInterviewResponseStore,
+  makeMockAPI,
 } from "@open-event-systems/interview-lib"
 import { InterviewPanel } from "./InterviewPanel.js"
 import { useState } from "react"
@@ -86,7 +89,18 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       },
     },
   ]
+  const nextStateMap: Record<string, string> = {
+    "1": "2",
+  }
   const [store] = useState(() => makeInterviewResponseStore(records))
+  const getNextRecord = async (
+    resp: InterviewResponse,
+    userResponse?: UserResponse,
+  ) => {
+    const nextState = nextStateMap[resp.state]
+    return nextState ? store.get(nextState) : null
+  }
+  const [mockApi] = useState(() => makeMockAPI(getNextRecord))
   const [recordId, setRecordId] = useState(props.recordId)
   const [latestRecordId, setLatestRecordId] = useState(props.latestRecordId)
 
@@ -97,6 +111,12 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
   return (
     <Interview
       store={store}
+      api={mockApi}
+      onUpdate={async (record) => {
+        await new Promise((r) => window.setTimeout(r, 1000))
+        setLatestRecordId(record.response.state)
+        navigate(record.response.state)
+      }}
       recordId={recordId}
       latestRecordId={latestRecordId}
       onNavigate={navigate}

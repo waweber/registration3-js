@@ -10,13 +10,14 @@ import { InterviewContext } from "../interview/Context.js"
 
 export type QuestionProps = InterviewComponentProps & {
   schema: Schema
+  initialData?: UserResponse
 }
 
 export const Question = (props: QuestionProps) => {
-  const { schema, children } = props
+  const { schema, initialData, children } = props
 
   const context = useContext(InterviewContext)
-  const [state] = useState(() => makeFormState(schema)) // TODO: user responses
+  const [state] = useState(() => makeFormState(schema, initialData))
 
   const componentProps = useMemo(
     () => ({

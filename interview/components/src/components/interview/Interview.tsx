@@ -1,4 +1,8 @@
 import {
+  CompletedInterviewResponse,
+  IncompleteInterviewResponse,
+  InterviewAPI,
+  InterviewResponseRecord,
   InterviewResponseStore,
   UserResponse,
 } from "@open-event-systems/interview-lib"
@@ -10,32 +14,60 @@ import { InterviewContext } from "./Context.js"
 
 export type InterviewProps = InterviewComponentProps & {
   store: InterviewResponseStore
+  api: InterviewAPI
   recordId?: string
   latestRecordId?: string
   onClose?: () => void
   onNavigate?: (state: string) => void
+  onUpdate?: (record: InterviewResponseRecord) => Promise<void> | void
 }
 
 export const Interview = (props: InterviewProps) => {
-  const { store, recordId, latestRecordId, onClose, onNavigate, children } =
-    props
+  const {
+    store,
+    api,
+    recordId,
+    latestRecordId,
+    onClose,
+    onNavigate,
+    onUpdate,
+    children,
+  } = props
   const record = recordId ? store.get(recordId) : null
   const response = record?.response
 
   const content = !response || response.completed ? undefined : response.content
 
   const [submitting, setSubmitting] = useState(false)
+
   const onSubmit = useCallback(
     (userResponse?: UserResponse) => {
-      if (submitting) {
+      if (!response || submitting) {
         return
       }
 
       setSubmitting(true)
-      console.log(userResponse)
-      window.setTimeout(() => setSubmitting(false), 1000)
+      try {
+        if (userResponse != null) {
+          store.saveUserResponse(response.state, userResponse)
+        }
+
+        api
+          .update(response, userResponse)
+          .then((res) => {
+            return onUpdate && onUpdate(res)
+          })
+          .then(() => {
+            setSubmitting(false)
+          })
+          .catch(() => {
+            setSubmitting(false)
+          })
+      } catch (_) {
+        setSubmitting(false)
+      }
     },
-    [submitting],
+    [response, onNavigate, onUpdate, submitting, store, api],
   )
 
   let child: ReactNode
@@ -58,7 +90,11 @@ export const Interview = (props: InterviewProps) => {
     )
   } else if (content.type == "question") {
     child = (
-      <Question key={response.state} schema={content.schema}>
+      <Question
+        key={response.state}
+        schema={content.schema}
+        initialData={record.userResponse}
+      >
         {children}
       </Question>
     )
