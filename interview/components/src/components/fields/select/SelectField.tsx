@@ -1,4 +1,5 @@
 import { useFieldContext } from "../context.js"
+import { ButtonsSelectField } from "./Buttons.js"
 import { CheckboxSelectField } from "./Checkbox.js"
 import { DropdownSelectField } from "./Dropdown.js"
 import { RadioSelectField } from "./Radio.js"
@@ -12,6 +13,8 @@ export const SelectField = () => {
       return <RadioSelectField />
     case "checkbox":
       return <CheckboxSelectField />
+    case "buttons":
+      return <ButtonsSelectField />
     default:
       return <DropdownSelectField />
   }

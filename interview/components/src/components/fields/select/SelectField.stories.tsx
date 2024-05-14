@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core"
+import { Box, Stack, Text, TextInput } from "@mantine/core"
 import { Meta, StoryObj } from "@storybook/react"
 import { useState } from "react"
 
@@ -138,6 +138,94 @@ export const Checkbox_as_Boolean: StoryObj<typeof SelectField> = {
       <FieldContextProvider state={formState} schema={schema}>
         <SelectField />
       </FieldContextProvider>
+    )
+  },
+}
+
+export const Buttons: StoryObj<typeof SelectField> = {
+  render() {
+    const schema: Schema = {
+      title: "Select",
+      "x-component": "buttons",
+      default: "1",
+      oneOf: [
+        {
+          const: "1",
+          title: "Yes!",
+          "x-primary": true,
+        },
+        {
+          const: "2",
+          title: "Maybe...",
+        },
+        {
+          const: "3",
+          title: "No.",
+        },
+      ],
+    }
+
+    const [formState] = useState(() => makeFormState(schema))
+    const [val, setVal] = useState("")
+
+    return (
+      <form
+        onSubmit={(e) => {
+          setVal(formState.getValue([]) as string)
+          e.preventDefault()
+        }}
+      >
+        <Stack>
+          {val && <Text>Value: {val}</Text>}
+          <TextInput title="Just to test submit on enter..." />
+          <FieldContextProvider state={formState} schema={schema}>
+            <SelectField />
+          </FieldContextProvider>
+        </Stack>
+      </form>
+    )
+  },
+}
+
+export const Buttons_Without_Default: StoryObj<typeof SelectField> = {
+  render() {
+    const schema: Schema = {
+      title: "Select",
+      "x-component": "buttons",
+      oneOf: [
+        {
+          const: "1",
+          title: "Yes!",
+        },
+        {
+          const: "2",
+          title: "Maybe...",
+        },
+        {
+          const: "3",
+          title: "No.",
+        },
+      ],
+    }
+
+    const [formState] = useState(() => makeFormState(schema))
+    const [val, setVal] = useState("")
+
+    return (
+      <form
+        onSubmit={(e) => {
+          setVal(formState.getValue([]) as string)
+          e.preventDefault()
+        }}
+      >
+        <Stack>
+          {val && <Text>Value: {val}</Text>}
+          <TextInput title="Just to test submit on enter..." />
+          <FieldContextProvider state={formState} schema={schema}>
+            <SelectField />
+          </FieldContextProvider>
+        </Stack>
+      </form>
     )
   },
 }
