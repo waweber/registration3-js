@@ -2,6 +2,7 @@ import { Schema } from "./types.js"
 import { z } from "zod"
 import * as EmailValidator from "email-validator"
 import psl from "psl"
+import { parseISO } from "date-fns"
 
 export const getStringValidator = (schema: Schema): z.ZodType<string> => {
   let strSchema = z.string()
@@ -36,34 +37,61 @@ export const getStringValidator = (schema: Schema): z.ZodType<string> => {
 }
 
 const handleDateFormat = (schema: Schema): z.ZodType<string> => {
-  const v = z
-    .string()
-    .transform(parseDate)
-    .refine((v) => !isNaN(v.getTime()), "Invalid date")
-
-  let dv = z.date()
-
   const minDate = schema["x-minDate"]
     ? parseDate(schema["x-minDate"])
     : undefined
   const maxDate = schema["x-maxDate"]
     ? parseDate(schema["x-maxDate"])
     : undefined
-  if (minDate && !isNaN(minDate.getTime())) {
-    dv = dv.min(minDate, `Must be on or after ${minDate.toLocaleDateString()}`)
-  }
-  if (maxDate && !isNaN(maxDate.getTime())) {
-    dv = dv.max(maxDate, `Must be on or before ${maxDate.toLocaleDateString()}`)
-  }
+
+  const minDateVal = minDate?.getTime()
+  const maxDateVal = maxDate?.getTime()
+
+  const v = z.string().superRefine((v, ctx) => {
+    const asDate = parseDate(v)
+    if (isNaN(asDate.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.invalid_date,
+        message: "Invalid date",
+      })
+    } else {
+      if (
+        minDateVal != null &&
+        !isNaN(minDateVal) &&
+        asDate.getTime() < minDateVal
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          inclusive: true,
+          minimum: minDateVal,
+          type: "date",
+          message: `Must be on or after ${minDate?.toLocaleDateString()}`,
+        })
+      }
+
+      if (
+        maxDateVal != null &&
+        !isNaN(maxDateVal) &&
+        asDate.getTime() > maxDateVal
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_big,
+          inclusive: true,
+          maximum: maxDateVal,
+          type: "date",
+          message: `Must be on or before ${maxDate?.toLocaleDateString()}`,
+        })
+      }
+    }
+
+    return z.NEVER
+  })
 
   return v
-    .pipe(dv)
-    .transform((v) => v.toISOString().substring(0, 10))
-    .pipe(z.string())
 }
 
 const parseDate = (s: string): Date => {
-  return new Date(s.substring(0, 10) + "T00:00:00")
+  return parseISO(s.substring(0, 10))
 }
 
 const handleEmailFormat = (): z.ZodType<string> => {

@@ -27,3 +27,19 @@ export const Default: StoryObj<typeof TextField> = {
     )
   },
 }
+
+export const Email: StoryObj<typeof TextField> = {
+  render(args) {
+    const schema: Schema = {
+      title: "Email",
+      type: "string",
+      format: "email",
+    }
+    const [formState] = useState(() => makeFormState(schema))
+    return (
+      <FieldContextProvider state={formState} schema={schema}>
+        <TextField {...args} />
+      </FieldContextProvider>
+    )
+  },
+}

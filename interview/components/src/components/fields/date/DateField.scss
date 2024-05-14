@@ -1,0 +1,28 @@
+.DateField-root {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.DateField-month, .DateField-day, .DateField-year {
+    margin-right: var(--mantine-spacing-xs);
+}
+
+.DateField-month {
+    flex: 0 0;
+    min-width: 100px;
+}
+
+.DateField-day {
+    flex: 0 0;
+    min-width: 50px;
+}
+
+.DateField-year {
+    flex: 0 0;
+    min-width: 65px;
+}
+
+.DateField-error {
+    flex: 1 0 100%;
+    margin-top: var(--mantine-spacing-xs);
+}

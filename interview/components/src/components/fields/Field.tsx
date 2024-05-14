@@ -4,6 +4,7 @@ import { TextField } from "./text/TextField.js"
 import { ObjectField } from "./object/ObjectField.js"
 import { SelectField } from "./select/SelectField.js"
 import { NumberField } from "./number/NumberField.js"
+import { DateField } from "./date/DateField.js"
 
 export const Field = () => {
   const ctx = useFieldContext()
@@ -13,12 +14,16 @@ export const Field = () => {
 
   if (schema["x-type"] == "text") {
     content = <TextField />
+  } else if (schema["x-type"] == "date") {
+    content = <DateField />
   } else if (schema["x-type"] == "number") {
     content = <NumberField />
   } else if (schema["x-type"] == "select") {
     content = <SelectField />
   } else if (isSchemaType(schema, "object")) {
     content = <ObjectField />
+  } else if (isSchemaType(schema, "string") && schema.format == "date") {
+    content = <DateField />
   } else if (isSchemaType(schema, "string")) {
     content = <TextField />
   } else if (
