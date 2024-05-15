@@ -1,10 +1,10 @@
 {
-  "name": "@open-event-systems/interview-components",
-  "version": "0.3.0",
-  "description": "",
+  "name": "@open-event-systems/registration-components",
+  "version": "0.1.0",
+  "description": "Registration common components",
   "type": "module",
   "exports": {
-    ".": "./dist/src/index.js"
+    ".": "./src/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,12 +13,6 @@
   },
   "keywords": [],
   "author": "",
-  "dependencies": {
-    "@open-event-systems/interview-lib": "^0.3.0",
-    "clsx": "^2.1.1",
-    "mobx": "^6.12.3",
-    "mobx-react-lite": "^4.0.7"
-  },
   "devDependencies": {
     "@mantine/core": "^7.9.1",
     "@mantine/hooks": "^7.9.1",
@@ -31,17 +25,18 @@
     "@storybook/react-webpack5": "^8.0.10",
     "@storybook/test": "^8.0.10",
     "@types/react": "^18.3.1",
-    "css-loader": "^7.1.1",
     "react": "^18.3.1",
-    "sass": "^1.77.1",
-    "sass-loader": "^14.2.1",
     "storybook": "^8.0.10",
-    "style-loader": "^4.0.0",
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "@mantine/core": "^7.9.1",
     "@mantine/hooks": "^7.9.1",
     "react": "^18.3.1"
+  },
+  "dependencies": {
+    "@open-event-systems/interview-components": "^0.3.0",
+    "@open-event-systems/interview-lib": "^0.3.0",
+    "currency-codes-ts": "^3.0.0"
   }
 }

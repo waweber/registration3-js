@@ -27,6 +27,10 @@ module.exports = {
   plugins: ["@typescript-eslint", "react"],
   rules: {
     "react/react-in-jsx-scope": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+    ],
   },
   settings: {
     react: {

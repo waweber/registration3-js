@@ -16,8 +16,15 @@ export type CheckboxSelectFieldProps = Omit<CheckboxGroupProps, "children"> & {
 
 export const CheckboxSelectField = observer(
   (props: CheckboxSelectFieldProps) => {
-    const { CheckboxProps, title, value, label, error, onChange, ...other } =
-      useProps("CheckboxSelectField", {}, props)
+    const {
+      CheckboxProps,
+      value,
+      label,
+      error,
+      onChange,
+      autoFocus,
+      ...other
+    } = useProps("CheckboxSelectField", {}, props)
 
     const [state, schema, path] = useFieldContext()
 
@@ -59,13 +66,14 @@ export const CheckboxSelectField = observer(
         {...other}
       >
         <Stack className="CheckboxSelectField-group">
-          {options.map((opt) => (
+          {options.map((opt, i) => (
             <Checkbox
               key={opt.value}
+              autoFocus={autoFocus && i == 0 ? true : undefined}
               className="CheckboxSelectField-checkbox-root"
               value={opt.value}
-              {...CheckboxProps}
               label={opt.label}
+              {...CheckboxProps}
             />
           ))}
         </Stack>

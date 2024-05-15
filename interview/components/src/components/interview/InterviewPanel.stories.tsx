@@ -3,7 +3,6 @@ import { Interview } from "./Interview.js"
 import {
   InterviewResponse,
   InterviewResponseRecord,
-  UserResponse,
   makeInterviewResponseStore,
   makeMockAPI,
 } from "@open-event-systems/interview-lib"
@@ -93,10 +92,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
     "1": "2",
   }
   const [store] = useState(() => makeInterviewResponseStore(records))
-  const getNextResponse = async (
-    resp: InterviewResponse,
-    userResponse?: UserResponse,
-  ) => {
+  const getNextResponse = async (resp: InterviewResponse) => {
     const nextState = nextStateMap[resp.state]
     return nextState ? store.get(nextState)?.response ?? null : null
   }

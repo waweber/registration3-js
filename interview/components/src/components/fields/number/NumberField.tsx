@@ -39,7 +39,7 @@ export const NumberField = observer((props: NumberFieldProps) => {
 
   return (
     <NumberInput
-      className={clsx("NumberField-root")}
+      className={clsx("NumberField-root", className)}
       label={label ?? schema.title}
       autoComplete={
         autoComplete ??

@@ -6,17 +6,17 @@ import { Field } from "../Field.js"
 export type ObjectFieldProps = StackProps
 
 export const ObjectField = (props: ObjectFieldProps) => {
-  const { className, ...other } = useProps("ObjectField", {}, props)
+  const { className, autoFocus, ...other } = useProps("ObjectField", {}, props)
 
   const ctx = useFieldContext()
   const schema = ctx[1]
 
   const properties = schema.properties ?? {}
 
-  const children = Object.keys(properties).map((key) => {
+  const children = Object.keys(properties).map((key, i) => {
     return (
       <FieldContextProvider key={key} pathItem={key} schema={properties[key]}>
-        <Field />
+        <Field autoFocus={autoFocus && i == 0 ? true : undefined} />
       </FieldContextProvider>
     )
   })

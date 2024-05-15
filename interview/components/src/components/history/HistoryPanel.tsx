@@ -23,7 +23,7 @@ export const HistoryPanel = (props: HistoryPanelProps) => {
   )
 }
 
-HistoryPanel.Item = (props: HistoryPanelItemProps) => {
+const HistoryPanelItem = (props: HistoryPanelItemProps) => {
   const { className, active, ...other } = props
 
   const ref = useRef<HTMLAnchorElement>(null)
@@ -44,3 +44,5 @@ HistoryPanel.Item = (props: HistoryPanelItemProps) => {
     />
   )
 }
+
+HistoryPanel.Item = HistoryPanelItem

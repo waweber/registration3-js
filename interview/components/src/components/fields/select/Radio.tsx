@@ -14,11 +14,8 @@ export type RadioSelectFieldProps = Omit<RadioGroupProps, "children"> & {
 }
 
 export const RadioSelectField = observer((props: RadioSelectFieldProps) => {
-  const { RadioProps, value, label, error, onChange, ...other } = useProps(
-    "RadioSelectField",
-    {},
-    props,
-  )
+  const { RadioProps, value, label, error, onChange, autoFocus, ...other } =
+    useProps("RadioSelectField", {}, props)
 
   const [state, schema, path] = useFieldContext()
 
@@ -46,13 +43,14 @@ export const RadioSelectField = observer((props: RadioSelectFieldProps) => {
       {...other}
     >
       <Stack className="RadioSelectField-group">
-        {options.map((opt) => (
+        {options.map((opt, i) => (
           <Radio
             key={opt.value}
+            autoFocus={autoFocus && i == 0 ? true : undefined}
             className="RadioSelectField-radio-root"
             value={opt.value}
-            {...RadioProps}
             label={opt.label}
+            {...RadioProps}
           />
         ))}
       </Stack>

@@ -6,31 +6,31 @@ import { SelectField } from "./select/SelectField.js"
 import { NumberField } from "./number/NumberField.js"
 import { DateField } from "./date/DateField.js"
 
-export const Field = () => {
+export const Field = ({ autoFocus }: { autoFocus?: boolean }) => {
   const ctx = useFieldContext()
   const schema = ctx[1]
 
   let content
 
   if (schema["x-type"] == "text") {
-    content = <TextField />
+    content = <TextField autoFocus={autoFocus} />
   } else if (schema["x-type"] == "date") {
-    content = <DateField />
+    content = <DateField autoFocus={autoFocus} />
   } else if (schema["x-type"] == "number") {
-    content = <NumberField />
+    content = <NumberField autoFocus={autoFocus} />
   } else if (schema["x-type"] == "select") {
-    content = <SelectField />
+    content = <SelectField autoFocus={autoFocus} />
   } else if (isSchemaType(schema, "object")) {
-    content = <ObjectField />
+    content = <ObjectField autoFocus={autoFocus} />
   } else if (isSchemaType(schema, "string") && schema.format == "date") {
-    content = <DateField />
+    content = <DateField autoFocus={autoFocus} />
   } else if (isSchemaType(schema, "string")) {
-    content = <TextField />
+    content = <TextField autoFocus={autoFocus} />
   } else if (
     isSchemaType(schema, "number") ||
     isSchemaType(schema, "integer")
   ) {
-    content = <NumberField />
+    content = <NumberField autoFocus={autoFocus} />
   } else {
     content = null
   }

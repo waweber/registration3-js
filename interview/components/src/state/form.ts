@@ -6,6 +6,11 @@ import {
 import { FormState, NestedValue, Path } from "./types.js"
 import { makeAutoObservable, observable } from "mobx"
 
+/**
+ * Create a {@link FormState}.
+ * @param schema - the schema
+ * @param initialValue - the initial value
+ */
 export const makeFormState = (
   schema: Schema,
   initialValue?: NestedValue,

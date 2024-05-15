@@ -1,6 +1,5 @@
 export * from "./types.js"
 export * from "./schema/index.js"
-export * from "./schema/types.js"
 export { makeInterviewResponseStore } from "./store.js"
 export { makeInterviewAPI } from "./api.js"
 export { makeMockAPI } from "./mock.js"

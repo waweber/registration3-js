@@ -28,7 +28,7 @@ export const Question = (props: QuestionProps) => {
         return (
           <Stack className={clsx("Question-content")}>
             <Box>{state.schema.description}</Box>
-            <ObjectField />
+            <ObjectField autoFocus />
           </Stack>
         )
       },

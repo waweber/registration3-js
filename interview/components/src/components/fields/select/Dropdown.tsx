@@ -29,7 +29,7 @@ export const DropdownSelectField = observer(
         className="DropdownSelectField-root"
         label={label ?? schema.title}
         clearable
-        data={state ? options : undefined}
+        data={state ? options : data}
         error={
           error ?? (state?.getTouched(path) ? state.getError(path) : undefined)
         }

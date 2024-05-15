@@ -30,7 +30,7 @@ class StoreImpl {
   }
 
   *[Symbol.iterator](): Iterator<InterviewResponseRecord> {
-    for (const [_state, record] of this.records) {
+    for (const [_, record] of this.records) {
       yield record
     }
   }

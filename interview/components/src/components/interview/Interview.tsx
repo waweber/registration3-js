@@ -1,6 +1,4 @@
 import {
-  CompletedInterviewResponse,
-  IncompleteInterviewResponse,
   InterviewAPI,
   InterviewResponseRecord,
   InterviewResponseStore,
@@ -74,6 +72,7 @@ export const Interview = (props: InterviewProps) => {
   let child: ReactNode
 
   if (!response || !content) {
+    // ignore
   } else if (content.type == "exit") {
     child = (
       <Error

@@ -2,7 +2,12 @@ import { Fieldset, NativeSelect, Text, TextInput } from "@mantine/core"
 import { observer } from "mobx-react-lite"
 import { useFieldContext } from "../context.js"
 
-export const DateField = observer(() => {
+export type DateFieldProps = {
+  autoFocus?: boolean
+}
+
+export const DateField = observer((props: DateFieldProps) => {
+  const { autoFocus } = props
   const [state, schema, path] = useFieldContext()
 
   const curValue = state?.getValue(path) as string | undefined
@@ -23,6 +28,7 @@ export const DateField = observer(() => {
     >
       <NativeSelect
         className="DateField-month"
+        autoFocus={autoFocus}
         value={month}
         aria-label="Month"
         autoComplete={ac ? "bday-month" : undefined}

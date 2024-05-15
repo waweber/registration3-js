@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react"
-import { HistoryPanel, HistoryPanelItemProps } from "./HistoryPanel.js"
+import { HistoryPanel } from "./HistoryPanel.js"
 import { useState } from "react"
 import { Button, Stack } from "@mantine/core"
 

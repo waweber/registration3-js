@@ -4,18 +4,23 @@ import { CheckboxSelectField } from "./Checkbox.js"
 import { DropdownSelectField } from "./Dropdown.js"
 import { RadioSelectField } from "./Radio.js"
 
-export const SelectField = () => {
+export type SelectFieldProps = {
+  autoFocus?: boolean
+}
+
+export const SelectField = (props: SelectFieldProps) => {
+  const { autoFocus } = props
   const ctx = useFieldContext()
   const schema = ctx[1]
 
   switch (schema["x-component"]) {
     case "radio":
-      return <RadioSelectField />
+      return <RadioSelectField autoFocus={autoFocus} />
     case "checkbox":
-      return <CheckboxSelectField />
+      return <CheckboxSelectField autoFocus={autoFocus} />
     case "buttons":
       return <ButtonsSelectField />
     default:
-      return <DropdownSelectField />
+      return <DropdownSelectField autoFocus={autoFocus} />
   }
 }
