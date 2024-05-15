@@ -3,6 +3,7 @@ import { DEFAULT_THEME, MantineProvider } from "@mantine/core"
 import React from "react"
 
 import "@mantine/core/styles.css"
+import "../src/styles.scss"
 
 const preview: Preview = {
   parameters: {

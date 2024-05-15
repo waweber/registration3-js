@@ -26,8 +26,12 @@
     "@storybook/test": "^8.0.10",
     "@types/markdown-it": "^14.1.1",
     "@types/react": "^18.3.1",
+    "css-loader": "^7.1.1",
     "react": "^18.3.1",
+    "sass": "^1.77.1",
+    "sass-loader": "^14.2.1",
     "storybook": "^8.0.10",
+    "style-loader": "^4.0.0",
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
@@ -38,6 +42,7 @@
   "dependencies": {
     "@open-event-systems/interview-components": "^0.3.0",
     "@open-event-systems/interview-lib": "^0.3.0",
+    "@tabler/icons-react": "^3.3.0",
     "clsx": "^2.1.1",
     "markdown-it": "^14.1.0"
   }

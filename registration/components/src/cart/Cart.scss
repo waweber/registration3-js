@@ -1,0 +1,107 @@
+.Cart-root {
+  display: grid;
+  grid-template-columns: //
+
+    [icon-start] auto //
+    [icon-end item-name-start registration-name-start item-description-start] minmax(
+      1rem,
+      1fr
+    )
+    //
+    [item-name-end item-description-end item-amount-start] auto //
+    [registration-name-end item-amount-end];
+  justify-items: end;
+  align-items: baseline;
+  column-gap: 16px;
+}
+
+@media (max-width: 36em) {
+  .Cart-root {
+    grid-template-columns: //
+
+      [icon-start] auto //
+      [icon-end item-name-start registration-name-start item-description-start item-amount-start] minmax(
+        1rem,
+        1fr
+      )
+      //
+      [item-name-end item-description-end registration-name-end item-amount-end];
+    column-gap: 8px;
+  }
+}
+
+.Cart-totalText {
+  margin-top: var(--mantine-spacing-sm);
+  grid-column: item-name-start / item-name-end;
+  text-align: right;
+  font-weight: bold;
+}
+
+.Cart-total {
+  grid-column: item-amount-start / item-amount-end;
+  text-align: right;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.CartPlaceholder-root {
+  display: grid;
+  grid-template-columns: 20px 1fr 50px;
+  justify-items: end;
+  align-items: baseline;
+  column-gap: 16px;
+  row-gap: 8px;
+}
+
+.CartDivider-root {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  margin-top: var(--mantine-spacing-sm);
+}
+
+.CartRegistration-name {
+  grid-column: registration-name-start / registration-name-end;
+  justify-self: start;
+  align-self: center;
+  margin-top: var(--mantine-spacing-sm);
+}
+
+.CartRegistration-removeIcon {
+  grid-column: icon-start / icon-end;
+  justify-self: start;
+  align-self: center;
+  margin-top: var(--mantine-spacing-sm);
+}
+
+.LineItem-name {
+  grid-column: item-name-start / item-name-end;
+  font-weight: bold;
+  font-size: large;
+  text-align: right;
+  margin-top: var(--mantine-spacing-xs);
+}
+
+.LineItem-price {
+  grid-column: item-amount-start / item-amount-end;
+  display: block;
+  font-weight: bold;
+  font-size: large;
+  text-align: right;
+}
+
+.LineItem-description {
+  grid-column: item-description-start / item-description-end;
+  text-align: right;
+}
+
+.Modifier-text {
+  grid-column: item-name-start / item-name-end;
+  text-align: right;
+  font-size: small;
+}
+
+.Modifier-amount {
+  grid-column: item-amount-start / item-amount-end;
+  text-align: right;
+  font-size: small;
+}
