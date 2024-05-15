@@ -81,7 +81,6 @@ export const OptionsDialog = (props: OptionsDialogProps) => {
       className={clsx("OptionsDialog-root", className)}
       centered
       opened={opened}
-      withCloseButton={false}
       classNames={{
         ...classNames,
         body: clsx("OptionsDialog-body", classNames?.body),
