@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react"
-import { code as getByCode } from "currency-codes-ts"
+import { currencyDecimals } from "./currency.js"
 
 export const CurrencyContext = createContext<string>("USD")
 
@@ -13,7 +13,7 @@ export type CurrencyProps = {
  */
 export const Currency = ({ code, amount }: CurrencyProps) => {
   const ctx = useContext(CurrencyContext)
-  code = code ?? ctx
+  code = (code ?? ctx).toUpperCase()
 
   if (amount == null) {
     return null
@@ -24,8 +24,7 @@ export const Currency = ({ code, amount }: CurrencyProps) => {
 }
 
 const toDecimal = (amount: number, code: string): [number, number] => {
-  const codeRecord = getByCode(code)
-  const digits = codeRecord?.digits ?? 2
+  const digits = currencyDecimals[code] ?? 2
   const scale = Math.pow(10, -digits)
   return [amount * scale, digits]
 }
