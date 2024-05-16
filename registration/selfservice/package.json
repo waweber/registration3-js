@@ -4,23 +4,40 @@
   "description": "Self-service registration portal",
   "type": "module",
   "scripts": {
+    "start": "webpack serve --mode=development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "devDependencies": {
+    "@mantine/core": "^7.9.1",
+    "@mantine/hooks": "^7.9.1",
+    "@tanstack/router-cli": "^1.32.10",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@types/webpack": "^5.28.5",
+    "css-loader": "^7.1.1",
+    "html-webpack-plugin": "^5.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "sass": "^1.77.1",
+    "sass-loader": "^14.2.1",
+    "style-loader": "^4.0.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.4.5",
     "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   },
   "peerDependencies": {
+    "@mantine/core": "^7.9.1",
+    "@mantine/hooks": "^7.9.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
+  },
+  "dependencies": {
+    "@open-event-systems/registration-components": "^0.1.0",
+    "@tabler/icons-react": "^3.3.0",
+    "@tanstack/react-router": ">=1 <1.31"
   }
 }

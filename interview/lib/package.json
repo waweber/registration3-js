@@ -8,6 +8,11 @@
   },
   "keywords": [],
   "author": "",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!*.test.*"
+  ],
   "exports": {
     ".": "./dist/src/index.js"
   },

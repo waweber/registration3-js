@@ -4,7 +4,9 @@
   "description": "Registration common components",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./dist/src/index.js",
+    "./styles.scss": "./src/styles.scss",
+    "./example-logo.svg": "./resources/example-logo.svg"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,6 +15,13 @@
   },
   "keywords": [],
   "author": "",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!*.stories.*",
+    "**/*.scss",
+    "resources/example-logo.svg"
+  ],
   "devDependencies": {
     "@mantine/core": "^7.9.1",
     "@mantine/hooks": "^7.9.1",

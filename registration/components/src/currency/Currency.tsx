@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react"
-import { currencyDecimals } from "./currency.js"
+import { currencyDecimals } from "./currency-info.js"
 
 export const CurrencyContext = createContext<string>("USD")
 
