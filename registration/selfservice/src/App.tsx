@@ -3,7 +3,7 @@ import { router } from "./router.js"
 import { DEFAULT_THEME, MantineProvider } from "@mantine/core"
 
 import "@mantine/core/styles.css"
-import "@open-event-systems/registration-components/styles.scss"
+import "@open-event-systems/registration-common/styles.scss"
 
 export const App = () => {
   return (

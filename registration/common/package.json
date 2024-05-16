@@ -1,7 +1,7 @@
 {
-  "name": "@open-event-systems/registration-components",
+  "name": "@open-event-systems/registration-common",
   "version": "0.1.0",
-  "description": "Registration common components",
+  "description": "Registration common modules",
   "type": "module",
   "exports": {
     ".": "./dist/src/index.js",

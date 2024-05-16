@@ -75,8 +75,8 @@ const config = (env, argv) => {
             singleton: true,
             requiredVersion: peerDeps["@mantine/hooks"],
           },
-          "@open-event-systems/registration-components":
-            deps["@open-event-systems/registration-components"],
+          "@open-event-systems/registration-common/":
+            deps["@open-event-systems/registration-common"],
         },
       }),
     ],

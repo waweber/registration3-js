@@ -36,7 +36,7 @@
     "react-dom": "^18.3.1"
   },
   "dependencies": {
-    "@open-event-systems/registration-components": "^0.1.0",
+    "@open-event-systems/registration-common": "^0.1.0",
     "@tabler/icons-react": "^3.3.0",
     "@tanstack/react-router": ">=1 <1.31"
   }

@@ -1,6 +1,10 @@
 {
   "extends": ["../../configs/tsconfig.base.json"],
-  "references": [],
+  "references": [
+    {
+      "path": "../common"
+    }
+  ],
   "compilerOptions": {
     "rootDir": "./",
     "jsx": "react-jsx",
