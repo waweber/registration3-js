@@ -1,6 +1,6 @@
 import { createBrowserHistory, createRouter } from "@tanstack/react-router"
 import { routeTree } from "./routes/index.js"
-import { FullscreenLoader } from "@open-event-systems/registration-common"
+import { FullscreenLoader } from "@open-event-systems/registration-common/components"
 
 export const router = createRouter({
   routeTree,

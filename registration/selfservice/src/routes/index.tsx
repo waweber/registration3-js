@@ -1,7 +1,10 @@
-import { SimpleLayout, Title } from "@open-event-systems/registration-common"
 import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router"
 
 import logoSrc from "@open-event-systems/registration-common/example-logo.svg"
+import {
+  SimpleLayout,
+  Title,
+} from "@open-event-systems/registration-common/components"
 
 export const rootRoute = createRootRoute()
 

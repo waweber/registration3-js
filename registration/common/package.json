@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/src/index.js",
+    "./components": "./dist/src/components/index.js",
     "./styles.scss": "./src/styles.scss",
     "./example-logo.svg": "./resources/example-logo.svg"
   },
