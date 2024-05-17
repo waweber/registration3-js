@@ -5,6 +5,7 @@ import {
   CardProps,
   Group,
   Menu,
+  Skeleton,
   Text,
   Title,
   useProps,
@@ -82,3 +83,31 @@ export const Registration = (props: RegistrationProps) => {
     </Card>
   )
 }
+
+const RegistrationPlaceholder = () => (
+  <Card className="Registration-root">
+    <Card.Section>
+      <Skeleton radius={0}>
+        <Box className="Registration-titleContainer">
+          <Title className="Registration-title" order={4}>
+            &nbsp;
+          </Title>
+          <Text span className="Registration-subtitle">
+            &nbsp;
+          </Text>
+        </Box>
+      </Skeleton>
+    </Card.Section>
+    <Skeleton mt={8} w="80%">
+      <Text size="sm">&nbsp;</Text>
+    </Skeleton>
+    <Skeleton mt={8} w="80%">
+      <Text size="sm">&nbsp;</Text>
+    </Skeleton>
+    <Skeleton mt={8} w="55%">
+      <Text size="sm">&nbsp;</Text>
+    </Skeleton>
+  </Card>
+)
+
+Registration.Placeholder = RegistrationPlaceholder

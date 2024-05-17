@@ -47,12 +47,10 @@ export const Title = ({
   useLayoutEffect(
     action(() => {
       state.title.splice(0, 0, localState)
-      console.log([...state.title.map((v) => [...v.get()])])
 
       return action(() => {
         const idx = state.title.findIndex((v) => v == localState)
         state.title.splice(idx, 1)
-        console.log([...state.title.map((v) => [...v.get()])])
       })
     }),
     [],

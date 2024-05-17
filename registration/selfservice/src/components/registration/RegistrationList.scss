@@ -1,0 +1,21 @@
+.RegistrationList-col {
+  display: flex;
+
+  & > * {
+    flex: auto;
+    align-self: stretch;
+  }
+}
+
+.RegistrationList-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  max-width: 100%;
+
+  & > * {
+    margin: 4px;
+    line-height: 1;
+  }
+}

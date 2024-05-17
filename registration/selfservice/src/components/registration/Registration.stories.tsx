@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { Registration } from "./Registration.js"
+import { Box } from "@mantine/core"
 
 const meta: Meta<typeof Registration> = {
   component: Registration,
@@ -32,5 +33,15 @@ export const Menu_Items: StoryObj<typeof Registration> = {
       { label: "Upgrade", onClick: () => void 0 },
       { label: "Change badge name", onClick: () => void 0 },
     ],
+  },
+}
+
+export const Placeholder: StoryObj<typeof Registration> = {
+  render() {
+    return (
+      <Box maw={300}>
+        <Registration.Placeholder />
+      </Box>
+    )
   },
 }
