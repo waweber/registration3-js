@@ -1,0 +1,40 @@
+.Registration-root {
+    box-shadow: 1px 1px 5px #333;
+}
+
+.Registration-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: var(--header-color, var(--mantine-primary-color-filled));
+    color: var(--mantine-primary-color-contrast);
+}
+
+.Registration-titleContainer {
+    flex: 1 1 0px;
+    padding: var(--mantine-spacing-md);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.Registration-title {
+    text-shadow:  1px 1px 3px #000, 0px 0px 12px #000;
+}
+
+.Registration-subtitle {
+    text-shadow:  1px 1px 3px #000, 0px 0px 12px #000;
+}
+
+.Registration-description ul {
+    padding-left: var(--mantine-spacing-xs);
+}
+
+.Registration-description li {
+    list-style-type: "- ";
+}
+
+.Registration-menuIcon {
+    margin: var(--mantine-spacing-md) var(--mantine-spacing-xs);
+    filter: drop-shadow(1px 1px 3px #000);
+}

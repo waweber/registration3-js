@@ -85,6 +85,14 @@ const config = (env, argv) => {
         chunks: "all",
       },
     },
+    devServer: {
+      historyApiFallback: true,
+      client: {
+        overlay: {
+          runtimeErrors: false,
+        },
+      },
+    },
   }
 
   return config
