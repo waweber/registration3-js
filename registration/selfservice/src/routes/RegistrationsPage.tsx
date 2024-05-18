@@ -6,6 +6,8 @@ import { RegistrationList } from "../components/registration/RegistrationList.js
 import { Suspense } from "react"
 import { Button, Group } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
+import { InterviewOptionsDialog } from "../components/options/InterviewOptionsDialog.js"
+import { useInterviewOptionsDialog } from "../hooks/interview.js"
 
 export const RegistrationsPage = () => {
   const { eventId } = eventRoute.useParams()
@@ -23,19 +25,26 @@ export const RegistrationsPage = () => {
 const Registrations = ({ event }: { event: Event }) => {
   const registrations = useRegistrations(event.id)
 
+  const interviewOptions = useInterviewOptionsDialog()
+
   return (
     <>
       <RegistrationList
-        registrations={registrations.map((r) => ({
+        registrations={registrations.registrations.map((r) => ({
           key: r.id,
           title: r.title,
           subtitle: r.subtitle,
           description: r.description,
         }))}
       />
-      <Group>
-        <Button leftSection={<IconPlus />}>Add Registration</Button>
-      </Group>
+      {interviewOptions.options.length > 0 && (
+        <Group>
+          <Button leftSection={<IconPlus />} onClick={interviewOptions.show}>
+            Add Registration
+          </Button>
+        </Group>
+      )}
+      <InterviewOptionsDialog />
     </>
   )
 }

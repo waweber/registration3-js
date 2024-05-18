@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react"
 import { makeMockSelfServiceAPI } from "../api/mock.js"
-import { Event, Registration, SelfServiceAPI } from "../api/types.js"
 import {
-  UseQueryResult,
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query"
+  Event,
+  RegistrationListResponse,
+  SelfServiceAPI,
+} from "../api/types.js"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { notFound } from "@tanstack/react-router"
 
 export const SelfServiceAPIContext = createContext(makeMockSelfServiceAPI())
@@ -36,7 +36,7 @@ export const useEvent = (eventId: string): Event => {
   return event
 }
 
-export const useRegistrations = (eventId: string): Registration[] => {
+export const useRegistrations = (eventId: string): RegistrationListResponse => {
   const api = useSelfServiceAPI()
   const query = useSuspenseQuery({
     queryKey: ["self-service", "events", eventId, "registrations"],
