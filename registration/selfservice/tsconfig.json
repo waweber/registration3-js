@@ -3,6 +3,12 @@
   "references": [
     {
       "path": "../common"
+    },
+    {
+      "path": "../../interview/components"
+    },
+    {
+      "path": "../../interview/lib"
     }
   ],
   "compilerOptions": {

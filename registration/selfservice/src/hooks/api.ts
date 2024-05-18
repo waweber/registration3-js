@@ -41,11 +41,9 @@ export const useRegistrations = (eventId: string): RegistrationListResponse => {
   const query = useSuspenseQuery({
     queryKey: ["self-service", "events", eventId, "registrations"],
     async queryFn() {
-      const regs = await api.listRegistrations()
+      const regs = await api.listRegistrations(eventId)
       return regs
     },
-    refetchInterval: 3000,
-    staleTime: 3000,
   })
   return query.data
 }

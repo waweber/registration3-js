@@ -1,13 +1,26 @@
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
-import { useCallback } from "react"
+import { useCallback, useContext } from "react"
 import { eventRoute } from "../routes/index.js"
 import { useRegistrations } from "./api.js"
 import { InterviewOption } from "../api/types.js"
+import {
+  InterviewAPI,
+  InterviewResponseStore,
+} from "@open-event-systems/interview-lib"
+import { InterviewAPIContext } from "../providers/interview.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
     showInterviewStateDialog?: boolean
   }
+}
+
+export const useInterviewAPI = (): [InterviewAPI, InterviewResponseStore] => {
+  const ctx = useContext(InterviewAPIContext)
+  if (!ctx) {
+    throw new Error("Interview context not provided")
+  }
+  return ctx
 }
 
 export type InterviewOptionsDialogHook = Readonly<{

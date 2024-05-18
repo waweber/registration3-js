@@ -1,3 +1,5 @@
+import { InterviewResponse } from "../../../../interview/lib/src/types.js"
+
 export type Event = Readonly<{
   id: string
   name: string
@@ -25,5 +27,10 @@ export type RegistrationListResponse = Readonly<{
 
 export type SelfServiceAPI = {
   listEvents(): Promise<Event[]>
-  listRegistrations(): Promise<RegistrationListResponse>
+  listRegistrations(eventId: string): Promise<RegistrationListResponse>
+  startInterview(
+    eventId: string,
+    cartId: string,
+    interviewId: string,
+  ): Promise<InterviewResponse>
 }

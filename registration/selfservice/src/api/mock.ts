@@ -39,5 +39,13 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
         ],
       }
     },
+    async startInterview(eventId, cartId, interviewId) {
+      await delay(200)
+      return {
+        state: `${interviewId}-0`,
+        completed: false,
+        update_url: "",
+      }
+    },
   }
 }

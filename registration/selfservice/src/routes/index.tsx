@@ -6,6 +6,7 @@ import {
   Title,
 } from "@open-event-systems/registration-common/components"
 import { RegistrationsPage } from "./RegistrationsPage.js"
+import { InterviewPage } from "./InterviewPage.js"
 
 export const rootRoute = createRootRoute({
   component() {
@@ -36,7 +37,20 @@ export const rootRoute = createRootRoute({
 export const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/events/$eventId",
+})
+
+export const registrationsRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "/",
   component: RegistrationsPage,
 })
 
-export const routeTree = rootRoute.addChildren([eventRoute])
+export const addRegistrationRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "cart/$cartId/add/$interviewId",
+  component: InterviewPage,
+})
+
+export const routeTree = rootRoute.addChildren([
+  eventRoute.addChildren([registrationsRoute, addRegistrationRoute]),
+])

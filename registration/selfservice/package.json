@@ -47,11 +47,15 @@
     "react-dom": "^18.3.1"
   },
   "dependencies": {
+    "@open-event-systems/interview-components": "^0.3.0",
+    "@open-event-systems/interview-lib": "^0.3.0",
     "@open-event-systems/registration-common": "^0.1.0",
     "@tabler/icons-react": "^3.4.0",
     "@tanstack/react-query": "^5.36.2",
-    "@tanstack/react-router": "file:../../tanstack-react-router-1.32.13.tgz",
+    "@tanstack/react-router": "^1.33.1",
     "clsx": "^2.1.1",
+    "mobx": "^6.12.3",
+    "mobx-react-lite": "^4.0.7",
     "wretch": "^2.8.1"
   }
 }

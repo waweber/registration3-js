@@ -8,6 +8,7 @@ import { Button, Group } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
 import { InterviewOptionsDialog } from "../components/options/InterviewOptionsDialog.js"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
+import { useCurrentCart } from "../hooks/cart.js"
 
 export const RegistrationsPage = () => {
   const { eventId } = eventRoute.useParams()
@@ -24,6 +25,7 @@ export const RegistrationsPage = () => {
 
 const Registrations = ({ event }: { event: Event }) => {
   const registrations = useRegistrations(event.id)
+  const currentCartStore = useCurrentCart(event.id)
 
   const interviewOptions = useInterviewOptionsDialog()
 
