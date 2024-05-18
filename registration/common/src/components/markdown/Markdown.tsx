@@ -1,9 +1,4 @@
-import {
-  Box,
-  BoxProps,
-  TypographyStylesProvider,
-  createPolymorphicComponent,
-} from "@mantine/core"
+import { Box, BoxProps, createPolymorphicComponent } from "@mantine/core"
 import clsx from "clsx"
 import { createContext, forwardRef, useContext, useMemo } from "react"
 import markdownit from "markdown-it"
@@ -19,7 +14,7 @@ export type MarkdownProps = BoxProps & {
 }
 
 export const Markdown = createPolymorphicComponent<"div", MarkdownProps>(
-  forwardRef<HTMLDivElement, MarkdownProps>((props, ref) => {
+  forwardRef<HTMLDivElement, MarkdownProps>(function Markdown(props, ref) {
     const { className, children, ...others } = props
 
     const markdown = useContext(MarkdownContext)
@@ -30,6 +25,7 @@ export const Markdown = createPolymorphicComponent<"div", MarkdownProps>(
 
     return (
       <Box
+        ref={ref}
         className={clsx("Markdown-root", className)}
         component="div"
         dangerouslySetInnerHTML={{ __html: markdownHtml }}
@@ -38,5 +34,3 @@ export const Markdown = createPolymorphicComponent<"div", MarkdownProps>(
     )
   }),
 )
-
-Markdown.displayName = "Markdown"

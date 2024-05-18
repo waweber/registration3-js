@@ -1,11 +1,4 @@
-import {
-  Box,
-  BoxProps,
-  Loader,
-  LoadingOverlay,
-  LoadingOverlayProps,
-  useProps,
-} from "@mantine/core"
+import { LoadingOverlay, LoadingOverlayProps, useProps } from "@mantine/core"
 import clsx from "clsx"
 import {
   ReactNode,

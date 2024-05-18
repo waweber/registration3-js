@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   CardProps,
-  Group,
   Menu,
   Skeleton,
   Text,

@@ -3,7 +3,7 @@ import { Title, useTitle } from "./Title.js"
 import { observer } from "mobx-react-lite"
 
 import { Title as MantineTitle } from "@mantine/core"
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode } from "react"
 
 const meta: Meta<typeof Title> = {
   component: Title,

@@ -1,5 +1,5 @@
 export class NotFoundError extends Error {
-  isNotFound: true = true
+  isNotFound = true as const
 }
 
 export const isNotFoundError = (obj: unknown): obj is NotFoundError => {

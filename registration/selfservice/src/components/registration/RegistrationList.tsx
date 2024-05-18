@@ -1,12 +1,4 @@
-import {
-  Box,
-  Grid,
-  GridColProps,
-  GridProps,
-  Group,
-  Text,
-  useProps,
-} from "@mantine/core"
+import { Grid, GridProps, Text, useProps } from "@mantine/core"
 import clsx from "clsx"
 import { Registration, RegistrationProps } from "./Registration.js"
 import { IconAlertCircle } from "@tabler/icons-react"
