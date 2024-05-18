@@ -5,7 +5,7 @@ import { Text } from "@mantine/core"
 import { SimpleLayout } from "./SimpleLayout.js"
 import { Title } from "../title/Title.js"
 
-import exampleLogo from "../../resources/example-logo.svg"
+import exampleLogo from "../../../resources/example-logo.svg"
 
 const meta: Meta<typeof SimpleLayout> = {
   component: SimpleLayout,

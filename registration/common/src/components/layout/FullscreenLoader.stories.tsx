@@ -10,4 +10,17 @@ const meta: Meta<typeof FullscreenLoader> = {
 
 export default meta
 
-export const Default: StoryObj<typeof FullscreenLoader> = {}
+export const Default: StoryObj<{ show?: boolean }> = {
+  args: {
+    show: true,
+  },
+  render({ show }) {
+    return (
+      <FullscreenLoader>
+        Content
+        {show && <FullscreenLoader.Show />}
+        {show && <FullscreenLoader.Show />}
+      </FullscreenLoader>
+    )
+  },
+}

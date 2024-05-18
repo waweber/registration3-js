@@ -1,16 +1,10 @@
-import {
-  Outlet,
-  createRootRoute,
-  createRoute,
-  notFound,
-} from "@tanstack/react-router"
+import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router"
 
 import logoSrc from "@open-event-systems/registration-common/example-logo.svg"
 import {
   SimpleLayout,
   Title,
 } from "@open-event-systems/registration-common/components"
-import { useEvents } from "../hooks/api.js"
 import { RegistrationsPage } from "./RegistrationsPage.js"
 
 export const rootRoute = createRootRoute({

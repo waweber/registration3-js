@@ -52,39 +52,45 @@ const config = (env, argv) => {
       new HtmlWebpackPlugin({
         template: "./index.html",
       }),
-      new webpack.container.ModuleFederationPlugin({
-        filename: "remoteEntry.js",
-        name: "registration_selfservice",
-        exposes: {
-          "./": "./src/index.ts",
-        },
-        shared: {
-          react: {
-            singleton: true,
-            requiredVersion: peerDeps.react,
-          },
-          "react-dom": {
-            singleton: true,
-            requiredVersion: peerDeps["react-dom"],
-          },
-          "@mantine/core/": {
-            singleton: true,
-            requiredVersion: peerDeps["@mantine/core"],
-          },
-          "@mantine/hooks/": {
-            singleton: true,
-            requiredVersion: peerDeps["@mantine/hooks"],
-          },
-          "@open-event-systems/registration-common/":
-            deps["@open-event-systems/registration-common"],
-        },
-      }),
+      ...(isProd
+        ? [
+            new webpack.container.ModuleFederationPlugin({
+              filename: "remoteEntry.js",
+              name: "registration_selfservice",
+              exposes: {
+                "./": "./src/index.ts",
+              },
+              shared: {
+                react: {
+                  singleton: true,
+                  requiredVersion: peerDeps.react,
+                },
+                "react-dom": {
+                  singleton: true,
+                  requiredVersion: peerDeps["react-dom"],
+                },
+                "@mantine/core/": {
+                  singleton: true,
+                  requiredVersion: peerDeps["@mantine/core"],
+                },
+                "@mantine/hooks/": {
+                  singleton: true,
+                  requiredVersion: peerDeps["@mantine/hooks"],
+                },
+                "@open-event-systems/registration-common/":
+                  deps["@open-event-systems/registration-common"],
+              },
+            }),
+          ]
+        : []),
     ],
-    optimization: {
-      splitChunks: {
-        chunks: "all",
-      },
-    },
+    optimization: isProd
+      ? {
+          splitChunks: {
+            chunks: "all",
+          },
+        }
+      : undefined,
     devServer: {
       historyApiFallback: true,
       client: {

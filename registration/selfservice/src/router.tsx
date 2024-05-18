@@ -5,9 +5,7 @@ import { FullscreenLoader } from "@open-event-systems/registration-common/compon
 export const router = createRouter({
   routeTree,
   history: createBrowserHistory(),
-  defaultPendingComponent() {
-    return <FullscreenLoader />
-  },
+  defaultPendingComponent: FullscreenLoader.Show,
 })
 
 declare module "@tanstack/react-router" {

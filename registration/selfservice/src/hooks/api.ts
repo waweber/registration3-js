@@ -36,16 +36,16 @@ export const useEvent = (eventId: string): Event => {
   return event
 }
 
-export const useRegistrations = (
-  eventId: string,
-): UseQueryResult<Registration[]> => {
+export const useRegistrations = (eventId: string): Registration[] => {
   const api = useSelfServiceAPI()
-  const query = useQuery({
+  const query = useSuspenseQuery({
     queryKey: ["self-service", "events", eventId, "registrations"],
     async queryFn() {
       const regs = await api.listRegistrations()
       return regs
     },
+    refetchInterval: 3000,
+    staleTime: 3000,
   })
-  return query
+  return query.data
 }
