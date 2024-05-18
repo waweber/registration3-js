@@ -1,36 +1,36 @@
 import { Title } from "@open-event-systems/registration-common/components"
 import { useEvent } from "../hooks/api.js"
 import { addRegistrationRoute, registrationsRoute } from "./index.js"
-import { useCart, useCartInterview } from "../hooks/cart.js"
-import { useInterviewAPI } from "../hooks/interview.js"
+import { useCartPricingResult, useCartInterviewRecord } from "../hooks/cart.js"
 import { useCallback, useState } from "react"
 import { useLocation, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {
   Interview,
   InterviewPanel,
+  useInterviewAPI,
 } from "@open-event-systems/interview-components"
 
 export const InterviewPage = () => {
   const { eventId, cartId, interviewId } = addRegistrationRoute.useParams()
   const event = useEvent(eventId)
-  const cart = useCart(cartId)
+  const cart = useCartPricingResult(cartId)
   const loc = useLocation()
   const navigate = addRegistrationRoute.useNavigate()
   const router = useRouter()
 
   const locStateId = getStateId(loc.hash)
-  const [interviewAPI, interviewStore] = useInterviewAPI()
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
 
-  const initialState = useCartInterview(
+  const [interviewAPI, interviewStore] = useInterviewAPI()
+
+  const interviewRecord = useCartInterviewRecord(
     eventId,
     cartId,
     interviewId,
-    locStateId ?? undefined,
+    "", // TODO
+    locStateId,
   )
-
-  const stateId = locStateId ?? initialState?.state
 
   const onNavigate = useCallback(
     (state: string) => {
@@ -81,7 +81,7 @@ export const InterviewPage = () => {
         api={interviewAPI}
         store={interviewStore}
         latestRecordId={latestRecordId ?? undefined}
-        recordId={stateId}
+        recordId={interviewRecord.response.state}
         onNavigate={onNavigate}
         onUpdate={onUpdate}
         onClose={onClose}

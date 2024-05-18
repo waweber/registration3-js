@@ -1,35 +1,10 @@
 import {
   IncompleteInterviewResponse,
-  InterviewAPI,
   InterviewResponse,
-  InterviewResponseStore,
   UserResponse,
   makeMockAPI,
 } from "@open-event-systems/interview-lib"
-import {
-  InterviewRecordLocalStorage,
-  NotFoundError,
-} from "@open-event-systems/registration-common"
-import { ReactNode, createContext, useState } from "react"
-
-export const InterviewAPIContext = createContext<
-  [InterviewAPI, InterviewResponseStore] | null
->(null)
-
-export const InterviewAPIProvider = ({
-  interviewAPI,
-  children,
-}: {
-  interviewAPI: InterviewAPI
-  children?: ReactNode
-}) => {
-  const [store] = useState(() => InterviewRecordLocalStorage.load())
-  return (
-    <InterviewAPIContext.Provider value={[interviewAPI, store]}>
-      {children}
-    </InterviewAPIContext.Provider>
-  )
-}
+import { NotFoundError } from "@open-event-systems/registration-common"
 
 export const mockAPI = makeMockAPI((curResp, userResp) => {
   const func = mockStates[curResp.state]

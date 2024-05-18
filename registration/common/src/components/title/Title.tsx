@@ -1,11 +1,5 @@
 import { makeAutoObservable, reaction } from "mobx"
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react"
+import { ReactNode, createContext, useContext, useLayoutEffect } from "react"
 
 class TitleState {
   entries: (readonly [string | null, string | null])[] = []

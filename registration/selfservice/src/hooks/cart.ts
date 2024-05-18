@@ -1,12 +1,20 @@
 import {
+  Cart,
   CartAPI,
   CartPricingResult,
+  catchNotFound,
 } from "@open-event-systems/registration-common"
-import { useContext } from "react"
+import { useCallback, useContext } from "react"
 import { CartAPIContext } from "../providers/cart.js"
-import { CurrentCartStore } from "../stores/cart.js"
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { useInterviewAPI } from "./interview.js"
+import { useInterviewAPI } from "@open-event-systems/interview-components"
+import {
+  InterviewAPI,
+  InterviewResponseRecord,
+  InterviewResponseStore,
+} from "@open-event-systems/interview-lib"
+
+const COOKIE_PREFIX = "oes-current-cart-"
 
 export const useCartAPI = (): CartAPI => {
   const api = useContext(CartAPIContext)
@@ -16,20 +24,44 @@ export const useCartAPI = (): CartAPI => {
   return api
 }
 
-export const useCurrentCart = (eventId: string): CurrentCartStore => {
+export const useCurrentCart = (
+  eventId: string,
+): [Cart, (cartId: string) => void] => {
   const api = useCartAPI()
   const queryClient = useQueryClient()
-  const res = useSuspenseQuery({
-    queryKey: ["carts", "_current-cart", eventId],
+
+  const query = useSuspenseQuery({
+    queryKey: ["self-service", "carts", "current", { eventId: eventId }],
     async queryFn() {
-      return await CurrentCartStore.setup(eventId, api, queryClient)
+      let curId = getCurrentCartIdFromCookie(eventId)
+      if (curId) {
+        const cur = await catchNotFound(api.readCartPricingResult(curId))
+        queryClient.setQueryData(["carts", curId, "pricing-result"], cur)
+        return { id: curId }
+      }
+
+      const empty = await api.readEmptyCart(eventId)
+      setCurrentCartCookie(eventId, empty.id)
+      return empty
     },
+    staleTime: Infinity,
   })
 
-  return res.data
+  const setCartId = useCallback(
+    (cartId: string) => {
+      setCurrentCartCookie(eventId, cartId)
+      queryClient.setQueryData(
+        ["self-service", "carts", "current", { eventId: eventId }],
+        { id: cartId },
+      )
+    },
+    [eventId],
+  )
+
+  return [query.data, setCartId]
 }
 
-export const useCart = (cartId: string): CartPricingResult => {
+export const useCartPricingResult = (cartId: string): CartPricingResult => {
   const api = useCartAPI()
   const res = useSuspenseQuery({
     queryKey: ["carts", cartId, "pricing-result"],
@@ -41,12 +73,13 @@ export const useCart = (cartId: string): CartPricingResult => {
   return res.data
 }
 
-export const useCartInterview = (
+export const useCartInterviewRecord = (
   eventId: string,
   cartId: string,
   interviewId: string,
-  stateId?: string,
-) => {
+  updateUrl: string,
+  stateId?: string | null,
+): InterviewResponseRecord => {
   const api = useCartAPI()
   const [interviewAPI, interviewStore] = useInterviewAPI()
 
@@ -60,16 +93,73 @@ export const useCartInterview = (
       "interview",
       { interviewId, stateId },
     ],
-    async queryFn() {
-      if (!stateId) {
-        const initial = await api.startInterview(eventId, cartId, interviewId)
-        const initialResponse = await interviewAPI.update(initial)
-        interviewStore.add(initialResponse)
-        return initialResponse
+    queryFn() {
+      if (stateId) {
+        let record = interviewStore.get(stateId)
+        if (record) {
+          return record
+        }
+
+        return fetchInterviewResponse(
+          interviewAPI,
+          interviewStore,
+          updateUrl,
+          stateId,
+        )
       }
-      return null
+
+      return startInterview(
+        api,
+        interviewAPI,
+        interviewStore,
+        eventId,
+        cartId,
+        interviewId,
+      )
     },
   })
 
   return query.data
+}
+
+const startInterview = async (
+  cartAPI: CartAPI,
+  interviewAPI: InterviewAPI,
+  store: InterviewResponseStore,
+  eventId: string,
+  cartId: string,
+  interviewId: string,
+) => {
+  const initial = await cartAPI.startInterview(eventId, cartId, interviewId)
+  const initialResp = await interviewAPI.update(initial)
+  return store.add(initialResp)
+}
+
+const fetchInterviewResponse = async (
+  api: InterviewAPI,
+  store: InterviewResponseStore,
+  updateUrl: string,
+  state: string,
+) => {
+  const resp = await api.update({
+    completed: false,
+    state: state,
+    update_url: updateUrl,
+  })
+  return store.add(resp)
+}
+
+const getCurrentCartIdFromCookie = (eventId: string) => {
+  const cookieName = `${COOKIE_PREFIX}${eventId}`
+  const items = document.cookie.split("; ")
+  const entry = items.find((it) => it.startsWith(`${cookieName}=`))
+  if (!entry) {
+    return null
+  }
+  return entry.substring(cookieName.length + 1)
+}
+
+const setCurrentCartCookie = (eventId: string, cartId: string) => {
+  const cookieName = `${COOKIE_PREFIX}${eventId}`
+  document.cookie = `${cookieName}=${cartId}; max-age=86400`
 }
