@@ -15,7 +15,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
       title: "Attendee 2",
       subtitle: "Attendee",
       description: "Standard registration.",
-      changeOptions: [
+      change_options: [
         {
           id: "upgrade",
           title: "Upgrade",
@@ -33,7 +33,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
       await delay(300)
       return {
         registrations: registrations,
-        addOptions: [
+        add_options: [
           { id: "add-full", title: "Full Weekend" },
           { id: "add-day", title: "Day Pass" },
         ],

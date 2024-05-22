@@ -28,7 +28,7 @@ export const InterviewPage = () => {
     eventId,
     cartId,
     interviewId,
-    "", // TODO
+    "http://localhost:8000/update-interview", // TODO
     locStateId,
   )
 

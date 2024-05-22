@@ -16,13 +16,13 @@ export type Registration = Readonly<{
   title?: string
   subtitle?: string
   description?: string
-  headerImage?: string
-  changeOptions?: InterviewOption[]
+  header_image?: string
+  change_options?: InterviewOption[]
 }>
 
 export type RegistrationListResponse = Readonly<{
   registrations: Registration[]
-  addOptions?: InterviewOption[]
+  add_options?: InterviewOption[]
 }>
 
 export type SelfServiceAPI = {

@@ -13,6 +13,8 @@ import {
   InterviewResponseRecord,
   InterviewResponseStore,
 } from "@open-event-systems/interview-lib"
+import { SelfServiceAPI } from "../api/types.js"
+import { useSelfServiceAPI } from "./api.js"
 
 const COOKIE_PREFIX = "oes-current-cart-"
 
@@ -80,7 +82,7 @@ export const useCartInterviewRecord = (
   updateUrl: string,
   stateId?: string | null,
 ): InterviewResponseRecord => {
-  const api = useCartAPI()
+  const api = useSelfServiceAPI()
   const [interviewAPI, interviewStore] = useInterviewAPI()
 
   const query = useSuspenseQuery({
@@ -123,14 +125,18 @@ export const useCartInterviewRecord = (
 }
 
 const startInterview = async (
-  cartAPI: CartAPI,
+  selfServiceAPI: SelfServiceAPI,
   interviewAPI: InterviewAPI,
   store: InterviewResponseStore,
   eventId: string,
   cartId: string,
   interviewId: string,
 ) => {
-  const initial = await cartAPI.startInterview(eventId, cartId, interviewId)
+  const initial = await selfServiceAPI.startInterview(
+    eventId,
+    cartId,
+    interviewId,
+  )
   const initialResp = await interviewAPI.update(initial)
   return store.add(initialResp)
 }

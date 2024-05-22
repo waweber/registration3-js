@@ -59,6 +59,7 @@
     "@tabler/icons-react": "^3.3.0",
     "@tanstack/react-router": "^1.32.5",
     "clsx": "^2.1.1",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.1.0",
+    "wretch": "^2.8.1"
   }
 }

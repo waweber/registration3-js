@@ -2,6 +2,14 @@ export class NotFoundError extends Error {
   isNotFound = true as const
 }
 
+/**
+ * Check if an object is a "not found" error.
+ */
+export const isNotFound = (obj: unknown): obj is NotFoundError => {
+  // TODO: include other types
+  return isNotFoundError(obj) || (isResponseError(obj) && obj.status == 404)
+}
+
 export const isNotFoundError = (obj: unknown): obj is NotFoundError => {
   return (
     typeof obj == "object" &&
@@ -12,11 +20,18 @@ export const isNotFoundError = (obj: unknown): obj is NotFoundError => {
 }
 
 /**
- * Check if an object is a "not found" error.
+ * Check if an object is an error response.
  */
-export const isNotFound = (obj: unknown): obj is NotFoundError => {
-  // TODO: include other types
-  return isNotFoundError(obj)
+export const isResponseError = (
+  obj: unknown,
+): obj is Error & { status: number } => {
+  return (
+    typeof obj == "object" &&
+    obj != null &&
+    "name" in obj &&
+    "message" in obj &&
+    "status" in obj
+  )
 }
 
 /**

@@ -1,8 +1,9 @@
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback } from "react"
-import { eventRoute } from "../routes/index.js"
+import { addRegistrationRoute, eventRoute } from "../routes/index.js"
 import { useRegistrations } from "./api.js"
 import { InterviewOption } from "../api/types.js"
+import { useCurrentCart } from "./cart.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -23,7 +24,8 @@ export const useInterviewOptionsDialog = (): InterviewOptionsDialogHook => {
   const navigate = useNavigate()
   const router = useRouter()
   const registrations = useRegistrations(eventId)
-  const options = registrations.addOptions ?? []
+  const [cart] = useCurrentCart(eventId)
+  const options = registrations.add_options ?? []
 
   return {
     options,
@@ -34,8 +36,14 @@ export const useInterviewOptionsDialog = (): InterviewOptionsDialogHook => {
       }
 
       if (options.length == 1) {
-        // TODO: start interview
-        console.log("TODO: would have started the interview right away")
+        navigate({
+          to: addRegistrationRoute.to,
+          params: {
+            cartId: cart.id,
+            eventId: eventId,
+            interviewId: options[0].id,
+          },
+        })
       } else {
         navigate({
           state: {

@@ -1,11 +1,15 @@
 import { OptionsDialog } from "@open-event-systems/registration-common/components"
 import { useRegistrations } from "../../hooks/api.js"
-import { eventRoute } from "../../routes/index.js"
-import { useLocation } from "@tanstack/react-router"
+import { addRegistrationRoute, eventRoute } from "../../routes/index.js"
+import { useLocation, useNavigate } from "@tanstack/react-router"
 import { useInterviewOptionsDialog } from "../../hooks/interview.js"
+import { useCurrentCart } from "../../hooks/cart.js"
 
 export const InterviewOptionsDialog = () => {
+  const { eventId } = eventRoute.useParams()
   const interviewOptions = useInterviewOptionsDialog()
+  const [cart] = useCurrentCart(eventId)
+  const navigate = useNavigate()
 
   // TODO: URL to interview page...
 
@@ -19,7 +23,14 @@ export const InterviewOptionsDialog = () => {
         label: opt.title,
       }))}
       onSelect={(opt) => {
-        // TODO: navigate to interview
+        navigate({
+          to: addRegistrationRoute.to,
+          params: {
+            cartId: cart.id,
+            eventId: eventId,
+            interviewId: opt,
+          },
+        })
       }}
     />
   )

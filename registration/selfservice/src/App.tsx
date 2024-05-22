@@ -6,17 +6,24 @@ import "@mantine/core/styles.css"
 import "@open-event-systems/interview-components/styles.scss"
 import "@open-event-systems/registration-common/styles.scss"
 import "./styles.scss"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { FullscreenLoader } from "@open-event-systems/registration-common/components"
 import {
   InterviewRecordLocalStorage,
+  createAuth,
+  isNotFound,
   isNotFoundError,
+  isResponseError,
   makeMockCartAPI,
 } from "@open-event-systems/registration-common"
 import { CartAPIProvider } from "./providers/cart.js"
 import { mockAPI } from "./providers/interview.js"
 import { InterviewAPIProvider } from "@open-event-systems/interview-components"
+import wretch from "wretch"
+import { makeSelfServiceAPI } from "./api/api.js"
+import { SelfServiceAPIContext } from "./hooks/api.js"
+import { makeInterviewAPI } from "@open-event-systems/interview-lib"
 
 export const App = () => {
   const [queryClient] = useState(
@@ -25,23 +32,44 @@ export const App = () => {
         defaultOptions: {
           queries: {
             retry(failureCount, error) {
-              return !isNotFoundError(error) && failureCount < 3
+              if (
+                isNotFound(error) ||
+                (isResponseError(error) && error.status == 401)
+              ) {
+                return false
+              }
+              return failureCount < 3
             },
           },
         },
       }),
   )
+
+  const [authWretch, authStore] = createAuth(
+    "http://localhost:8000",
+    wretch("http://localhost:8000"),
+  )
+
   const [cartAPI] = useState(() => makeMockCartAPI())
-  const [interviewAPI] = useState(() => mockAPI)
+  const [interviewAPI] = useState(() => makeInterviewAPI())
   const [interviewStore] = useState(() => InterviewRecordLocalStorage.load())
+
+  const [selfServiceAPI] = useState(() => makeSelfServiceAPI(authWretch))
+
+  useEffect(() => {
+    authStore.load()
+  }, [authStore])
+
   return (
     <MantineProvider theme={DEFAULT_THEME} forceColorScheme="light">
       <QueryClientProvider client={queryClient}>
         <CartAPIProvider cartAPI={cartAPI}>
           <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
-            <FullscreenLoader>
-              <RouterProvider router={router} />
-            </FullscreenLoader>
+            <SelfServiceAPIContext.Provider value={selfServiceAPI}>
+              <FullscreenLoader>
+                <RouterProvider router={router} />
+              </FullscreenLoader>
+            </SelfServiceAPIContext.Provider>
           </InterviewAPIProvider>
         </CartAPIProvider>
       </QueryClientProvider>

@@ -40,7 +40,17 @@ class StoreImpl {
   }
 
   add(response: InterviewResponse, prev?: string): InterviewResponseRecord {
-    const record = { response, prev, title: getTitle(response) }
+    const cur = this.records.get(response.state)
+    const record = {
+      ...cur,
+      response,
+      title: getTitle(response),
+    }
+
+    if (prev && prev != response.state) {
+      record.prev = prev
+    }
+
     this.records.set(response.state, record)
     this.trim()
     return record

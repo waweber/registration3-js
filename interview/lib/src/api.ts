@@ -17,15 +17,24 @@ export const makeInterviewAPI = (
 }
 
 class InterviewAPIImpl {
-  constructor(private fetch: FetchFunc = fetch) {}
+  private fetchFunc: FetchFunc | null
+  constructor(fetchFunc?: FetchFunc) {
+    this.fetchFunc = fetchFunc ?? null
+  }
 
   async update(
     response: InterviewResponse,
     userResponse?: UserResponse,
   ): Promise<InterviewResponse> {
-    while (!response.completed && !response.completed) {
-      const next = await this.updateOnce(response, userResponse)
-      userResponse = undefined
+    if (response.completed) {
+      return response
+    }
+
+    response = await this.updateOnce(response, userResponse)
+    userResponse = undefined
+
+    while (!response.completed && !response.content) {
+      const next = await this.updateOnce(response)
       response = next
     }
     return response
@@ -40,7 +49,8 @@ class InterviewAPIImpl {
       responses: userResponse,
     }
 
-    const res = await this.fetch(response.update_url, {
+    const fetchFunc = this.fetchFunc ?? window.fetch
+    const res = await fetchFunc(response.update_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

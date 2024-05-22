@@ -92,7 +92,7 @@ const getHistoryItems = (
   return records.map((rec, i) => (
     <HistoryPanel.Item
       key={rec.response.state}
-      label={`${i + 1}. ${rec.title}`}
+      label={`${i + 1}. ${rec.title || ""}`}
       active={!!current && rec.response.state == current}
       href={getLink ? getLink(rec.response.state) : undefined}
       onClick={() => {
