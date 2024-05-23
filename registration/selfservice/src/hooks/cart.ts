@@ -38,8 +38,10 @@ export const useCurrentCart = (
       let curId = getCurrentCartIdFromCookie(eventId)
       if (curId) {
         const cur = await catchNotFound(api.readCartPricingResult(curId))
-        queryClient.setQueryData(["carts", curId, "pricing-result"], cur)
-        return { id: curId }
+        if (cur) {
+          queryClient.setQueryData(["carts", curId, "pricing-result"], cur)
+          return { id: curId }
+        }
       }
 
       const empty = await api.readEmptyCart(eventId)

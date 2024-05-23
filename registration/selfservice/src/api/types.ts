@@ -1,3 +1,4 @@
+import { Cart } from "@open-event-systems/registration-common"
 import { InterviewResponse } from "../../../../interview/lib/src/types.js"
 
 export type Event = Readonly<{
@@ -33,4 +34,5 @@ export type SelfServiceAPI = {
     cartId: string,
     interviewId: string,
   ): Promise<InterviewResponse>
+  completeInterview(state: string): Promise<Cart>
 }

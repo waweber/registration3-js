@@ -23,5 +23,12 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
         .get()
         .json()
     },
+    async completeInterview(state) {
+      return await wretch
+        .url(`/self-service/add-to-cart`)
+        .json({ state: state })
+        .post()
+        .json()
+    },
   }
 }

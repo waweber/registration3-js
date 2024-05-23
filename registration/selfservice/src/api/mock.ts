@@ -47,5 +47,11 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
         update_url: "",
       }
     },
+    async completeInterview(state) {
+      await delay(300)
+      return {
+        id: "empty",
+      }
+    },
   }
 }

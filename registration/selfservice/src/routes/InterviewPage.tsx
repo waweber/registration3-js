@@ -1,7 +1,11 @@
 import { Title } from "@open-event-systems/registration-common/components"
-import { useEvent } from "../hooks/api.js"
+import { useEvent, useSelfServiceAPI } from "../hooks/api.js"
 import { addRegistrationRoute, registrationsRoute } from "./index.js"
-import { useCartPricingResult, useCartInterviewRecord } from "../hooks/cart.js"
+import {
+  useCartPricingResult,
+  useCartInterviewRecord,
+  useCurrentCart,
+} from "../hooks/cart.js"
 import { useCallback, useState } from "react"
 import { useLocation, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
@@ -15,9 +19,11 @@ export const InterviewPage = () => {
   const { eventId, cartId, interviewId } = addRegistrationRoute.useParams()
   const event = useEvent(eventId)
   const cart = useCartPricingResult(cartId)
+  const [currentCart, setCurrentCart] = useCurrentCart(eventId)
   const loc = useLocation()
   const navigate = addRegistrationRoute.useNavigate()
   const router = useRouter()
+  const selfService = useSelfServiceAPI()
 
   const locStateId = getStateId(loc.hash)
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
@@ -31,6 +37,8 @@ export const InterviewPage = () => {
     "http://localhost:8000/update-interview", // TODO
     locStateId,
   )
+
+  console.log("render with", currentCart.id, interviewId, eventId)
 
   const onNavigate = useCallback(
     (state: string) => {
@@ -47,12 +55,19 @@ export const InterviewPage = () => {
         eventId: eventId,
       },
     })
-  }, [navigate])
+  }, [navigate, eventId])
 
   const onUpdate = useCallback(
-    (record: InterviewResponseRecord) => {
+    async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
-        console.log("completed")
+        const res = await selfService.completeInterview(record.response.state)
+        navigate({
+          to: registrationsRoute.to,
+          params: {
+            eventId: eventId,
+          },
+        })
+        setCurrentCart(res.id)
       } else {
         setLatestRecordId(record.response.state)
         navigate({
@@ -60,7 +75,7 @@ export const InterviewPage = () => {
         })
       }
     },
-    [navigate],
+    [navigate, eventId],
   )
 
   const getHistoryLink = useCallback(
@@ -72,7 +87,7 @@ export const InterviewPage = () => {
       })
       return loc.href
     },
-    [router],
+    [router, eventId, cartId, interviewId],
   )
 
   return (

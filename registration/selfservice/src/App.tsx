@@ -15,6 +15,7 @@ import {
   isNotFound,
   isNotFoundError,
   isResponseError,
+  makeCartAPI,
   makeMockCartAPI,
 } from "@open-event-systems/registration-common"
 import { CartAPIProvider } from "./providers/cart.js"
@@ -50,7 +51,7 @@ export const App = () => {
     wretch("http://localhost:8000"),
   )
 
-  const [cartAPI] = useState(() => makeMockCartAPI())
+  const [cartAPI] = useState(() => makeCartAPI(authWretch))
   const [interviewAPI] = useState(() => makeInterviewAPI())
   const [interviewStore] = useState(() => InterviewRecordLocalStorage.load())
 

@@ -55,14 +55,6 @@ export const makeMockCartAPI = (): CartAPI => {
       }
       return carts[cartId]
     },
-    async startInterview(_eventId, _cartId, interviewId, _registrationId) {
-      await delay(300)
-      return {
-        state: `${interviewId}-0`,
-        update_url: "",
-        completed: false,
-      }
-    },
     async removeRegistrationFromCart(cartId, registrationId) {
       await delay(300)
       if (!(cartId in carts)) {
