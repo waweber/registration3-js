@@ -13,12 +13,13 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
         .get()
         .json()
     },
-    async startInterview(eventId, cartId, interviewId) {
+    async startInterview(eventId, cartId, interviewId, registrationId) {
       return await wretch
         .url(`/self-service/events/${eventId}/interviews/${interviewId}`)
         .addon(queryStringAddon)
         .query({
           cart_id: cartId,
+          registration_id: registrationId ?? undefined,
         })
         .get()
         .json()

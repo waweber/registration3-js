@@ -1,27 +1,69 @@
 import { Title } from "@open-event-systems/registration-common/components"
 import { useEvent, useSelfServiceAPI } from "../hooks/api.js"
-import { addRegistrationRoute, registrationsRoute } from "./index.js"
 import {
-  useCartPricingResult,
-  useCartInterviewRecord,
-  useCurrentCart,
-} from "../hooks/cart.js"
-import { useCallback, useState } from "react"
-import { useLocation, useRouter } from "@tanstack/react-router"
+  addRegistrationRoute,
+  cartRoute,
+  changeRegistrationRoute,
+  registrationsRoute,
+} from "./index.js"
+import { useCartInterviewRecord, useCurrentCart } from "../hooks/cart.js"
+import { Suspense, useCallback, useLayoutEffect, useRef, useState } from "react"
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {
   Interview,
   InterviewPanel,
   useInterviewAPI,
 } from "@open-event-systems/interview-components"
+import { Skeleton } from "@mantine/core"
 
-export const InterviewPage = () => {
-  const { eventId, cartId, interviewId } = addRegistrationRoute.useParams()
-  const event = useEvent(eventId)
-  const cart = useCartPricingResult(cartId)
-  const [currentCart, setCurrentCart] = useCurrentCart(eventId)
+export const AddRegistrationPage = () => {
+  const { eventId, interviewId } = addRegistrationRoute.useParams()
+
+  return (
+    <Suspense fallback={<Skeleton h={300} />}>
+      <InterviewPage eventId={eventId} interviewId={interviewId} />
+    </Suspense>
+  )
+}
+
+export const ChangeRegistrationPage = () => {
+  const { eventId, interviewId, registrationId } =
+    changeRegistrationRoute.useParams()
+  useEvent(eventId)
+
+  return (
+    <Suspense fallback={<Skeleton h={300} />}>
+      <InterviewPage
+        eventId={eventId}
+        interviewId={interviewId}
+        registrationId={registrationId}
+      />
+    </Suspense>
+  )
+}
+
+const InterviewPage = ({
+  eventId,
+  interviewId,
+  registrationId,
+}: {
+  eventId: string
+  interviewId: string
+  registrationId?: string
+}) => {
   const loc = useLocation()
-  const navigate = addRegistrationRoute.useNavigate()
+
+  const [currentCart, setCurrentCart] = useCurrentCart(eventId)
+
+  // keep using this cart ID until unmounted
+  const curCartIdRef = useRef(currentCart.id)
+
+  // prevent starting a new interview after completion between navigate and rerender
+  const curStateRef = useRef<string | null>(null)
+
+  const cartId = curCartIdRef.current
+  const navigate = useNavigate()
   const router = useRouter()
   const selfService = useSelfServiceAPI()
 
@@ -35,10 +77,18 @@ export const InterviewPage = () => {
     cartId,
     interviewId,
     "http://localhost:8000/update-interview", // TODO
-    locStateId,
+    registrationId,
+    curStateRef.current ?? locStateId,
   )
 
-  console.log("render with", currentCart.id, interviewId, eventId)
+  useLayoutEffect(() => {
+    if (!curStateRef.current && !locStateId && interviewRecord) {
+      navigate({
+        hash: `s=${interviewRecord.response.state}`,
+        replace: true,
+      })
+    }
+  }, [curStateRef.current, locStateId, interviewRecord])
 
   const onNavigate = useCallback(
     (state: string) => {
@@ -61,8 +111,9 @@ export const InterviewPage = () => {
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
         const res = await selfService.completeInterview(record.response.state)
+        curStateRef.current = record.response.state
         navigate({
-          to: registrationsRoute.to,
+          to: cartRoute.to,
           params: {
             eventId: eventId,
           },
@@ -82,7 +133,7 @@ export const InterviewPage = () => {
     (state: string) => {
       const loc = router.buildLocation({
         to: addRegistrationRoute.to,
-        params: { eventId, cartId, interviewId },
+        params: { eventId, interviewId },
         hash: `s=${state}`,
       })
       return loc.href

@@ -6,7 +6,8 @@ import {
   Title,
 } from "@open-event-systems/registration-common/components"
 import { RegistrationsPage } from "./RegistrationsPage.js"
-import { InterviewPage } from "./InterviewPage.js"
+import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
+import { CartPage } from "./CartPage.js"
 
 export const rootRoute = createRootRoute({
   component() {
@@ -47,10 +48,27 @@ export const registrationsRoute = createRoute({
 
 export const addRegistrationRoute = createRoute({
   getParentRoute: () => eventRoute,
-  path: "cart/$cartId/add/$interviewId",
-  component: InterviewPage,
+  path: "cart/add/$interviewId",
+  component: AddRegistrationPage,
+})
+
+export const changeRegistrationRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "cart/change/$registrationId/$interviewId",
+  component: ChangeRegistrationPage,
+})
+
+export const cartRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "cart",
+  component: CartPage,
 })
 
 export const routeTree = rootRoute.addChildren([
-  eventRoute.addChildren([registrationsRoute, addRegistrationRoute]),
+  eventRoute.addChildren([
+    registrationsRoute,
+    addRegistrationRoute,
+    changeRegistrationRoute,
+    cartRoute,
+  ]),
 ])

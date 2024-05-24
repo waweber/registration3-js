@@ -82,6 +82,7 @@ export const useCartInterviewRecord = (
   cartId: string,
   interviewId: string,
   updateUrl: string,
+  registrationId?: string | null,
   stateId?: string | null,
 ): InterviewResponseRecord => {
   const api = useSelfServiceAPI()
@@ -92,10 +93,10 @@ export const useCartInterviewRecord = (
       "self-service",
       "events",
       eventId,
-      "cart",
+      "carts",
       cartId,
       "interview",
-      { interviewId, stateId },
+      { interviewId, registrationId, stateId },
     ],
     queryFn() {
       if (stateId) {
@@ -119,6 +120,7 @@ export const useCartInterviewRecord = (
         eventId,
         cartId,
         interviewId,
+        registrationId,
       )
     },
   })
@@ -133,11 +135,13 @@ const startInterview = async (
   eventId: string,
   cartId: string,
   interviewId: string,
+  registrationId?: string | null,
 ) => {
   const initial = await selfServiceAPI.startInterview(
     eventId,
     cartId,
     interviewId,
+    registrationId,
   )
   const initialResp = await interviewAPI.update(initial)
   return store.add(initialResp)
@@ -169,5 +173,5 @@ const getCurrentCartIdFromCookie = (eventId: string) => {
 
 const setCurrentCartCookie = (eventId: string, cartId: string) => {
   const cookieName = `${COOKIE_PREFIX}${eventId}`
-  document.cookie = `${cookieName}=${cartId}; max-age=86400`
+  document.cookie = `${cookieName}=${cartId}; path=/; SameSite=strict; max-age=86400`
 }

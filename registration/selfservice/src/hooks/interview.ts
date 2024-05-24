@@ -39,7 +39,6 @@ export const useInterviewOptionsDialog = (): InterviewOptionsDialogHook => {
         navigate({
           to: addRegistrationRoute.to,
           params: {
-            cartId: cart.id,
             eventId: eventId,
             interviewId: options[0].id,
           },

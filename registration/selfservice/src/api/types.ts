@@ -33,6 +33,7 @@ export type SelfServiceAPI = {
     eventId: string,
     cartId: string,
     interviewId: string,
+    registrationId?: string | null,
   ): Promise<InterviewResponse>
   completeInterview(state: string): Promise<Cart>
 }

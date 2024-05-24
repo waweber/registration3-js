@@ -1,16 +1,23 @@
 
-:global .AppShell-root {
+.AppShellLayout-root {
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 100%;
 }
 
-:global .AppShell-main {
+.AppShellLayout-main {
     padding-top: 3rem;
     padding-right: 0;
     padding-left: 0;
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: stre;
+}
+
+.AppShellLayout-content {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }

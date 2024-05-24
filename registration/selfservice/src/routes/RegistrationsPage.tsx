@@ -1,14 +1,20 @@
 import { Title } from "@open-event-systems/registration-common/components"
-import { eventRoute } from "./index.js"
+import {
+  addRegistrationRoute,
+  cartRoute,
+  changeRegistrationRoute,
+  eventRoute,
+} from "./index.js"
 import { useEvent, useRegistrations } from "../hooks/api.js"
 import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
-import { Button, Group } from "@mantine/core"
+import { Anchor, Box, Button, Grid, Group } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
 import { InterviewOptionsDialog } from "../components/options/InterviewOptionsDialog.js"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
-import { useCurrentCart } from "../hooks/cart.js"
+import { Link, useNavigate } from "@tanstack/react-router"
+import { useCartPricingResult, useCurrentCart } from "../hooks/cart.js"
 
 export const RegistrationsPage = () => {
   const { eventId } = eventRoute.useParams()
@@ -25,7 +31,9 @@ export const RegistrationsPage = () => {
 
 const Registrations = ({ event }: { event: Event }) => {
   const registrations = useRegistrations(event.id)
-  const currentCartStore = useCurrentCart(event.id)
+  const navigate = useNavigate()
+  const [currentCart] = useCurrentCart(event.id)
+  const currentPricingResult = useCartPricingResult(currentCart.id)
 
   const interviewOptions = useInterviewOptionsDialog()
 
@@ -37,14 +45,49 @@ const Registrations = ({ event }: { event: Event }) => {
           title: r.title,
           subtitle: r.subtitle,
           description: r.description,
+          menuItems: r.change_options?.map((o) => ({
+            label: o.title,
+            onClick: () => {
+              navigate({
+                to: changeRegistrationRoute.to,
+                params: {
+                  eventId: event.id,
+                  registrationId: r.id,
+                  interviewId: o.id,
+                },
+              })
+            },
+          })),
         }))}
       />
+      <Box flex={{ base: "auto", xs: "auto", sm: "initial" }} />
       {interviewOptions.options.length > 0 && (
-        <Group>
-          <Button leftSection={<IconPlus />} onClick={interviewOptions.show}>
-            Add Registration
-          </Button>
-        </Group>
+        <Grid justify="space-between">
+          <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
+            <Button
+              fullWidth
+              leftSection={<IconPlus />}
+              onClick={interviewOptions.show}
+            >
+              Add Registration
+            </Button>
+          </Grid.Col>
+          {currentPricingResult.registrations.length > 0 && (
+            <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
+              <Button
+                fullWidth
+                variant="subtle"
+                component={Link}
+                to={cartRoute.to}
+              >
+                View cart{" "}
+                {currentPricingResult.registrations.length > 1 &&
+                  ` (${currentPricingResult.registrations.length}) `}
+                &raquo;
+              </Button>
+            </Grid.Col>
+          )}
+        </Grid>
       )}
       <InterviewOptionsDialog />
     </>
