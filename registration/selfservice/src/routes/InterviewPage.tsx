@@ -88,7 +88,11 @@ const InterviewPage = ({
         replace: true,
       })
     }
-  }, [curStateRef.current, locStateId, interviewRecord])
+  }, [curStateRef.current ?? locStateId, interviewRecord])
+
+  if (locStateId) {
+    curStateRef.current = locStateId
+  }
 
   const onNavigate = useCallback(
     (state: string) => {
