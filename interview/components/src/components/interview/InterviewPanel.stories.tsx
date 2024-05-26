@@ -11,6 +11,9 @@ import { useState } from "react"
 
 const meta: Meta<typeof InterviewPanel> = {
   component: InterviewPanel,
+  parameters: {
+    layout: "padded",
+  },
 }
 
 export default meta
@@ -121,8 +124,9 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
         <InterviewPanel
           {...renderProps}
           style={{
-            width: 600,
+            maxWidth: 600,
             height: 300,
+            margin: "auto",
           }}
         />
       )}

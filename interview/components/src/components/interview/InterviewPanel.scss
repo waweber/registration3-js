@@ -5,6 +5,7 @@
 
 .InterviewPanel-inner {
   flex: 1 1 auto;
+  align-content: flex-start;
 }
 
 .InterviewPanel-historyCol {
@@ -29,4 +30,8 @@
 
 .InterviewPanel-content {
   flex: 1 0 auto;
+}
+
+.InterviewPanel-historySelector {
+  flex: auto;
 }

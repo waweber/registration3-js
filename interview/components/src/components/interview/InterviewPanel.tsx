@@ -13,8 +13,10 @@ import {
   InterviewResponseRecord,
   InterviewResponseStore,
 } from "@open-event-systems/interview-lib"
-import { useContext, useMemo } from "react"
+import { lazy, useContext, useMemo } from "react"
 import { InterviewContext } from "./Context.js"
+import { useMediaQuery } from "@mantine/hooks"
+import { HistorySelector } from "../history/HistorySelector.js"
 
 export type InterviewPanelProps = Omit<GridProps, "onSubmit" | "children"> &
   InterviewRenderProps & {
@@ -26,6 +28,10 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
     useProps("InterviewPanel", {}, props)
 
   const context = useContext(InterviewContext)
+
+  const isSmall = useMediaQuery("(max-width: 48em)", false, {
+    getInitialValueInEffect: false,
+  })
 
   const historyRecords = useMemo(
     () =>
@@ -50,6 +56,15 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
     [historyRecords],
   )
 
+  const historySelectorItems = useMemo(
+    () =>
+      historyRecords.map((r, i) => ({
+        id: r.response.state,
+        label: `${i + 1}. ${r.title ?? ""}`,
+      })),
+    [historyRecords],
+  )
+
   return (
     <Grid
       className={clsx("InterviewPanel-root", className)}
@@ -59,13 +74,35 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
       align="stretch"
       {...other}
     >
-      <Grid.Col span={4} classNames={{ col: "InterviewPanel-historyCol" }}>
-        <HistoryPanel className="InterviewPanel-history">
-          {historyItems}
-        </HistoryPanel>
-        <Divider orientation="vertical" className="InterviewPanel-divider" />
+      <Grid.Col
+        span={{ base: 12, xs: 12, sm: 4 }}
+        classNames={{ col: "InterviewPanel-historyCol" }}
+      >
+        {isSmall ? (
+          <HistorySelector
+            className="InterviewPanel-historySelector"
+            items={historySelectorItems}
+            selectedId={context.recordId ?? undefined}
+            onChange={(selectedId) => {
+              context.onNavigate(selectedId)
+            }}
+          />
+        ) : (
+          <>
+            <HistoryPanel className="InterviewPanel-history">
+              {historyItems}
+            </HistoryPanel>
+            <Divider
+              orientation="vertical"
+              className="InterviewPanel-divider"
+            />
+          </>
+        )}
       </Grid.Col>
-      <Grid.Col span={8} classNames={{ col: "InterviewPanel-contentCol" }}>
+      <Grid.Col
+        span={{ base: 12, xs: 12, sm: 8 }}
+        classNames={{ col: "InterviewPanel-contentCol" }}
+      >
         <ContentComponent
           className="InterviewPanel-content"
           title={<Title />}
