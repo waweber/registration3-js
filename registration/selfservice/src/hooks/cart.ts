@@ -6,7 +6,11 @@ import {
 } from "@open-event-systems/registration-common"
 import { useCallback, useContext } from "react"
 import { CartAPIContext } from "../providers/cart.js"
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 import { useInterviewAPI } from "@open-event-systems/interview-components"
 import {
   InterviewAPI,
@@ -28,7 +32,7 @@ export const useCartAPI = (): CartAPI => {
 
 export const useCurrentCart = (
   eventId: string,
-): [Cart, (cartId: string) => void] => {
+): [Cart, (cartId: string | null) => void] => {
   const api = useCartAPI()
   const queryClient = useQueryClient()
 
@@ -51,13 +55,35 @@ export const useCurrentCart = (
     staleTime: Infinity,
   })
 
-  const setCartId = useCallback(
-    (cartId: string) => {
-      setCurrentCartCookie(eventId, cartId)
+  const setCart = useMutation({
+    mutationKey: ["self-service", "carts", "current", { eventId: eventId }],
+    async mutationFn({ cartId }: { cartId: string | null }) {
+      if (cartId) {
+        setCurrentCartCookie(eventId, cartId)
+        return { id: cartId }
+      } else {
+        const empty = await queryClient.ensureQueryData({
+          queryKey: ["carts", "empty", { eventId: eventId }],
+          async queryFn() {
+            return await api.readEmptyCart(eventId)
+          },
+          staleTime: Infinity,
+        })
+        setCurrentCartCookie(eventId, cartId)
+        return empty
+      }
+    },
+    onSuccess(data) {
       queryClient.setQueryData(
         ["self-service", "carts", "current", { eventId: eventId }],
-        { id: cartId },
+        data,
       )
+    },
+  })
+
+  const setCartId = useCallback(
+    (cartId: string | null) => {
+      setCart.mutate({ cartId })
     },
     [eventId],
   )
@@ -171,7 +197,11 @@ const getCurrentCartIdFromCookie = (eventId: string) => {
   return entry.substring(cookieName.length + 1)
 }
 
-const setCurrentCartCookie = (eventId: string, cartId: string) => {
+const setCurrentCartCookie = (eventId: string, cartId: string | null) => {
   const cookieName = `${COOKIE_PREFIX}${eventId}`
-  document.cookie = `${cookieName}=${cartId}; path=/; SameSite=strict; max-age=86400`
+  if (cartId) {
+    document.cookie = `${cookieName}=${cartId}; path=/; SameSite=strict; max-age=86400`
+  } else {
+    document.cookie = `${cookieName}=; path=/; SameSite=strict; max-age=0`
+  }
 }

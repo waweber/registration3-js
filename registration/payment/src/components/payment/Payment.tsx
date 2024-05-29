@@ -1,73 +1,26 @@
-import {
-  ComponentType,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react"
-import { PaymentContextProvider, usePaymentContext } from "../../context.js"
-import { PaymentResult } from "../../types.js"
-import { getPaymentComponent } from "../../services/index.js"
+import { Box, Button, ButtonProps, Skeleton, Text } from "@mantine/core"
+import { usePaymentContext } from "../../hooks/payment.js"
+import { PaymentServiceComponentProps } from "../../types.js"
 
-import { LoadingOverlay, Skeleton, Text } from "@mantine/core"
+export const PaymentPlaceholder = ({
+  children,
+}: PaymentServiceComponentProps) =>
+  children({
+    content: (
+      <Box>
+        <Skeleton h={36} />
+        <Skeleton mt="0.625rem" h={36} />
+      </Box>
+    ),
+  })
 
-export type PaymentProps = {
-  paymentId?: string | null
-  payment?: PaymentResult | null
-}
+export const PaymentComplete = () => <Text span>Your payment is complete.</Text>
 
-export const Payment = ({ paymentId, payment }: PaymentProps) => {
+export const PaymentCloseButton = (props: ButtonProps) => {
+  const { close } = usePaymentContext()
   return (
-    <PaymentContextProvider
-      key={paymentId}
-      paymentId={paymentId}
-      payment={payment}
-    >
-      <PaymentComponent />
-    </PaymentContextProvider>
+    <Button onClick={() => close()} variant="outline" {...props}>
+      Close
+    </Button>
   )
 }
-
-const PaymentComponent = () => {
-  const { submitting, result } = usePaymentContext()
-  const service = result?.service
-  const [component, setComponent] = useState<{ Component: ComponentType }>(
-    () => {
-      return { Component: () => <PaymentPlaceholder /> }
-    },
-  )
-
-  useEffect(() => {
-    if (service) {
-      getPaymentComponent(service).then((component) => setComponent(component))
-    }
-  }, [service])
-
-  return (
-    <>
-      <component.Component />
-      <LoadingOverlay visible={submitting} />
-    </>
-  )
-}
-
-const PaymentPlaceholder = () => {
-  return (
-    <>
-      <Skeleton h={40} />
-      <Skeleton mt={8} h={40} />
-    </>
-  )
-}
-
-const PaymentComplete = () => {
-  return <Text component="p">Your payment is complete.</Text>
-}
-
-const PaymentCanceled = () => {
-  return <Text component="p">Payment canceled.</Text>
-}
-
-Payment.Placeholder = PaymentPlaceholder
-Payment.Complete = PaymentComplete
-Payment.Canceled = PaymentCanceled

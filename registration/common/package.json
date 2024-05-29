@@ -44,6 +44,7 @@
     "sass-loader": "^14.2.1",
     "storybook": "^8.0.10",
     "style-loader": "^4.0.0",
+    "wretch": "^2.8.1",
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
@@ -51,7 +52,8 @@
     "@mantine/hooks": "^7.9.1",
     "mobx": "^6.12.3",
     "mobx-react-lite": "^4.0.7",
-    "react": "^18.3.1"
+    "react": "^18.3.1",
+    "wretch": "^2.8.1"
   },
   "dependencies": {
     "@open-event-systems/interview-components": "^0.3.0",
@@ -59,7 +61,6 @@
     "@tabler/icons-react": "^3.3.0",
     "@tanstack/react-router": "^1.32.5",
     "clsx": "^2.1.1",
-    "markdown-it": "^14.1.0",
-    "wretch": "^2.8.1"
+    "markdown-it": "^14.1.0"
   }
 }

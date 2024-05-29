@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import { ComponentType, ReactNode } from "react"
 
 export type PaymentMethod = {
   id: string
@@ -42,28 +42,14 @@ export type PaymentAPI = {
   cancelPayment(paymentId: string): Promise<PaymentResult>
 }
 
-export type PaymentContext<S extends string = string> = (
-  | {
-      id: string
-      result: PaymentResult<S> | null
-    }
-  | { id: null; result: null }
-) & {
-  submitting: boolean
-  setSubmitting(submitting: boolean): void
-  error: string | null
-  setError(error: string | null): void
-  update(
-    body: S extends keyof PaymentRequestBodyMap
-      ? PaymentRequestBodyMap[S]
-      : Record<string, unknown>,
-  ): Promise<PaymentResult<S>>
-  cancel(): Promise<PaymentResult<S>>
+export type PaymentServiceRenderProps = {
+  content?: ReactNode
+  controls?: ReactNode
 }
 
 export type PaymentServiceComponentProps = {
-  children: {
-    Content: () => ReactNode
-    Controls: () => ReactNode
-  }
+  children: (renderProps: PaymentServiceRenderProps) => ReactNode
 }
+
+export type PaymentServiceComponent =
+  ComponentType<PaymentServiceComponentProps>

@@ -144,9 +144,6 @@ importers:
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
-      wretch:
-        specifier: ^2.8.1
-        version: 2.8.1
     devDependencies:
       "@mantine/core":
         specifier: ^7.9.1
@@ -211,12 +208,18 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
+      wretch:
+        specifier: ^2.8.1
+        version: 2.8.1
 
   registration/payment:
     dependencies:
       "@open-event-systems/registration-common":
         specifier: ^0.1.0
         version: link:../common
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       "@mantine/core":
         specifier: ^7.9.1
@@ -275,6 +278,9 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
+      wretch:
+        specifier: ^2.8.1
+        version: 2.8.1
 
   registration/selfservice:
     dependencies:
@@ -287,6 +293,9 @@ importers:
       "@open-event-systems/registration-common":
         specifier: ^0.1.0
         version: link:../common
+      "@open-event-systems/registration-payment":
+        specifier: ^0.1.0
+        version: link:../payment
       "@tabler/icons-react":
         specifier: ^3.4.0
         version: 3.4.0(react@18.3.1)

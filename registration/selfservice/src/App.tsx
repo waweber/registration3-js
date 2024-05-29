@@ -25,6 +25,10 @@ import wretch from "wretch"
 import { makeSelfServiceAPI } from "./api/api.js"
 import { SelfServiceAPIContext } from "./hooks/api.js"
 import { makeInterviewAPI } from "@open-event-systems/interview-lib"
+import {
+  PaymentAPIContext,
+  makePaymentAPI,
+} from "@open-event-systems/registration-payment"
 
 export const App = () => {
   const [queryClient] = useState(
@@ -52,6 +56,7 @@ export const App = () => {
   )
 
   const [cartAPI] = useState(() => makeCartAPI(authWretch))
+  const [paymentAPI] = useState(() => makePaymentAPI(authWretch))
   const [interviewAPI] = useState(() => makeInterviewAPI())
   const [interviewStore] = useState(() => InterviewRecordLocalStorage.load())
 
@@ -65,13 +70,15 @@ export const App = () => {
     <MantineProvider theme={DEFAULT_THEME} forceColorScheme="light">
       <QueryClientProvider client={queryClient}>
         <CartAPIProvider cartAPI={cartAPI}>
-          <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
-            <SelfServiceAPIContext.Provider value={selfServiceAPI}>
-              <FullscreenLoader>
-                <RouterProvider router={router} />
-              </FullscreenLoader>
-            </SelfServiceAPIContext.Provider>
-          </InterviewAPIProvider>
+          <PaymentAPIContext.Provider value={paymentAPI}>
+            <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
+              <SelfServiceAPIContext.Provider value={selfServiceAPI}>
+                <FullscreenLoader>
+                  <RouterProvider router={router} />
+                </FullscreenLoader>
+              </SelfServiceAPIContext.Provider>
+            </InterviewAPIProvider>
+          </PaymentAPIContext.Provider>
         </CartAPIProvider>
       </QueryClientProvider>
     </MantineProvider>

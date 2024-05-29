@@ -1,102 +1,42 @@
-import {
-  Button,
-  LoadingOverlay,
-  Modal,
-  ModalProps,
-  Skeleton,
-  Stack,
-  useProps,
-} from "@mantine/core"
+import { LoadingOverlay, Modal, ModalProps, useProps } from "@mantine/core"
 import clsx from "clsx"
-import { useCallback, useRef, useState } from "react"
+import { Options, OptionsProps } from "./Options.js"
+import { useRef } from "react"
 
-export type OptionsDialogProps = Omit<ModalProps, "onSelect" | "children"> & {
-  options?: OptionsDialogOption[]
-  placeholder?: boolean
-  onSelect?: (optionId: string) => Promise<void> | void
-}
-
-export type OptionsDialogOption = {
-  id: string
-  label: string
-  button?: boolean
-  href?: string
-}
+export type OptionsDialogProps = Omit<ModalProps, "children" | "onSelect"> &
+  OptionsProps & {
+    loading?: boolean
+  }
 
 export const OptionsDialog = (props: OptionsDialogProps) => {
   const {
     className,
-    classNames,
-    onSelect,
     options,
+    onSelect,
     opened,
-    placeholder,
+    loading = false,
     ...other
   } = useProps("OptionsDialog", {}, props)
-  const prevItemsRef = useRef<OptionsDialogOption[]>(options ?? [])
-  const [loading, setLoading] = useState(false)
 
-  const handleSelect = useCallback(
-    (id: string) => {
-      if (onSelect) {
-        const ret = onSelect(id)
-        if (ret && "then" in ret) {
-          setLoading(true)
-          ret
-            .then(() => {
-              setLoading(false)
-            })
-            .catch(() => {
-              setLoading(false)
-            })
-        }
-      }
-    },
-    [onSelect],
-  )
+  const prevOptionsRef = useRef<OptionsProps["options"]>()
 
-  if (options && opened) {
-    prevItemsRef.current = options
+  if (opened && options) {
+    prevOptionsRef.current = options
   }
-
-  const optsOrPrev = opened ? options : prevItemsRef.current
-
-  const opts =
-    !placeholder &&
-    optsOrPrev?.map((opt) => (
-      <Button
-        component={opt.button ? "button" : "a"}
-        key={opt.id}
-        variant="subtle"
-        onClick={() => handleSelect(opt.id)}
-        href={opt.href}
-      >
-        {opt.label}
-      </Button>
-    ))
 
   return (
     <Modal
       className={clsx("OptionsDialog-root", className)}
-      centered
       opened={opened}
-      classNames={{
-        ...classNames,
-        body: clsx("OptionsDialog-body", classNames?.body),
-      }}
-      size="sm"
+      centered
       {...other}
     >
-      <Stack gap="xs">
-        {placeholder && (
-          <>
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-          </>
-        )}
-        {opts}
-        <LoadingOverlay visible={loading} />
-      </Stack>
+      <Options
+        className="OptionsDialog-options"
+        options={opened ? options : options ?? prevOptionsRef.current}
+        onSelect={onSelect}
+      />
+      <LoadingOverlay visible={loading} />
     </Modal>
   )
 }

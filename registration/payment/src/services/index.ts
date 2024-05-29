@@ -1,8 +1,12 @@
 import { ComponentType } from "react"
+import { PaymentServiceComponentProps } from "../types.js"
 
 const paymentComponents: Record<
   string,
-  (() => Promise<{ Component: ComponentType }>) | undefined
+  | (() => Promise<
+      Readonly<{ Component: ComponentType<PaymentServiceComponentProps> }>
+    >)
+  | undefined
 > = {
   async mock() {
     const mock = await import("./mock/Mock.js")
@@ -13,12 +17,18 @@ const paymentComponents: Record<
 /**
  * Get the component for a payment service.
  */
-export const getPaymentComponent = async (
-  service: string,
-): Promise<{ Component: ComponentType }> => {
+export const getPaymentComponent = async <S extends string = string>(
+  service: S,
+): Promise<
+  Readonly<{
+    service: S
+    Component: ComponentType<PaymentServiceComponentProps>
+  }>
+> => {
   const loader = paymentComponents[service]
   if (!loader) {
     throw new Error(`Unsupported payment service: ${service}`)
   }
-  return await loader()
+  const container = await loader()
+  return { service, Component: container.Component }
 }
