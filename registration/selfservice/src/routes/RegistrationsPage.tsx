@@ -1,15 +1,10 @@
 import { Title } from "@open-event-systems/registration-common/components"
-import {
-  addRegistrationRoute,
-  cartRoute,
-  changeRegistrationRoute,
-  eventRoute,
-} from "./index.js"
+import { cartRoute, changeRegistrationRoute, eventRoute } from "./index.js"
 import { useEvent, useRegistrations } from "../hooks/api.js"
 import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
-import { Anchor, Box, Button, Grid, Group } from "@mantine/core"
+import { Box, Button, Grid } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
 import { InterviewOptionsDialog } from "../components/options/InterviewOptionsDialog.js"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"

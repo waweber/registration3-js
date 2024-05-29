@@ -22,12 +22,19 @@ export const isNotFoundError = (obj: unknown): obj is NotFoundError => {
   )
 }
 
+export type ErrorResponseJson = {
+  status?: number
+  description?: string
+  message?: string
+  [key: string]: unknown
+}
+
 /**
  * Check if an object is an error response.
  */
 export const isResponseError = (
   obj: unknown,
-): obj is Error & { status: number } => {
+): obj is Error & { status: number; json?: ErrorResponseJson } => {
   return (
     typeof obj == "object" &&
     obj != null &&

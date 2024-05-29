@@ -145,7 +145,11 @@ export const usePayment = <S extends string = string>({
         } catch (e) {
           setSubmittingCb(false)
           if (isResponseError(e)) {
-            setError(JSON.parse(e.message).message)
+            if (e.json?.message) {
+              setError(e.json.message)
+            } else {
+              setError(e.name)
+            }
           } else {
             setError(String(e))
           }
