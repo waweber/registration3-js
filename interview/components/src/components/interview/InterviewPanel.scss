@@ -1,37 +1,51 @@
 .InterviewPanel-root {
-  flex: 1 1 auto;
+  flex: auto;
   display: flex;
-}
+  align-items: stretch;
 
-.InterviewPanel-inner {
-  flex: 1 1 auto;
-  align-content: flex-start;
+  @media (max-width: 48em) {
+    & {
+      flex-direction: column;
+    }
+  }
 }
 
 .InterviewPanel-historyCol {
-  flex: 1 1 auto;
+  flex: initial;
   display: flex;
+
+  @media (max-width: 48em) {
+    & {
+      margin-bottom: var(--mantine-spacing-xs);
+    }
+  }
+
+  @media (min-width: 48em) {
+    & {
+      margin-right: var(--mantine-spacing-xs);
+      width: 250px;
+    }
+  }
 }
 
 .InterviewPanel-history {
-  flex: 1 1 auto;
+  flex: auto;
   align-self: flex-start;
 }
 
 .InterviewPanel-divider {
-  flex: 0 0 auto;
   align-self: stretch;
 }
 
 .InterviewPanel-contentCol {
-  flex: 1 1 auto;
+  flex: auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
 .InterviewPanel-content {
-  flex: 1 0 auto;
+  flex: auto;
 }
 
 .InterviewPanel-historySelector {

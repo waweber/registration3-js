@@ -12,7 +12,7 @@ import { useState } from "react"
 const meta: Meta<typeof InterviewPanel> = {
   component: InterviewPanel,
   parameters: {
-    layout: "padded",
+    layout: "fullscreen",
   },
 }
 
@@ -121,14 +121,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       onNavigate={navigate}
     >
       {(renderProps) => (
-        <InterviewPanel
-          {...renderProps}
-          style={{
-            maxWidth: 600,
-            height: 300,
-            margin: "auto",
-          }}
-        />
+        <InterviewPanel {...renderProps} p="xs" w="100vw" h="100vh" />
       )}
     </Interview>
   )

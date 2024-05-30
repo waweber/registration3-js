@@ -1,10 +1,4 @@
-import {
-  Divider,
-  Grid,
-  GridProps,
-  LoadingOverlay,
-  useProps,
-} from "@mantine/core"
+import { Box, BoxProps, Divider, LoadingOverlay, useProps } from "@mantine/core"
 import { InterviewRenderProps } from "../types.js"
 import clsx from "clsx"
 import { HistoryPanel } from "../history/HistoryPanel.js"
@@ -18,7 +12,7 @@ import { InterviewContext } from "./Context.js"
 import { useMediaQuery } from "@mantine/hooks"
 import { HistorySelector } from "../history/HistorySelector.js"
 
-export type InterviewPanelProps = Omit<GridProps, "onSubmit" | "children"> &
+export type InterviewPanelProps = Omit<BoxProps, "onSubmit" | "children"> &
   InterviewRenderProps & {
     getHistoryLink?: (state: string) => string
   }
@@ -66,18 +60,8 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
   )
 
   return (
-    <Grid
-      className={clsx("InterviewPanel-root", className)}
-      classNames={{
-        inner: "InterviewPanel-inner",
-      }}
-      align="stretch"
-      {...other}
-    >
-      <Grid.Col
-        span={{ base: 12, xs: 12, sm: 4 }}
-        classNames={{ col: "InterviewPanel-historyCol" }}
-      >
+    <Box className={clsx("InterviewPanel-root", className)} {...other}>
+      <Box className="InterviewPanel-historyCol">
         {isSmall ? (
           <HistorySelector
             className="InterviewPanel-historySelector"
@@ -98,11 +82,8 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
             />
           </>
         )}
-      </Grid.Col>
-      <Grid.Col
-        span={{ base: 12, xs: 12, sm: 8 }}
-        classNames={{ col: "InterviewPanel-contentCol" }}
-      >
+      </Box>
+      <Box className="InterviewPanel-contentCol">
         <ContentComponent
           className="InterviewPanel-content"
           title={<Title />}
@@ -114,9 +95,9 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
         >
           <Content />
         </ContentComponent>
-      </Grid.Col>
+      </Box>
       <LoadingOverlay visible={context.submitting} />
-    </Grid>
+    </Box>
   )
 }
 
