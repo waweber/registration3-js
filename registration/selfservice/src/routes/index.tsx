@@ -2,6 +2,7 @@ import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router"
 
 import logoSrc from "@open-event-systems/registration-common/example-logo.svg"
 import {
+  AlertProvider,
   SimpleLayout,
   Title,
 } from "@open-event-systems/registration-common/components"
@@ -22,7 +23,9 @@ export const rootRoute = createRootRoute({
         }}
       >
         <Title title="Registration">
-          <Outlet />
+          <AlertProvider>
+            <Outlet />
+          </AlertProvider>
         </Title>
       </SimpleLayout>
     )

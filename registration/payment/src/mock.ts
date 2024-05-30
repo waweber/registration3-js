@@ -8,11 +8,11 @@ export const makeMockPaymentAPI = (cartAPI: CartAPI): PaymentAPI => {
   let id = 1
   const payments = new Map<string, PaymentResult<"mock">>()
   return {
-    async getPaymentMethods(cartId) {
+    async getPaymentMethods() {
       await delay(200)
       return [{ id: "mock", name: "Mock" }]
     },
-    async createPayment(cartId, method): Promise<PaymentResult<"mock">> {
+    async createPayment(cartId): Promise<PaymentResult<"mock">> {
       const pricingResult = await cartAPI.readCartPricingResult(cartId)
       const total = (pricingResult.total_price / 100).toFixed(2)
       await delay(300)

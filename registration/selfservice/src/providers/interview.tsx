@@ -22,7 +22,7 @@ const mockStates: Record<
     userResp?: UserResponse,
   ) => InterviewResponse
 > = {
-  "add-0": (curResp, userResp) => ({
+  "add-0": (curResp) => ({
     state: "add-1",
     completed: false,
     update_url: curResp.update_url,
@@ -44,7 +44,7 @@ const mockStates: Record<
       },
     },
   }),
-  "add-1": (curResp, userResp) => ({
+  "add-1": (curResp) => ({
     state: "add-2",
     completed: false,
     update_url: curResp.update_url,

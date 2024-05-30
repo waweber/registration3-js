@@ -24,7 +24,7 @@ export const makeAuthMiddleware = (
       url: string,
       options: RequestInit,
     ): Promise<WretchResponse> => {
-      let fullOptions = options
+      const fullOptions = options
       const urlObj = new URL(url, window.location.href)
 
       await readyPromise
@@ -69,7 +69,7 @@ export const makeRefreshMiddleware = (
       url: string,
       options: RequestInit,
     ): Promise<WretchResponse> => {
-      while (true) {
+      for (;;) {
         const usedAccessToken = getAccessToken()
         const resp = await next(url, options)
         if (resp.status == 401) {

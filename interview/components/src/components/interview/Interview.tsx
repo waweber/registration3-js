@@ -1,4 +1,5 @@
 import {
+  IncompleteInterviewResponse,
   InterviewAPI,
   InterviewResponseRecord,
   InterviewResponseStore,
@@ -59,8 +60,22 @@ export const Interview = (props: InterviewProps) => {
           .then(() => {
             setSubmitting(false)
           })
-          .catch(() => {
+          .catch((e) => {
             setSubmitting(false)
+            if (typeof e == "object" && e) {
+              const errResp: IncompleteInterviewResponse = {
+                completed: false,
+                state: `${response.state}-error`,
+                update_url: "",
+                content: {
+                  type: "error",
+                  title: "Error",
+                  description: formatError(e.message),
+                },
+              }
+              const record = store.add(errResp, response.state)
+              return onUpdate && onUpdate(record)
+            }
           })
       } catch (_) {
         setSubmitting(false)
@@ -118,4 +133,13 @@ export const Interview = (props: InterviewProps) => {
       {child}
     </InterviewContext.Provider>
   )
+}
+
+const formatError = (e: string) => {
+  try {
+    const obj = JSON.parse(e)
+    return obj.message
+  } catch (_) {
+    return e
+  }
 }

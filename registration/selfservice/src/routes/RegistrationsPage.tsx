@@ -1,4 +1,7 @@
-import { Title } from "@open-event-systems/registration-common/components"
+import {
+  OptionsDialog,
+  Title,
+} from "@open-event-systems/registration-common/components"
 import { cartRoute, changeRegistrationRoute, eventRoute } from "./index.js"
 import { useEvent, useRegistrations } from "../hooks/api.js"
 import { Event } from "../api/types.js"
@@ -6,7 +9,6 @@ import { RegistrationList } from "../components/registration/RegistrationList.js
 import { Suspense } from "react"
 import { Box, Button, Grid } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
-import { InterviewOptionsDialog } from "../components/options/InterviewOptionsDialog.js"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useCartPricingResult, useCurrentCart } from "../hooks/cart.js"
@@ -30,7 +32,7 @@ const Registrations = ({ event }: { event: Event }) => {
   const [currentCart] = useCurrentCart(event.id)
   const currentPricingResult = useCartPricingResult(currentCart.id)
 
-  const interviewOptions = useInterviewOptionsDialog()
+  const interviewOptions = useInterviewOptionsDialog(event.id, currentCart.id)
 
   return (
     <>
@@ -84,7 +86,13 @@ const Registrations = ({ event }: { event: Event }) => {
           )}
         </Grid>
       )}
-      <InterviewOptionsDialog />
+      <OptionsDialog
+        title="Add Registration"
+        opened={interviewOptions.opened}
+        options={interviewOptions.options}
+        onClose={() => interviewOptions.close()}
+        onSelect={(id) => interviewOptions.select(id)}
+      />
     </>
   )
 }

@@ -3,6 +3,7 @@ import {
   BoxProps,
   Divider,
   DividerProps,
+  Group,
   Skeleton,
   Text,
   useProps,
@@ -10,6 +11,7 @@ import {
 import clsx from "clsx"
 import { ReactNode } from "react"
 import { Currency } from "../currency/Currency.js"
+import { IconAlertCircle } from "@tabler/icons-react"
 
 export type CartProps = {
   children?: ReactNode
@@ -60,12 +62,12 @@ const CartPlaceholder = (props: CartPlaceholderProps) => {
   const skCls = "CartPlaceholder-skeleton"
 
   return (
-    <Box className={clsx("CartPlaceholder-root", className)} {...other}>
-      <Skeleton className={skCls} height={24} />
+    <Box className={clsx("CartPlaceholder-root", className)} p="xs" {...other}>
+      <Skeleton className={skCls} h={36} w={36} />
       <Skeleton
         className={skCls}
-        height={24}
-        width={250}
+        height={36}
+        width={230}
         style={{ justifySelf: "start" }}
       />
 
@@ -95,11 +97,45 @@ const CartPlaceholder = (props: CartPlaceholderProps) => {
 
       <Cart.Divider />
 
-      <Skeleton className={skCls} height={24} />
+      <Skeleton className={skCls} h={36} w={36} />
       <Skeleton
         className={skCls}
-        height={24}
-        width={250}
+        height={36}
+        width={230}
+        style={{ justifySelf: "start" }}
+      />
+
+      <Skeleton
+        className={skCls}
+        height={16}
+        width={150}
+        style={{ gridColumn: "-3 / -2" }}
+      />
+      <Skeleton
+        className={skCls}
+        height={16}
+        style={{ gridColumn: "-2 / -1" }}
+      />
+
+      <Skeleton
+        className={skCls}
+        height={16}
+        width={150}
+        style={{ gridColumn: "-3 / -2" }}
+      />
+      <Skeleton
+        className={skCls}
+        height={16}
+        style={{ gridColumn: "-2 / -1" }}
+      />
+
+      <Cart.Divider />
+
+      <Skeleton className={skCls} h={36} w={36} />
+      <Skeleton
+        className={skCls}
+        height={36}
+        width={230}
         style={{ justifySelf: "start" }}
       />
 
@@ -131,3 +167,14 @@ const CartPlaceholder = (props: CartPlaceholderProps) => {
 }
 
 Cart.Placeholder = CartPlaceholder
+
+export type CartEmptyProps = BoxProps
+
+const CartEmpty = (props: CartEmptyProps) => (
+  <Group align="center" m="xl" c="dimmed">
+    <IconAlertCircle />
+    <Text span>Your cart is empty.</Text>
+  </Group>
+)
+
+Cart.Empty = CartEmpty

@@ -1,9 +1,12 @@
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback } from "react"
-import { addRegistrationRoute, eventRoute } from "../routes/index.js"
+import { addRegistrationRoute } from "../routes/index.js"
 import { useRegistrations } from "./api.js"
-import { InterviewOption } from "../api/types.js"
-import { useCurrentCart } from "./cart.js"
+import {
+  UseOptionsDialogHook,
+  UseOptionsDialogOptions,
+  useOptionsDialog,
+} from "@open-event-systems/registration-common"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -11,51 +14,60 @@ declare module "@tanstack/react-router" {
   }
 }
 
-export type InterviewOptionsDialogHook = Readonly<{
-  options: InterviewOption[]
+export type InterviewOptionsDialogHook = {
+  options: UseOptionsDialogHook["options"]
   opened: boolean
-  show: () => void
-  close: () => void
-}>
+} & UseOptionsDialogHook
 
-export const useInterviewOptionsDialog = (): InterviewOptionsDialogHook => {
-  const { eventId } = eventRoute.useParams()
+export const useInterviewOptionsDialog = (
+  eventId: string,
+  cartId: string,
+  opts?: Pick<UseOptionsDialogOptions, "disableAutoselect">,
+): InterviewOptionsDialogHook => {
   const loc = useLocation()
   const navigate = useNavigate()
   const router = useRouter()
   const registrations = useRegistrations(eventId)
-  const [cart] = useCurrentCart(eventId)
   const options = registrations.add_options ?? []
 
-  return {
-    options,
-    opened: !!loc.state.showInterviewStateDialog,
-    show: useCallback(() => {
-      if (loc.state.showInterviewStateDialog || options.length == 0) {
-        return
-      }
+  const opened = loc.state.showInterviewStateDialog
 
-      if (options.length == 1) {
-        navigate({
-          to: addRegistrationRoute.to,
-          params: {
-            eventId: eventId,
-            interviewId: options[0].id,
-          },
-        })
-      } else {
-        navigate({
-          state: {
-            ...loc.state,
-            showInterviewStateDialog: true,
-          },
-        })
-      }
-    }, [loc, registrations]),
-    close: useCallback(() => {
-      if (loc.state.showInterviewStateDialog) {
-        router.history.go(-1)
-      }
-    }, [loc]),
+  const onShow = useCallback(() => {
+    navigate({
+      state: {
+        ...router.history.location.state,
+        showInterviewStateDialog: true,
+      },
+    })
+  }, [])
+
+  const onClose = useCallback(() => {
+    router.history.go(-1)
+  }, [])
+
+  const onSelect = useCallback(
+    (id: string) => {
+      navigate({
+        to: addRegistrationRoute.to,
+        params: {
+          eventId: eventId,
+          interviewId: id,
+        },
+      })
+    },
+    [eventId],
+  )
+
+  const hook = useOptionsDialog({
+    options: options.map((o) => ({ id: o.id, label: o.title, button: true })),
+    ...opts,
+    onShow,
+    onClose,
+    onSelect,
+  })
+
+  return {
+    ...hook,
+    opened: !!opened,
   }
 }

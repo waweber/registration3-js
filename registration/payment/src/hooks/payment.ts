@@ -21,6 +21,7 @@ export type PaymentHookOptions<S extends string = string> = {
   paymentId?: string | null
   result?: PaymentResult<S> | null
   onClose?: () => void
+  onError?: (error: unknown) => void
 }
 
 export type PaymentHook<S extends string = string> = (
@@ -45,6 +46,7 @@ export const usePayment = <S extends string = string>({
   paymentId,
   result,
   onClose,
+  onError,
 }: PaymentHookOptions<S>): PaymentHook<S> => {
   const paymentAPI = usePaymentAPI()
   const queryClient = useQueryClient()
@@ -114,7 +116,7 @@ export const usePayment = <S extends string = string>({
     }
 
     return res
-  }, [paymentId, cancel])
+  }, [paymentId, cancel.mutateAsync])
 
   useLayoutEffect(() => {
     if (result?.service && result.service != componentContainer.service) {
@@ -153,10 +155,11 @@ export const usePayment = <S extends string = string>({
           } else {
             setError(String(e))
           }
+          onError && onError(e)
           throw e
         }
       },
-      [paymentId, update],
+      [paymentId, update.mutateAsync],
     ),
     cancel: cancelFunc,
     close: useCallback(() => {

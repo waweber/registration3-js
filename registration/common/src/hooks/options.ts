@@ -10,6 +10,7 @@ export type UseOptionsDialogOptions = {
 }
 
 export type UseOptionsDialogHook = {
+  options: Exclude<OptionsProps["options"], undefined | null>
   show: () => void
   select: (optionId: string) => void
   close: () => void
@@ -23,6 +24,7 @@ export const useOptionsDialog = ({
   disableAutoselect,
 }: UseOptionsDialogOptions): UseOptionsDialogHook => {
   return {
+    options: options ?? [],
     show: useCallback(() => {
       if (options?.length == 1 && !disableAutoselect) {
         onSelect && onSelect(options[0].id)

@@ -9,6 +9,7 @@
 }
 
 .InterviewPanel-historyCol {
+  flex: 1 1 auto;
   display: flex;
 }
 
@@ -23,6 +24,7 @@
 }
 
 .InterviewPanel-contentCol {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;

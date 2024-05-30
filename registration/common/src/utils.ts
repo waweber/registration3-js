@@ -45,6 +45,26 @@ export const isResponseError = (
 }
 
 /**
+ * Get an error message from an error.
+ */
+export const getErrorMessage = (e: unknown): string => {
+  let message
+  if (isResponseError(e)) {
+    if (e.json && "message" in e.json) {
+      message = e.json.message
+    } else if (e.name) {
+      message = e.name
+    }
+  }
+
+  if (!message && typeof e == "object" && e && "message" in e) {
+    message = e.message as string
+  }
+
+  return message || String(e)
+}
+
+/**
  * Wrap a promise to return null if it throws a not found error.
  */
 export const catchNotFound = async <T>(

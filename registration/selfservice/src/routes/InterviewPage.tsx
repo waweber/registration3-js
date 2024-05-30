@@ -16,14 +16,22 @@ import {
   useInterviewAPI,
 } from "@open-event-systems/interview-components"
 import { Skeleton } from "@mantine/core"
+import { useQueryClient } from "@tanstack/react-query"
+import { isResponseError } from "@open-event-systems/registration-common"
 
 export const AddRegistrationPage = () => {
   const { eventId, interviewId } = addRegistrationRoute.useParams()
 
   return (
-    <Suspense fallback={<Skeleton h={300} />}>
-      <InterviewPage eventId={eventId} interviewId={interviewId} />
-    </Suspense>
+    <Title title="New Registration" subtitle="Add a new registration">
+      <Suspense fallback={<Skeleton h={300} />}>
+        <InterviewPage
+          key={`${eventId}-${interviewId}`}
+          eventId={eventId}
+          interviewId={interviewId}
+        />
+      </Suspense>
+    </Title>
   )
 }
 
@@ -33,13 +41,16 @@ export const ChangeRegistrationPage = () => {
   useEvent(eventId)
 
   return (
-    <Suspense fallback={<Skeleton h={300} />}>
-      <InterviewPage
-        eventId={eventId}
-        interviewId={interviewId}
-        registrationId={registrationId}
-      />
-    </Suspense>
+    <Title title="Change Registration" subtitle="Change a registration">
+      <Suspense fallback={<Skeleton h={300} />}>
+        <InterviewPage
+          key={`${eventId}-${interviewId}`}
+          eventId={eventId}
+          interviewId={interviewId}
+          registrationId={registrationId}
+        />
+      </Suspense>
+    </Title>
   )
 }
 
@@ -66,6 +77,7 @@ const InterviewPage = ({
   const navigate = useNavigate()
   const router = useRouter()
   const selfService = useSelfServiceAPI()
+  const queryClient = useQueryClient()
 
   const locStateId = getStateId(loc.hash)
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
@@ -78,7 +90,7 @@ const InterviewPage = ({
     interviewId,
     "http://localhost:8000/update-interview", // TODO
     registrationId,
-    curStateRef.current ?? locStateId,
+    curStateRef.current || locStateId,
   )
 
   useLayoutEffect(() => {
@@ -114,23 +126,51 @@ const InterviewPage = ({
   const onUpdate = useCallback(
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
-        const res = await selfService.completeInterview(record.response.state)
-        curStateRef.current = record.response.state
-        navigate({
-          to: cartRoute.to,
-          params: {
-            eventId: eventId,
-          },
-        })
-        setCurrentCart(res.id)
+        try {
+          const res = await selfService.completeInterview(record.response.state)
+          curStateRef.current = record.response.state
+          navigate({
+            to: cartRoute.to,
+            params: {
+              eventId: eventId,
+            },
+          })
+          setCurrentCart(res)
+        } catch (e) {
+          if (isResponseError(e)) {
+            if (e.status == 409) {
+              throw new Error(
+                "This registration has been changed and is out of date. " +
+                  "Please start over to work with the latest version.",
+              )
+            } else if (e.status == 404) {
+              throw new Error(
+                "This form has expired or is no longer available.",
+              )
+            }
+          }
+          throw e
+        }
       } else {
         setLatestRecordId(record.response.state)
+        queryClient.setQueryData(
+          [
+            "self-service",
+            "events",
+            eventId,
+            "carts",
+            cartId,
+            "interview",
+            { interviewId, registrationId, stateId: record.response.state },
+          ],
+          record,
+        )
         navigate({
           hash: `s=${record.response.state}`,
         })
       }
     },
-    [navigate, eventId],
+    [navigate, interviewId, registrationId, cartId, eventId],
   )
 
   const getHistoryLink = useCallback(
@@ -146,21 +186,19 @@ const InterviewPage = ({
   )
 
   return (
-    <Title title="Add registration">
-      <Interview
-        api={interviewAPI}
-        store={interviewStore}
-        latestRecordId={latestRecordId ?? undefined}
-        recordId={interviewRecord.response.state}
-        onNavigate={onNavigate}
-        onUpdate={onUpdate}
-        onClose={onClose}
-      >
-        {(renderProps) => (
-          <InterviewPanel getHistoryLink={getHistoryLink} {...renderProps} />
-        )}
-      </Interview>
-    </Title>
+    <Interview
+      api={interviewAPI}
+      store={interviewStore}
+      latestRecordId={latestRecordId ?? undefined}
+      recordId={interviewRecord.response.state}
+      onNavigate={onNavigate}
+      onUpdate={onUpdate}
+      onClose={onClose}
+    >
+      {(renderProps) => (
+        <InterviewPanel getHistoryLink={getHistoryLink} {...renderProps} />
+      )}
+    </Interview>
   )
 }
 

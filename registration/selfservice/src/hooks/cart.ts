@@ -32,14 +32,14 @@ export const useCartAPI = (): CartAPI => {
 
 export const useCurrentCart = (
   eventId: string,
-): [Cart, (cartId: string | null) => void] => {
+): [Cart, (cart: Cart | null) => void] => {
   const api = useCartAPI()
   const queryClient = useQueryClient()
 
   const query = useSuspenseQuery({
     queryKey: ["self-service", "carts", "current", { eventId: eventId }],
     async queryFn() {
-      let curId = getCurrentCartIdFromCookie(eventId)
+      const curId = getCurrentCartIdFromCookie(eventId)
       if (curId) {
         const cur = await catchNotFound(api.readCartPricingResult(curId))
         if (cur) {
@@ -57,10 +57,10 @@ export const useCurrentCart = (
 
   const setCart = useMutation({
     mutationKey: ["self-service", "carts", "current", { eventId: eventId }],
-    async mutationFn({ cartId }: { cartId: string | null }) {
-      if (cartId) {
-        setCurrentCartCookie(eventId, cartId)
-        return { id: cartId }
+    async mutationFn({ cart }: { cart: Cart | null }) {
+      if (cart) {
+        setCurrentCartCookie(eventId, cart.id)
+        return cart
       } else {
         const empty = await queryClient.ensureQueryData({
           queryKey: ["carts", "empty", { eventId: eventId }],
@@ -69,7 +69,7 @@ export const useCurrentCart = (
           },
           staleTime: Infinity,
         })
-        setCurrentCartCookie(eventId, cartId)
+        setCurrentCartCookie(eventId, empty.id)
         return empty
       }
     },
@@ -81,14 +81,14 @@ export const useCurrentCart = (
     },
   })
 
-  const setCartId = useCallback(
-    (cartId: string | null) => {
-      setCart.mutate({ cartId })
+  const setCartFn = useCallback(
+    (cart: Cart | null) => {
+      setCart.mutate({ cart: cart })
     },
-    [eventId],
+    [setCart.mutate],
   )
 
-  return [query.data, setCartId]
+  return [query.data, setCartFn]
 }
 
 export const useCartPricingResult = (cartId: string): CartPricingResult => {
@@ -126,7 +126,7 @@ export const useCartInterviewRecord = (
     ],
     queryFn() {
       if (stateId) {
-        let record = interviewStore.get(stateId)
+        const record = interviewStore.get(stateId)
         if (record) {
           return record
         }

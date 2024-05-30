@@ -87,5 +87,7 @@ const getTitle = (response: InterviewResponse) => {
     return response.content.schema.title
   } else if (response.content?.type == "exit") {
     return response.content.title
+  } else if (response.content?.type == "error") {
+    return response.content.title
   }
 }

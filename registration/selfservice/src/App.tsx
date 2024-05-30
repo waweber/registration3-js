@@ -13,13 +13,10 @@ import {
   InterviewRecordLocalStorage,
   createAuth,
   isNotFound,
-  isNotFoundError,
   isResponseError,
   makeCartAPI,
-  makeMockCartAPI,
 } from "@open-event-systems/registration-common"
 import { CartAPIProvider } from "./providers/cart.js"
-import { mockAPI } from "./providers/interview.js"
 import { InterviewAPIProvider } from "@open-event-systems/interview-components"
 import wretch from "wretch"
 import { makeSelfServiceAPI } from "./api/api.js"

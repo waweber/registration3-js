@@ -28,3 +28,20 @@ export type Modifier = Readonly<{
   amount: number
   name?: string
 }>
+
+export const cartConflictErrorCode = {
+  version: "version",
+  status: "status",
+  event: "event",
+}
+
+export type CartConflictErrorCode = keyof typeof cartConflictErrorCode
+
+export type CartConflictResult = Readonly<{
+  change: { readonly id: string }
+  errors: readonly CartConflictErrorCode[]
+}>
+
+export type CartConflictError = Readonly<{
+  results: readonly CartConflictResult[]
+}>
