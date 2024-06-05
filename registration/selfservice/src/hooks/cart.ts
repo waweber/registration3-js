@@ -109,6 +109,7 @@ export const useCartInterviewRecord = (
   interviewId: string,
   updateUrl: string,
   registrationId?: string | null,
+  accessCode?: string | null,
   stateId?: string | null,
 ): InterviewResponseRecord => {
   const api = useSelfServiceAPI()
@@ -147,6 +148,7 @@ export const useCartInterviewRecord = (
         cartId,
         interviewId,
         registrationId,
+        accessCode,
       )
     },
   })
@@ -162,12 +164,14 @@ const startInterview = async (
   cartId: string,
   interviewId: string,
   registrationId?: string | null,
+  accessCode?: string | null,
 ) => {
   const initial = await selfServiceAPI.startInterview(
     eventId,
     cartId,
     interviewId,
     registrationId,
+    accessCode,
   )
   const initialResp = await interviewAPI.update(initial)
   return store.add(initialResp)

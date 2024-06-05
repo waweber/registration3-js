@@ -22,12 +22,13 @@ export type InterviewOptionsDialogHook = {
 export const useInterviewOptionsDialog = (
   eventId: string,
   cartId: string,
+  accessCode?: string | null,
   opts?: Pick<UseOptionsDialogOptions, "disableAutoselect">,
 ): InterviewOptionsDialogHook => {
   const loc = useLocation()
   const navigate = useNavigate()
   const router = useRouter()
-  const registrations = useRegistrations(eventId)
+  const registrations = useRegistrations(eventId, accessCode)
   const options = registrations.add_options ?? []
 
   const opened = loc.state.showInterviewStateDialog
@@ -49,6 +50,7 @@ export const useInterviewOptionsDialog = (
     (id: string) => {
       navigate({
         to: addRegistrationRoute.to,
+        hash: accessCode ? `a=${accessCode}` : undefined,
         params: {
           eventId: eventId,
           interviewId: id,

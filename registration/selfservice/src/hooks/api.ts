@@ -36,13 +36,36 @@ export const useEvent = (eventId: string): Event => {
   return event
 }
 
-export const useRegistrations = (eventId: string): RegistrationListResponse => {
+export const useRegistrations = (
+  eventId: string,
+  accessCode?: string | null,
+): RegistrationListResponse => {
   const api = useSelfServiceAPI()
   const query = useSuspenseQuery({
-    queryKey: ["self-service", "events", eventId, "registrations"],
+    queryKey: [
+      "self-service",
+      "events",
+      eventId,
+      "registrations",
+      { accessCode },
+    ],
     async queryFn() {
-      const regs = await api.listRegistrations(eventId)
+      const regs = await api.listRegistrations(eventId, accessCode)
       return regs
+    },
+  })
+  return query.data
+}
+
+export const useAccessCodeCheck = (
+  eventId: string,
+  accessCode: string,
+): boolean => {
+  const api = useSelfServiceAPI()
+  const query = useSuspenseQuery({
+    queryKey: ["events", eventId, "access-codes", accessCode, "check"],
+    async queryFn() {
+      return await api.checkAccessCode(eventId, accessCode)
     },
   })
   return query.data

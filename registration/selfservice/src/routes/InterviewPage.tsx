@@ -80,6 +80,7 @@ const InterviewPage = ({
   const queryClient = useQueryClient()
 
   const locStateId = getStateId(loc.hash)
+  const accessCode = getAccessCode(loc.hash)
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
 
   const [interviewAPI, interviewStore] = useInterviewAPI()
@@ -90,6 +91,7 @@ const InterviewPage = ({
     interviewId,
     "http://localhost:8000/update-interview", // TODO
     registrationId,
+    accessCode,
     curStateRef.current || locStateId,
   )
 
@@ -208,4 +210,12 @@ const getStateId = (hash: string) => {
   }
   const params = new URLSearchParams(hash)
   return params.get("s")
+}
+
+const getAccessCode = (hash: string) => {
+  if (!hash) {
+    return null
+  }
+  const params = new URLSearchParams(hash)
+  return params.get("a")
 }

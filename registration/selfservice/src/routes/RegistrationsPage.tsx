@@ -2,13 +2,18 @@ import {
   OptionsDialog,
   Title,
 } from "@open-event-systems/registration-common/components"
-import { cartRoute, changeRegistrationRoute, eventRoute } from "./index.js"
-import { useEvent, useRegistrations } from "../hooks/api.js"
+import {
+  accessCodeRoute,
+  cartRoute,
+  changeRegistrationRoute,
+  eventRoute,
+} from "./index.js"
+import { useAccessCodeCheck, useEvent, useRegistrations } from "../hooks/api.js"
 import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
-import { Box, Button, Grid } from "@mantine/core"
-import { IconPlus } from "@tabler/icons-react"
+import { Alert, Box, Button, Grid, Text } from "@mantine/core"
+import { IconPlus, IconSparkles } from "@tabler/icons-react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useCartPricingResult, useCurrentCart } from "../hooks/cart.js"
@@ -26,13 +31,52 @@ export const RegistrationsPage = () => {
   )
 }
 
-const Registrations = ({ event }: { event: Event }) => {
-  const registrations = useRegistrations(event.id)
+export const AccessCodePage = () => {
+  const { eventId, accessCode } = accessCodeRoute.useParams()
+  const event = useEvent(eventId)
+  const accessCodeResult = useAccessCodeCheck(eventId, accessCode)
+
+  if (!accessCodeResult) {
+    return (
+      <Title title="Not Found">
+        <Text component="p">
+          The access code was not found. It may have been already used or
+          expired.
+        </Text>
+      </Title>
+    )
+  }
+
+  return (
+    <Title title="Registrations" subtitle="View and manage registrations">
+      <Alert title="Access Code" icon={<IconSparkles />}>
+        You are using an access code. Add a registration or select a
+        registration to change.
+      </Alert>
+      <Suspense fallback={<RegistrationList.Placeholder />}>
+        <Registrations event={event} accessCode={accessCode} />
+      </Suspense>
+    </Title>
+  )
+}
+
+const Registrations = ({
+  event,
+  accessCode,
+}: {
+  event: Event
+  accessCode?: string | null
+}) => {
+  const registrations = useRegistrations(event.id, accessCode)
   const navigate = useNavigate()
   const [currentCart] = useCurrentCart(event.id)
   const currentPricingResult = useCartPricingResult(currentCart.id)
 
-  const interviewOptions = useInterviewOptionsDialog(event.id, currentCart.id)
+  const interviewOptions = useInterviewOptionsDialog(
+    event.id,
+    currentCart.id,
+    accessCode,
+  )
 
   return (
     <>
@@ -47,6 +91,7 @@ const Registrations = ({ event }: { event: Event }) => {
             onClick: () => {
               navigate({
                 to: changeRegistrationRoute.to,
+                hash: accessCode ? `a=${accessCode}` : undefined,
                 params: {
                   eventId: event.id,
                   registrationId: r.id,

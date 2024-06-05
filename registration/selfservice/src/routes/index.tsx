@@ -6,7 +6,7 @@ import {
   SimpleLayout,
   Title,
 } from "@open-event-systems/registration-common/components"
-import { RegistrationsPage } from "./RegistrationsPage.js"
+import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
 import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
 import { CartPage } from "./CartPage.js"
 
@@ -49,6 +49,12 @@ export const registrationsRoute = createRoute({
   component: RegistrationsPage,
 })
 
+export const accessCodeRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "access-code/$accessCode",
+  component: AccessCodePage,
+})
+
 export const addRegistrationRoute = createRoute({
   getParentRoute: () => eventRoute,
   path: "cart/add/$interviewId",
@@ -72,6 +78,7 @@ export const routeTree = rootRoute.addChildren([
     registrationsRoute,
     addRegistrationRoute,
     changeRegistrationRoute,
+    accessCodeRoute,
     cartRoute,
   ]),
 ])

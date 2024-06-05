@@ -28,12 +28,17 @@ export type RegistrationListResponse = Readonly<{
 
 export type SelfServiceAPI = {
   listEvents(): Promise<Event[]>
-  listRegistrations(eventId: string): Promise<RegistrationListResponse>
+  listRegistrations(
+    eventId: string,
+    accessCode?: string | null,
+  ): Promise<RegistrationListResponse>
   startInterview(
     eventId: string,
     cartId: string,
     interviewId: string,
     registrationId?: string | null,
+    accessCode?: string | null,
   ): Promise<InterviewResponse>
   completeInterview(state: string): Promise<Cart>
+  checkAccessCode(eventId: string, accessCode: string): Promise<boolean>
 }
