@@ -1,0 +1,73 @@
+.AppShellLayout-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: var(--mantine-primary-color-filled);
+  color: var(--mantine-primary-color-contrast);
+}
+
+.AppShellLayout-topbar {
+  height: 48px;
+  border-bottom: var(--mantine-color-gray-3) solid 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: var(--mantine-spacing-sm);
+  padding-right: var(--mantine-spacing-sm);
+}
+
+.AppShellLayout-headerContent {
+  flex: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-xl);
+}
+
+.AppShellLayout-main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.AppShellLayout-mainHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+
+  padding: var(--mantine-spacing-lg);
+  background-color: var(--mantine-primary-color-filled);
+  color: var(--mantine-primary-color-contrast);
+}
+
+.AppShellLayout-titleArea {
+  flex: auto;
+
+  @media (max-width: 48em) {
+    flex: 1 0 100%;
+    order: 2;
+  }
+}
+
+.AppShellLayout-title {
+  font-size: 1.25rem;
+  line-height: 2rem;
+  min-height: 2rem;
+}
+
+.AppShellLayout-subtitle {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  min-height: 1.5rem;
+}
+
+.AppShellLayout-logo {
+  flex: 0 0 0;
+  object-fit: contain;
+  object-position: left center;
+  @media (max-width: 48em) {
+    order: 1;
+  }
+}

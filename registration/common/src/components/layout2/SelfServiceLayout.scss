@@ -1,0 +1,76 @@
+.SelfServiceLayout-header {
+  display: flex;
+  padding: 0 var(--mantine-spacing-md);
+  justify-content: space-between;
+  align-items: center;
+
+  color: var(--mantine-primary-color-contrast);
+  background-color: var(--mantine-primary-color-filled);
+  --mantine-color-anchor: var(--mantine-primary-color-contrast);
+}
+
+.SelfServiceLayout-main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.SelfServiceLayout-mainHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  color: var(--mantine-primary-color-contrast);
+  background-color: var(--mantine-primary-color-filled);
+  padding-right: var(--mantine-spacing-md);
+  padding-top: var(--mantine-spacing-md);
+}
+
+.SelfServiceLayout-titleArea {
+  flex: auto;
+  margin-left: var(--mantine-spacing-md);
+  margin-bottom: var(--mantine-spacing-md);
+  order: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.SelfServiceLayout-title {
+  flex: auto;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: normal;
+  text-align: center;
+}
+
+.SelfServiceLayout-subtitle {
+  flex: auto;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  order: 2;
+  font-weight: normal;
+  text-align: center;
+}
+
+.SelfServiceLayout-logo {
+  flex: none;
+  object-fit: contain;
+  object-position: center center;
+  order: 1;
+
+  margin-left: var(--mantine-spacing-md);
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.SelfServiceLayout-mainContent {
+  flex: auto;
+  align-self: center;
+  width: 100%;
+  max-width: 62em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--mantine-spacing-xs);
+}
