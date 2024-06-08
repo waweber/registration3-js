@@ -15,15 +15,25 @@ import {
 import { IconChevronRight, IconHome } from "@tabler/icons-react"
 import { ReactNode } from "react"
 
-export type SelfServiceLayoutProps = AppShellProps & {
+export type SelfServiceLayoutProps = Omit<AppShellProps, "title"> & {
+  title?: ReactNode
+  subtitle?: ReactNode
   logoSrc?: string
   homeHref?: string
   userMenu?: ReactNode
 }
 
 export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
-  const { className, logoSrc, homeHref, userMenu, children, ...other } =
-    useProps("SelfServiceLayout", {}, props)
+  const {
+    className,
+    logoSrc,
+    homeHref,
+    title,
+    subtitle,
+    userMenu,
+    children,
+    ...other
+  } = useProps("SelfServiceLayout", {}, props)
 
   return (
     <AppShell
@@ -38,7 +48,7 @@ export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
       }}
       {...other}
     >
-      <AppShell.Header withBorder={false}>
+      <AppShell.Header>
         {homeHref != null && (
           <ActionIcon
             component="a"
@@ -56,11 +66,9 @@ export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
         <Box component="header" className="SelfServiceLayout-mainHeader">
           <Box className="SelfServiceLayout-titleArea">
             <Title order={1} className="SelfServiceLayout-title">
-              Registrations
+              {title}
             </Title>
-            <Text className="SelfServiceLayout-subtitle">
-              View and manage registrations
-            </Text>
+            <Text className="SelfServiceLayout-subtitle">{subtitle}</Text>
           </Box>
           <img className="SelfServiceLayout-logo" src={logoSrc} alt="" />
         </Box>

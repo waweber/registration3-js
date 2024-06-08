@@ -1,5 +1,6 @@
 import {
   OptionsDialog,
+  Spacer,
   Title,
 } from "@open-event-systems/registration-common/components"
 import {
@@ -12,7 +13,14 @@ import { useAccessCodeCheck, useEvent, useRegistrations } from "../hooks/api.js"
 import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
-import { Alert, Box, Button, Grid, Text } from "@mantine/core"
+import {
+  Alert,
+  Button,
+  Grid,
+  Text,
+  Title as MTitle,
+  Divider,
+} from "@mantine/core"
 import { IconPlus, IconSparkles } from "@tabler/icons-react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
 import { Link, useNavigate } from "@tanstack/react-router"
@@ -80,6 +88,9 @@ const Registrations = ({
 
   return (
     <>
+      <MTitle order={4}>{event.title}</MTitle>
+      <Text component="p">These are your registrations for {event.title}.</Text>
+      <Divider />
       <RegistrationList
         registrations={registrations.registrations.map((r) => ({
           key: r.id,
@@ -102,7 +113,7 @@ const Registrations = ({
           })),
         }))}
       />
-      <Box flex={{ base: "auto", xs: "auto", sm: "initial" }} />
+      <Spacer flex={{ base: "auto", xs: "auto", sm: "none" }} />
       {interviewOptions.options.length > 0 && (
         <Grid justify="space-between">
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>

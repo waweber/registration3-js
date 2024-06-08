@@ -3,7 +3,7 @@ import { InterviewResponse } from "../../../../interview/lib/src/types.js"
 
 export type Event = Readonly<{
   id: string
-  name: string
+  title: string
   open: boolean
 }>
 

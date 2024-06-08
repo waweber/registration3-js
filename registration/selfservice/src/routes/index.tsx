@@ -3,33 +3,33 @@ import { Outlet, createRootRoute, createRoute } from "@tanstack/react-router"
 import logoSrc from "@open-event-systems/registration-common/example-logo.svg"
 import {
   AlertProvider,
-  SimpleLayout,
+  SelfServiceLayout,
   Title,
+  useTitle,
 } from "@open-event-systems/registration-common/components"
 import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
 import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
 import { CartPage } from "./CartPage.js"
+import { observer } from "mobx-react-lite"
 
 export const rootRoute = createRootRoute({
-  component() {
+  component: observer(() => {
+    const [title, subtitle] = useTitle()
     return (
-      <SimpleLayout
-        AppShellLayoutProps={{
-          TitleAreaProps: {
-            LogoProps: {
-              src: logoSrc,
-            },
-          },
-        }}
+      <SelfServiceLayout
+        logoSrc={logoSrc}
+        homeHref="/"
+        title={title}
+        subtitle={subtitle}
       >
         <Title title="Registration">
           <AlertProvider>
             <Outlet />
           </AlertProvider>
         </Title>
-      </SimpleLayout>
+      </SelfServiceLayout>
     )
-  },
+  }),
   notFoundComponent() {
     return <>Not found</>
   },

@@ -6,6 +6,7 @@ import {
   Modifier,
   Title,
   Options,
+  Spacer,
 } from "@open-event-systems/registration-common/components"
 import { useEvent } from "../hooks/api.js"
 import {
@@ -19,7 +20,6 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
 import {
   Anchor,
-  Box,
   Button,
   Grid,
   Group,
@@ -27,6 +27,8 @@ import {
   Modal,
   Stack,
   Text,
+  Title as MTitle,
+  Divider,
 } from "@mantine/core"
 import { IconPlus, IconShoppingCartCheck } from "@tabler/icons-react"
 import {
@@ -64,9 +66,14 @@ export const CartPage = () => {
 
   return (
     <Title title="Cart" subtitle="Your current shopping cart">
+      <Text component="p">
+        Be sure to finish adding or changing all registrations before selecting
+        Checkout.
+      </Text>
       <Anchor component={Link} to={registrationsRoute.to}>
         &laquo; View registrations
       </Anchor>
+      <Divider />
       <Suspense fallback={<CartView.Placeholder />}>
         <CartComponent eventId={eventId} />
       </Suspense>
@@ -104,7 +111,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
       ) : (
         <CartView.Empty />
       )}
-      <Box flex={{ base: "auto", xs: "auto", sm: "initial" }} />
+      <Spacer flex={{ base: "auto", xs: "auto", sm: "initial" }} />
       <Grid justify="space-between">
         {interviewOptions.options.length > 0 && (
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
