@@ -1,20 +1,102 @@
-import { Token, TokenResponse } from "./types.js"
+import { AuthAPI, AuthInfo, TokenResponse } from "./types.js"
+
+export type Token = Readonly<{
+  accessToken: string
+  refreshToken: string | null
+  expiresAt: Date
+  accountId: string | null
+  email: string | null
+  getIsExpired(now?: Date): boolean
+}>
+
+const LOCAL_STORAGE_KEY = "oes-auth-v1"
 
 /**
- * Create a {@link Token} from a token endpoint response.
+ * Save a token to local storage.
  */
-export const makeTokenFromResponse = (response: TokenResponse): Token => {
-  let expiresAt = null
-  if (response.expires_in != null) {
-    const now = Math.floor(new Date().getTime() / 1000)
-    expiresAt = now + response.expires_in
+export const saveToken = (token: Token | null) => {
+  if (token) {
+    const jsonStr = JSON.stringify(token)
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, jsonStr)
+  } else {
+    window.localStorage.removeItem(LOCAL_STORAGE_KEY)
+  }
+}
+
+/**
+ * Listen for token updates from other tabs.
+ */
+export const listenTokenUpdate = (
+  setToken: (token: Token) => void,
+): (() => void) => {
+  const handler = (e: StorageEvent) => {
+    if (e.key == LOCAL_STORAGE_KEY && e.newValue) {
+      const obj = JSON.parse(e.newValue)
+      const token = makeTokenFromObject(obj)
+      if (token) {
+        setToken(token)
+      }
+    }
   }
 
-  return new TokenImpl(
-    response.access_token,
-    response.refresh_token ?? null,
+  window.addEventListener("storage", handler)
+
+  return () => {
+    window.removeEventListener("storage", handler)
+  }
+}
+
+/**
+ * Load a token from local storage.
+ */
+export const loadToken = (): Token | null => {
+  try {
+    const jsonStr = window.localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (!jsonStr) {
+      return null
+    }
+
+    const obj = JSON.parse(jsonStr)
+    return makeTokenFromObject(obj)
+  } catch (_) {
+    return null
+  }
+}
+
+/**
+ * Get a {@link Token} from a token response.
+ * @param api - the auth api
+ * @param tokenResponse - the token response
+ * @returns the token
+ */
+export const getTokenResponseInfo = async (
+  api: AuthAPI,
+  tokenResponse: TokenResponse,
+): Promise<Token> => {
+  const tokenInfo = await api.readInfo(tokenResponse.access_token)
+  return makeTokenFromResponse(tokenResponse, tokenInfo)
+}
+
+/**
+ * Create a {@link Token} from a token endpoint and info endpoint response.
+ */
+export const makeTokenFromResponse = (
+  tokenResponse: TokenResponse,
+  infoResponse: AuthInfo,
+): Token => {
+  let expiresAt = new Date()
+  if (tokenResponse.expires_in != null) {
+    const now = Math.floor(new Date().getTime() / 1000)
+    expiresAt = new Date((now + tokenResponse.expires_in) * 1000)
+  }
+
+  return makeToken({
+    accessToken: tokenResponse.access_token,
+    refreshToken: tokenResponse.refresh_token ?? null,
     expiresAt,
-  )
+    accountId: infoResponse.account_id || null,
+    email: infoResponse.email || null,
+  })
 }
 
 /**
@@ -22,51 +104,58 @@ export const makeTokenFromResponse = (response: TokenResponse): Token => {
  *
  * @returns A {@link Token} object, or null if it could not be parsed.
  */
-export const makeTokenFromObject = (obj: object): Token | null => {
+export const makeTokenFromObject = (
+  obj: Record<string, unknown>,
+): Token | null => {
   try {
-    const parsed = obj as {
-      accessToken: string
-      refreshToken?: string
-      expiresAt?: number
+    const accessToken =
+      typeof obj.accessToken == "string" && obj.accessToken
+        ? obj.accessToken
+        : null
+    const refreshToken =
+      (typeof obj.refreshToken == "string" ? obj.refreshToken : "") || null
+    const expiresAt =
+      typeof obj.expiresAt == "number" &&
+      !isNaN(new Date(obj.expiresAt * 1000).getTime())
+        ? new Date(obj.expiresAt * 1000)
+        : null
+    const accountId =
+      (typeof obj.accountId == "string" ? obj.accountId : "") || null
+    const email = (typeof obj.email == "string" ? obj.email : "") || null
+
+    if (!accessToken || !refreshToken || !expiresAt) {
+      return null
     }
 
-    return new TokenImpl(
-      parsed.accessToken,
-      parsed.refreshToken,
-      parsed.expiresAt,
-    )
+    return makeToken({
+      accessToken,
+      refreshToken,
+      accountId,
+      expiresAt,
+      email,
+    })
   } catch (_) {
     return null
   }
 }
 
-class TokenImpl implements Token {
-  expiresAt: Date | null
-  constructor(
-    public accessToken: string,
-    public refreshToken: string | null = null,
-    expiresAt: Date | number | null = null,
-  ) {
-    if (typeof expiresAt == "number") {
-      this.expiresAt = new Date(expiresAt * 1000)
-    } else {
-      this.expiresAt = expiresAt
-    }
-  }
-
-  getIsExpired(): boolean {
-    const now = new Date().getTime()
-    return this.expiresAt != null && now >= this.expiresAt.getTime()
-  }
-
-  toJSON() {
-    return {
-      accessToken: this.accessToken,
-      refreshToken: this.refreshToken,
-      expiresAt:
-        this.expiresAt != null
-          ? Math.floor(this.expiresAt.getTime() / 1000)
-          : null,
-    }
+const makeToken = (
+  tokenProps: Omit<Token, "getIsExpired">,
+): Token & { toJSON(): unknown } => {
+  return {
+    ...tokenProps,
+    getIsExpired(now) {
+      const nowT = now ? now.getTime() : new Date().getTime()
+      return nowT >= this.expiresAt?.getTime()
+    },
+    toJSON() {
+      return {
+        accessToken: this.accessToken,
+        refreshToken: this.refreshToken,
+        expiresAt: Math.floor(this.expiresAt.getTime() / 1000),
+        accountId: this.accountId,
+        email: this.email,
+      }
+    },
   }
 }

@@ -1,158 +1,211 @@
-import { action, makeAutoObservable, runInAction } from "mobx"
-import { AuthAPI, Token } from "./types.js"
-import { makeTokenFromObject, makeTokenFromResponse } from "./token.js"
-import { isResponseError } from "../utils.js"
-import { Wretch } from "wretch"
-import { createAuthAPI } from "./authApi.js"
-import { makeAuthMiddleware, makeRefreshMiddleware } from "./middleware.js"
+import { action, makeAutoObservable, when } from "mobx"
+import { AuthAPI } from "./types.js"
+import { FetchLike, WretchResponse } from "wretch"
+import {
+  Token,
+  getTokenResponseInfo,
+  listenTokenUpdate,
+  loadToken,
+  saveToken,
+} from "./token.js"
 
-const LOCAL_STORAGE_KEY = "oes-auth-v1"
-
-export const createAuth = (
-  origin: string,
-  baseWretch: Wretch,
-): [Wretch, AuthStore] => {
-  const authAPI = createAuthAPI(baseWretch)
-
-  const [authMiddleware, getAccessToken, setAccessToken] =
-    makeAuthMiddleware(origin)
-
-  const authStore = new AuthStore(authAPI, setAccessToken)
-
-  const refreshMiddleware = makeRefreshMiddleware(
-    getAccessToken,
-    setAccessToken,
-    (curToken) => authStore.refresh(curToken),
-  )
-
-  const authWretch = baseWretch.middlewares([refreshMiddleware, authMiddleware])
-  return [authWretch, authStore]
-}
-
-/**
- * Stores auth tokens.
- */
 export class AuthStore {
-  private token: Token | null = null
-  private curRefresh: Promise<string | null> = Promise.resolve(null)
+  private currentToken: Token | null = null
+  private currentRefreshOperation: Promise<Token | null> | null = null
+
+  readonly ready: Promise<void>
+  private isReady = false
 
   constructor(
     private api: AuthAPI,
-    private setAuthToken: (token: string | null) => void,
+    private origin: string,
   ) {
     makeAutoObservable(this)
-    listenTokenReplace(
-      action((token) => {
-        this.curRefresh = this.curRefresh
-          .catch(() => null)
-          .then(
-            action(() => {
-              this.token = token
-              this.setAuthToken(token.accessToken)
-              return token.accessToken
-            }),
-          )
-      }),
-    )
+    this.ready = when(() => this.isReady)
+    listenTokenUpdate((token) => this.setToken(token))
   }
 
-  get accessToken(): string | null {
-    return this.token?.accessToken || null
-  }
-
-  async load() {
-    const loaded = getTokenFromStorage()
+  load() {
+    const loaded = loadToken()
     if (loaded) {
-      runInAction(() => {
-        this.token = loaded
-        this.setAuthToken(this.token.accessToken)
-      })
-
-      if (loaded.getIsExpired()) {
-        await this.refresh(loaded.accessToken)
-      }
-    } else {
-      const resp = await this.api.createNewToken()
-      runInAction(() => {
-        this.token = makeTokenFromResponse(resp)
-        this.setAuthToken(this.token.accessToken)
-        saveTokenToStorage(this.token)
-      })
+      this.setToken(loaded)
     }
   }
 
-  async refresh(curToken: string | null): Promise<string | null> {
-    this.curRefresh = this.curRefresh
-      .catch(() => void 0)
-      .then(() => {
-        return this._refresh(curToken)
-      })
-    return this.curRefresh
+  setToken(token: Token | null) {
+    this.currentToken = token
+    if (token) {
+      this.isReady = true
+    }
   }
 
-  private async _refresh(curToken: string | null) {
-    if (curToken != this.token?.accessToken) {
-      return this.token && !this.token.getIsExpired()
-        ? this.token.accessToken
-        : null
-    }
-
-    if (!this.token?.refreshToken) {
-      return null
-    }
-
-    try {
-      const res = await this.api.refreshToken(this.token.refreshToken)
-      runInAction(() => {
-        this.token = makeTokenFromResponse(res)
-        saveTokenToStorage(this.token)
-      })
-      return res.access_token
-    } catch (e) {
-      if (isResponseError(e) && e.status == 401) {
-        runInAction(() => {
-          this.token = null
-        })
-        return null
+  /**
+   * Get auth middleware.
+   */
+  authMiddleware = (next: FetchLike): FetchLike => {
+    const wrapped = (
+      url: string,
+      opts: RequestInit,
+    ): Promise<WretchResponse> => {
+      const urlObj = new URL(url, window.location.href)
+      if (urlObj.origin == this.origin) {
+        return withWaitReady(this.withRefresh(next), this.ready)(url, opts)
       } else {
-        throw e
+        return next(url, opts)
       }
     }
+    return wrapped
   }
-}
 
-const getTokenFromStorage = () => {
-  const item = window.localStorage.getItem(LOCAL_STORAGE_KEY)
-  if (item) {
-    try {
-      const obj = JSON.parse(item)
-      return makeTokenFromObject(obj)
-    } catch (_) {
+  /**
+   * Decorate a fetch function to attempt refreshing the access token.
+   */
+  withRefresh = (next: FetchLike): FetchLike => {
+    const wrapper = async (
+      url: string,
+      opts: RequestInit,
+    ): Promise<WretchResponse> => {
+      await this.currentRefreshOperation
+
+      let retryCount = 0
+      for (;;) {
+        const usedToken = this.currentToken
+        const res = await withAuthHeader(next, usedToken)(url, opts)
+        const curToken = this.currentToken
+        if (
+          res.status != 401 ||
+          (!curToken?.refreshToken &&
+            curToken?.accessToken == usedToken?.refreshToken)
+        ) {
+          // return if successful, or if refresh is not possible
+          return res
+        } else {
+          if (
+            !this.currentRefreshOperation &&
+            curToken?.refreshToken &&
+            curToken.accessToken == usedToken?.accessToken
+          ) {
+            // only attempt refresh if there isn't currently one in progress,
+            // and the token hasn't been updated
+            this.tryRefresh(curToken)
+          }
+
+          await this.currentRefreshOperation
+
+          if (!this.currentToken?.accessToken) {
+            // return if refresh was unsuccessful
+            return res
+          }
+
+          // otherwise, retry
+          if (retryCount < 3) {
+            retryCount += 1
+            continue
+          } else {
+            return res
+          }
+        }
+      }
+    }
+    return wrapper
+  }
+
+  private tryRefresh(curToken: Token): Promise<Token | null> {
+    this.currentRefreshOperation = refresh(this.api, curToken)
+      .then(
+        action((newToken) => {
+          this.currentRefreshOperation = null
+          const replaced = this.replaceToken(curToken, newToken)
+          if (replaced?.accessToken == newToken?.accessToken) {
+            saveToken(replaced)
+          }
+          return replaced
+        }),
+      )
+      .catch(
+        action((e) => {
+          this.currentRefreshOperation = null
+          throw e
+        }),
+      )
+    return this.currentRefreshOperation
+  }
+
+  /**
+   * Sets the current token without overwriting other updates.
+   */
+  private replaceToken(
+    oldToken: Token | null,
+    newToken: Token | null,
+  ): Token | null {
+    if (!newToken) {
+      // clear the token without checking
+      this.currentToken = null
       return null
+    } else if (
+      !this.currentToken ||
+      this.currentToken.accessToken == oldToken?.accessToken
+    ) {
+      // only set the token if it is still the same as the old one
+      this.currentToken = newToken
+      return newToken
+    } else {
+      return this.currentToken
     }
   }
-  return null
 }
 
-const saveTokenToStorage = (token: Token | null) => {
-  if (token) {
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(token))
-  } else {
-    window.localStorage.removeItem(LOCAL_STORAGE_KEY)
+const refresh = async (
+  api: AuthAPI,
+  curToken: Token | null,
+): Promise<Token | null> => {
+  if (!curToken?.refreshToken) {
+    return null
   }
+
+  const res = await api.refreshToken(curToken.refreshToken)
+  if (!res) {
+    return null
+  }
+  const newToken = await getTokenResponseInfo(api, res)
+  return newToken
 }
 
-const listenTokenReplace = (replaceFunc: (token: Token) => void) => {
-  const listener = (e: StorageEvent) => {
-    if (e.key == LOCAL_STORAGE_KEY && e.newValue && e.newValue != e.oldValue) {
-      try {
-        const obj = JSON.parse(e.newValue)
-        replaceFunc(obj)
-      } catch (_) {
-        return
-      }
+/**
+ * Decorate a fetch function to wait for the auth store to be ready.
+ */
+const withWaitReady = (
+  next: FetchLike,
+  readyPromise: Promise<void>,
+): FetchLike => {
+  const wrapped = async (
+    url: string,
+    opts: RequestInit,
+  ): Promise<WretchResponse> => {
+    await readyPromise
+    return await next(url, opts)
+  }
+  return wrapped
+}
+
+/**
+ * Decorate a fetch function to set the auth header.
+ */
+const withAuthHeader = (next: FetchLike, token: Token | null): FetchLike => {
+  const wrapped = async (
+    url: string,
+    opts: RequestInit,
+  ): Promise<WretchResponse> => {
+    const newOpts = {
+      ...opts,
+      headers: new Headers(opts.headers),
     }
-  }
 
-  window.addEventListener("storage", listener)
+    if (token?.accessToken) {
+      newOpts.headers.set("Authorization", `Bearer ${token.accessToken}`)
+    }
+
+    return await next(url, newOpts)
+  }
+  return wrapped
 }

@@ -7,6 +7,15 @@ export const createAuthAPI = (wretch: Wretch): AuthAPI => {
     async createNewToken() {
       return await wretch.url("/auth/create").json({}).post().json()
     },
+    async readInfo(accessToken) {
+      return await wretch
+        .url("/auth/info")
+        .headers({
+          Authorization: `Bearer ${accessToken}`,
+        })
+        .get()
+        .json()
+    },
     async refreshToken(refreshToken) {
       return await wretch
         .url("/auth/token")

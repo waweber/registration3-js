@@ -5,16 +5,20 @@ import {
   AlertProvider,
   SelfServiceLayout,
   Title,
+  UserMenu,
   useTitle,
 } from "@open-event-systems/registration-common/components"
 import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
 import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
 import { CartPage } from "./CartPage.js"
 import { observer } from "mobx-react-lite"
+import { useContext } from "react"
+import { useAuth } from "@open-event-systems/registration-common"
 
 export const rootRoute = createRootRoute({
   component: observer(() => {
     const [title, subtitle] = useTitle()
+    const auth = useAuth()
     return (
       <SelfServiceLayout
         logoSrc={logoSrc}

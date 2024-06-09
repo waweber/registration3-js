@@ -27,7 +27,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
   return {
     async listEvents() {
       await delay(100)
-      return [{ id: "example-event", name: "Example Event", open: true }]
+      return [{ id: "example-event", title: "Example Event", open: true }]
     },
     async listRegistrations() {
       await delay(300)

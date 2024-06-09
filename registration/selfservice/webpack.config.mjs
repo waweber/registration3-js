@@ -91,6 +91,7 @@ const config = (env, argv) => {
           },
         }
       : undefined,
+    devtool: isProd ? undefined : "eval-source-map",
     devServer: {
       historyApiFallback: true,
       client: {

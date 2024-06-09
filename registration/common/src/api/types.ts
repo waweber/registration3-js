@@ -6,14 +6,13 @@ export type TokenResponse = {
   scope?: string
 }
 
-export type Token = Readonly<{
-  accessToken: string
-  refreshToken: string | null
-  expiresAt: Date | null
-  getIsExpired(): boolean
-}>
+export type AuthInfo = {
+  account_id?: string | null
+  email?: string | null
+}
 
 export type AuthAPI = {
   createNewToken(): Promise<TokenResponse>
-  refreshToken(refreshToken: string): Promise<TokenResponse>
+  readInfo(accessToken: string): Promise<AuthInfo>
+  refreshToken(refreshToken: string): Promise<TokenResponse | null>
 }

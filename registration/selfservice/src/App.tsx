@@ -10,8 +10,10 @@ import { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { FullscreenLoader } from "@open-event-systems/registration-common/components"
 import {
+  AuthContext,
+  AuthStore,
   InterviewRecordLocalStorage,
-  createAuth,
+  createAuthAPI,
   isNotFound,
   isResponseError,
   makeCartAPI,
@@ -47,9 +49,14 @@ export const App = () => {
       }),
   )
 
-  const [authWretch, authStore] = createAuth(
-    "http://localhost:8000",
-    wretch("http://localhost:8000"),
+  const [authAPI] = useState(() =>
+    createAuthAPI(wretch("http://localhost:8000")),
+  )
+  const [authStore] = useState(
+    () => new AuthStore(authAPI, "http://localhost:8000"),
+  )
+  const [authWretch] = useState(() =>
+    wretch("http://localhost:8000").middlewares([authStore.authMiddleware]),
   )
 
   const [cartAPI] = useState(() => makeCartAPI(authWretch))
@@ -66,17 +73,19 @@ export const App = () => {
   return (
     <MantineProvider theme={DEFAULT_THEME} forceColorScheme="light">
       <QueryClientProvider client={queryClient}>
-        <CartAPIProvider cartAPI={cartAPI}>
-          <PaymentAPIContext.Provider value={paymentAPI}>
-            <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
-              <SelfServiceAPIContext.Provider value={selfServiceAPI}>
-                <FullscreenLoader>
-                  <RouterProvider router={router} />
-                </FullscreenLoader>
-              </SelfServiceAPIContext.Provider>
-            </InterviewAPIProvider>
-          </PaymentAPIContext.Provider>
-        </CartAPIProvider>
+        <AuthContext.Provider value={authStore}>
+          <CartAPIProvider cartAPI={cartAPI}>
+            <PaymentAPIContext.Provider value={paymentAPI}>
+              <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
+                <SelfServiceAPIContext.Provider value={selfServiceAPI}>
+                  <FullscreenLoader>
+                    <RouterProvider router={router} />
+                  </FullscreenLoader>
+                </SelfServiceAPIContext.Provider>
+              </InterviewAPIProvider>
+            </PaymentAPIContext.Provider>
+          </CartAPIProvider>
+        </AuthContext.Provider>
       </QueryClientProvider>
     </MantineProvider>
   )
