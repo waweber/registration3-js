@@ -1,10 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { SelfServiceLayout } from "./SelfServiceLayout.js"
 
-import exampleLogo from "../../../resources/example-logo.svg"
-import { Anchor, Menu } from "@mantine/core"
-import { IconLogout2, IconMail } from "@tabler/icons-react"
-import { UserMenu } from "../user-menu/UserMenu.js"
+import exampleLogo from "../../../../resources/example-logo.svg"
+import { IconMail } from "@tabler/icons-react"
+import { UserMenu } from "../../user-menu/UserMenu.js"
 import { useState } from "react"
 
 const meta: Meta<typeof SelfServiceLayout> = {
@@ -24,6 +23,8 @@ export const Default: StoryObj<typeof SelfServiceLayout> = {
       <SelfServiceLayout
         logoSrc={exampleLogo}
         homeHref="#"
+        title="Title"
+        subtitle="Subtitle"
         userMenu={
           <UserMenu
             userName={userName}

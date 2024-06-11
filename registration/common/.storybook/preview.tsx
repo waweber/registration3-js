@@ -4,6 +4,7 @@ import React from "react"
 
 import "@mantine/core/styles.css"
 import "../src/styles.scss"
+import exampleLogo from "../resources/example-logo.svg"
 
 const preview: Preview = {
   parameters: {
@@ -17,7 +18,18 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <MantineProvider theme={DEFAULT_THEME}>
+      <MantineProvider
+        theme={{
+          ...DEFAULT_THEME,
+          components: {
+            Logo: {
+              defaultProps: {
+                src: exampleLogo,
+              },
+            },
+          },
+        }}
+      >
         <Story />
       </MantineProvider>
     ),

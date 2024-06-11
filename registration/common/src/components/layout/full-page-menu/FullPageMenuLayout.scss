@@ -1,0 +1,22 @@
+.FullPageMenuLayout-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--mantine-primary-color-filled);
+  color: var(--mantine-primary-color-contrast);
+}
+
+.FullPageMenuLayout-logo {
+  margin-top: var(--mantine-spacing-xl);
+  margin-bottom: var(--mantine-spacing-xl);
+}
+
+.FullPageMenuLayout-content {
+  @media (max-width: 36em) {
+    align-self: stretch;
+  }
+
+  @media (min-width: 36em) {
+    width: calc(20em - 2 * var(--mantine-spacing-sm));
+  }
+}

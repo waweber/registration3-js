@@ -1,4 +1,5 @@
 export * from "./auth.js"
 export * from "./authApi.js"
+export * from "./AuthProvider.js"
 export * from "./token.js"
 export * from "./types.js"

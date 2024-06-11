@@ -1,42 +1,124 @@
-import { action, makeAutoObservable, when } from "mobx"
+import { action, makeAutoObservable, observable, runInAction, when } from "mobx"
 import { AuthAPI } from "./types.js"
 import { FetchLike, WretchResponse } from "wretch"
 import {
   Token,
-  getTokenResponseInfo,
   listenTokenUpdate,
   loadToken,
+  makeTokenFromResponse,
   saveToken,
 } from "./token.js"
 
+const RETURN_URL_STORAGE_KEY = "oes-return-url"
+
+/**
+ * Holds auth related state.
+ */
 export class AuthStore {
   private currentToken: Token | null = null
   private currentRefreshOperation: Promise<Token | null> | null = null
 
+  /**
+   * A promise that resolves when auth setup is complete.
+   */
   readonly ready: Promise<void>
-  private isReady = false
+
+  private _isReady = false
 
   constructor(
     private api: AuthAPI,
     private origin: string,
   ) {
-    makeAutoObservable(this)
-    this.ready = when(() => this.isReady)
-    listenTokenUpdate((token) => this.setToken(token))
+    makeAutoObservable<this, "currentToken">(this, {
+      currentToken: observable.ref,
+    })
+    this.ready = when(() => this._isReady)
+    listenTokenUpdate(
+      action((token) => {
+        this.currentToken = token
+        if (token) {
+          this._isReady = true
+        }
+      }),
+    )
   }
 
-  load() {
-    const loaded = loadToken()
-    if (loaded) {
-      this.setToken(loaded)
+  /**
+   * The current access token.
+   */
+  get token(): Token | null {
+    return this.currentToken
+  }
+
+  /**
+   * Whether auth setup is complete.
+   */
+  get isReady(): boolean {
+    return this._isReady
+  }
+
+  /**
+   * Attempt to load a token from storage.
+   */
+  async loadToken(): Promise<Token | null> {
+    const token = loadToken()
+    if (token && !token.getIsExpired()) {
+      this.currentToken = token
+      this._isReady = true
+      return token
+    } else if (!token) {
+      return null
+    } else if (token.refreshToken) {
+      const refreshed = await refresh(this.api, token)
+      if (refreshed) {
+        this.setToken(refreshed)
+        return refreshed
+      } else {
+        return null
+      }
+    } else {
+      return null
     }
   }
 
+  /**
+   * Create a new anonymous refresh token.
+   */
+  async createToken(): Promise<Token> {
+    const resp = await this.api.createNewToken()
+    const token = makeTokenFromResponse(resp)
+    this.setToken(token)
+    return token
+  }
+
+  /**
+   * Sets the auth token.
+   */
   setToken(token: Token | null) {
     this.currentToken = token
     if (token) {
-      this.isReady = true
+      this._isReady = true
+      saveToken(token)
     }
+  }
+
+  /**
+   * Clear the saved token.
+   */
+  forgetToken() {
+    saveToken(null)
+  }
+
+  set returnURL(url: string | null) {
+    if (url) {
+      window.sessionStorage.setItem(RETURN_URL_STORAGE_KEY, url)
+    } else {
+      window.sessionStorage.removeItem(RETURN_URL_STORAGE_KEY)
+    }
+  }
+
+  get returnURL(): string | null {
+    return window.sessionStorage.getItem(RETURN_URL_STORAGE_KEY) || null
   }
 
   /**
@@ -167,8 +249,7 @@ const refresh = async (
   if (!res) {
     return null
   }
-  const newToken = await getTokenResponseInfo(api, res)
-  return newToken
+  return makeTokenFromResponse(res)
 }
 
 /**

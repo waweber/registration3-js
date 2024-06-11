@@ -1,4 +1,4 @@
-import { AuthAPI, AuthInfo, TokenResponse } from "./types.js"
+import { TokenResponse } from "./types.js"
 
 export type Token = Readonly<{
   accessToken: string
@@ -6,6 +6,7 @@ export type Token = Readonly<{
   expiresAt: Date
   accountId: string | null
   email: string | null
+  scope: string
   getIsExpired(now?: Date): boolean
 }>
 
@@ -27,7 +28,7 @@ export const saveToken = (token: Token | null) => {
  * Listen for token updates from other tabs.
  */
 export const listenTokenUpdate = (
-  setToken: (token: Token) => void,
+  setToken: (token: Token | null) => void,
 ): (() => void) => {
   const handler = (e: StorageEvent) => {
     if (e.key == LOCAL_STORAGE_KEY && e.newValue) {
@@ -35,6 +36,8 @@ export const listenTokenUpdate = (
       const token = makeTokenFromObject(obj)
       if (token) {
         setToken(token)
+      } else {
+        setToken(null)
       }
     }
   }
@@ -64,26 +67,9 @@ export const loadToken = (): Token | null => {
 }
 
 /**
- * Get a {@link Token} from a token response.
- * @param api - the auth api
- * @param tokenResponse - the token response
- * @returns the token
- */
-export const getTokenResponseInfo = async (
-  api: AuthAPI,
-  tokenResponse: TokenResponse,
-): Promise<Token> => {
-  const tokenInfo = await api.readInfo(tokenResponse.access_token)
-  return makeTokenFromResponse(tokenResponse, tokenInfo)
-}
-
-/**
  * Create a {@link Token} from a token endpoint and info endpoint response.
  */
-export const makeTokenFromResponse = (
-  tokenResponse: TokenResponse,
-  infoResponse: AuthInfo,
-): Token => {
+export const makeTokenFromResponse = (tokenResponse: TokenResponse): Token => {
   let expiresAt = new Date()
   if (tokenResponse.expires_in != null) {
     const now = Math.floor(new Date().getTime() / 1000)
@@ -94,8 +80,9 @@ export const makeTokenFromResponse = (
     accessToken: tokenResponse.access_token,
     refreshToken: tokenResponse.refresh_token ?? null,
     expiresAt,
-    accountId: infoResponse.account_id || null,
-    email: infoResponse.email || null,
+    accountId: tokenResponse.account_id || null,
+    email: tokenResponse.email || null,
+    scope: tokenResponse.scope || "",
   })
 }
 
@@ -122,6 +109,7 @@ export const makeTokenFromObject = (
     const accountId =
       (typeof obj.accountId == "string" ? obj.accountId : "") || null
     const email = (typeof obj.email == "string" ? obj.email : "") || null
+    const scope = typeof obj.scope == "string" ? obj.scope : ""
 
     if (!accessToken || !refreshToken || !expiresAt) {
       return null
@@ -133,6 +121,7 @@ export const makeTokenFromObject = (
       accountId,
       expiresAt,
       email,
+      scope,
     })
   } catch (_) {
     return null
@@ -155,6 +144,7 @@ const makeToken = (
         expiresAt: Math.floor(this.expiresAt.getTime() / 1000),
         accountId: this.accountId,
         email: this.email,
+        scope: this.scope,
       }
     },
   }
