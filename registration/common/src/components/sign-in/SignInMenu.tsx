@@ -9,7 +9,13 @@ export type SignInMenuProps = Omit<
   FullPageMenuLayoutContentProps,
   "children" | "onSelect"
 > & {
-  options?: { id: string; label: string; icon?: ReactNode }[]
+  options?: {
+    id: string
+    label: string
+    description?: string
+    icon?: ReactNode
+    error?: boolean
+  }[]
   onSelect?: (id: string) => void
 }
 
@@ -23,6 +29,8 @@ export const SignInMenu = (props: SignInMenuProps) => {
           <NavLink
             key={o.id}
             label={o.label}
+            description={o.error ? "Try again" : o.description}
+            c={o.error ? "red" : undefined}
             leftSection={o.icon}
             component="button"
             onClick={() => onSelect && onSelect(o.id)}

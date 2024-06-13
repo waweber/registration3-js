@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from "@storybook/react"
-import { WebAuthnAuth } from "./WebAuthnAuth.js"
+import { WebAuthnRegistration } from "./WebAuthnRegistration.js"
 
 import { FullPageMenuLayout } from "../layout/index.js"
 
-const meta: Meta<typeof WebAuthnAuth> = {
-  component: WebAuthnAuth,
+const meta: Meta<typeof WebAuthnRegistration> = {
+  component: WebAuthnRegistration,
   parameters: {
     layout: "fullscreen",
   },
@@ -19,30 +19,30 @@ const meta: Meta<typeof WebAuthnAuth> = {
 
 export default meta
 
-export const iPhone: StoryObj<typeof WebAuthnAuth> = {
+export const iPhone: StoryObj<typeof WebAuthnRegistration> = {
   name: "iPhone",
   args: {
     _userAgent: "iPhone",
   },
   render(args) {
-    return <WebAuthnAuth {...args} />
+    return <WebAuthnRegistration {...args} />
   },
 }
 
-export const Android: StoryObj<typeof WebAuthnAuth> = {
+export const Android: StoryObj<typeof WebAuthnRegistration> = {
   args: {
     _userAgent: "android",
   },
   render(args) {
-    return <WebAuthnAuth {...args} />
+    return <WebAuthnRegistration {...args} />
   },
 }
 
-export const Windows: StoryObj<typeof WebAuthnAuth> = {
+export const Windows: StoryObj<typeof WebAuthnRegistration> = {
   args: {
     _userAgent: "windows",
   },
   render(args) {
-    return <WebAuthnAuth {...args} />
+    return <WebAuthnRegistration {...args} />
   },
 }

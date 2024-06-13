@@ -12,6 +12,7 @@ import {
   SelfServiceLayout,
   Title,
   UserMenu,
+  WebAuthnRegistration,
   useTitle,
 } from "@open-event-systems/registration-common/components"
 import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
@@ -25,6 +26,7 @@ import {
   SignInEmailRoute,
   SignInMenuRoute,
   SignInRoute,
+  SignInWebAuthnRegisterRoute,
   saveToken,
   useAuth,
 } from "@open-event-systems/registration-common"
@@ -59,6 +61,12 @@ export const signInEmailRoute = createRoute({
   component: SignInEmailRoute,
 })
 
+export const webAuthnRegisterRoute = createRoute({
+  getParentRoute: () => signInRoute,
+  path: "webauthn-register",
+  component: SignInWebAuthnRegisterRoute,
+})
+
 export const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/events/$eventId",
@@ -69,7 +77,6 @@ export const eventRoute = createRoute({
       authStore.returnURL = location.href
       throw redirect({ to: signInMenuRoute.to })
     }
-    authStore.returnURL = null
   },
   component: observer(() => {
     const [title, subtitle] = useTitle()
@@ -86,9 +93,7 @@ export const eventRoute = createRoute({
             userName={auth.token?.email}
             onSignIn={() => {
               auth.returnURL = loc.pathname
-              navigate({
-                to: signInMenuRoute.to,
-              })
+              window.location.href = signInMenuRoute.to
             }}
             onSignOut={() => {
               saveToken(null)
@@ -139,7 +144,11 @@ export const cartRoute = createRoute({
 })
 
 export const routeTree = rootRoute.addChildren([
-  signInRoute.addChildren([signInMenuRoute, signInEmailRoute]),
+  signInRoute.addChildren([
+    signInMenuRoute,
+    signInEmailRoute,
+    webAuthnRegisterRoute,
+  ]),
   eventRoute.addChildren([
     registrationsRoute,
     addRegistrationRoute,

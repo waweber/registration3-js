@@ -132,6 +132,9 @@ importers:
       "@open-event-systems/interview-lib":
         specifier: ^0.3.0
         version: link:../../interview/lib
+      "@simplewebauthn/browser":
+        specifier: ^10.0.0
+        version: 10.0.0
       "@tabler/icons-react":
         specifier: ^3.3.0
         version: 3.5.0(react@18.3.1)
@@ -148,6 +151,9 @@ importers:
       "@mantine/hooks":
         specifier: ^7.9.1
         version: 7.10.1(react@18.3.1)
+      "@simplewebauthn/types":
+        specifier: ^10.0.0
+        version: 10.0.0
       "@storybook/addon-essentials":
         specifier: ^8.0.10
         version: 8.1.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2207,6 +2213,18 @@ packages:
     peerDependenciesMeta:
       "@types/react":
         optional: true
+
+  "@simplewebauthn/browser@10.0.0":
+    resolution:
+      {
+        integrity: sha512-hG0JMZD+LiLUbpQcAjS4d+t4gbprE/dLYop/CkE01ugU/9sKXflxV5s0DRjdz3uNMFecatRfb4ZLG3XvF8m5zg==,
+      }
+
+  "@simplewebauthn/types@10.0.0":
+    resolution:
+      {
+        integrity: sha512-SFXke7xkgPRowY2E+8djKbdEznTVnD5R6GO7GPTthpHrokLvNKw8C3lFZypTxLI7KkCfGPfhtqB3d7OVGGa9jQ==,
+      }
 
   "@sinclair/typebox@0.27.8":
     resolution:
@@ -11449,6 +11467,12 @@ snapshots:
       react: 18.3.1
     optionalDependencies:
       "@types/react": 18.3.3
+
+  "@simplewebauthn/browser@10.0.0":
+    dependencies:
+      "@simplewebauthn/types": 10.0.0
+
+  "@simplewebauthn/types@10.0.0": {}
 
   "@sinclair/typebox@0.27.8": {}
 

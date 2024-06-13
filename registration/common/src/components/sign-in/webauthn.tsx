@@ -1,3 +1,7 @@
+import {
+  browserSupportsWebAuthn,
+  platformAuthenticatorIsAvailable,
+} from "@simplewebauthn/browser"
 import { IconBrandWindows, IconFingerprint, IconKey } from "@tabler/icons-react"
 import { ComponentType } from "react"
 
@@ -7,6 +11,16 @@ export type PlatformWebAuthnDetails = {
   registerName: string
   registerDescription: string
   icon: ComponentType
+}
+
+/**
+ * Get whether a platform authenticator is available.
+ */
+export const getSupportsWebAuthn = async (): Promise<boolean> => {
+  if (!browserSupportsWebAuthn()) {
+    return false
+  }
+  return await platformAuthenticatorIsAvailable()
 }
 
 /**

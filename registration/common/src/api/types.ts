@@ -13,6 +13,11 @@ export type AuthInfo = {
   email?: string | null
 }
 
+export type WebAuthnChallenge = {
+  token: string
+  challenge: string
+}
+
 export type AuthAPI = {
   createNewToken(): Promise<TokenResponse>
   readInfo(accessToken: string): Promise<AuthInfo>
@@ -22,5 +27,20 @@ export type AuthAPI = {
     email: string,
     code: string,
   ): Promise<TokenResponse | null>
+  readWebAuthnRegistrationChallenge(
+    accessToken: string,
+  ): Promise<WebAuthnChallenge>
+  completeWebAuthnRegistration(
+    accessToken: string,
+    token: string,
+    response: Record<string, unknown>,
+  ): Promise<TokenResponse>
+  readWebAuthnAuthenticationChallenge(
+    credentialId: string,
+  ): Promise<WebAuthnChallenge | null>
+  completeWebAuthnAuthenticationChallenge(
+    token: string,
+    response: Record<string, unknown>,
+  ): Promise<TokenResponse>
   refreshToken(refreshToken: string): Promise<TokenResponse | null>
 }

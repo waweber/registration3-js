@@ -10,6 +10,7 @@ import {
 } from "./token.js"
 
 const RETURN_URL_STORAGE_KEY = "oes-return-url"
+const WEBAUTHN_CREDENTIAL_ID_LOCAL_STORAGE_KEY = "oes-credential-id-v1"
 
 /**
  * Holds auth related state.
@@ -117,8 +118,38 @@ export class AuthStore {
     }
   }
 
+  /**
+   * The URL to return to after auth.
+   */
   get returnURL(): string | null {
     return window.sessionStorage.getItem(RETURN_URL_STORAGE_KEY) || null
+  }
+
+  /**
+   * Return to the URL sign in started from.
+   */
+  navigateToReturnURL(): void {
+    const url = this.returnURL
+    this.returnURL = null
+    window.location.href = url || "/"
+  }
+
+  set credentialId(id: string | null) {
+    if (id) {
+      window.localStorage.setItem(WEBAUTHN_CREDENTIAL_ID_LOCAL_STORAGE_KEY, id)
+    } else {
+      window.localStorage.removeItem(WEBAUTHN_CREDENTIAL_ID_LOCAL_STORAGE_KEY)
+    }
+  }
+
+  /**
+   * The WebAuthn credential ID.
+   */
+  get credentialId(): string | null {
+    return (
+      window.localStorage.getItem(WEBAUTHN_CREDENTIAL_ID_LOCAL_STORAGE_KEY) ||
+      null
+    )
   }
 
   /**

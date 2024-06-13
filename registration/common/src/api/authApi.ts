@@ -1,5 +1,5 @@
 import { Wretch, WretchResponse } from "wretch"
-import { AuthAPI, TokenResponse } from "./types.js"
+import { AuthAPI, TokenResponse, WebAuthnChallenge } from "./types.js"
 import { formUrlAddon } from "wretch/addons"
 
 export const createAuthAPI = (wretch: Wretch): AuthAPI => {
@@ -47,6 +47,47 @@ export const createAuthAPI = (wretch: Wretch): AuthAPI => {
         .forbidden(() => null)
         .error(422, () => null)
         .json<TokenResponse | null>()
+    },
+    async readWebAuthnRegistrationChallenge(accessToken) {
+      return await wretch
+        .url("/auth/webauthn/register")
+        .headers({
+          Authorization: `Bearer ${accessToken}`,
+        })
+        .get()
+        .json()
+    },
+    async completeWebAuthnRegistration(accessToken, token, response) {
+      return await wretch
+        .url("/auth/webauthn/register")
+        .json({
+          token: token,
+          response: response,
+        })
+        .headers({
+          Authorization: `Bearer ${accessToken}`,
+        })
+        .post()
+        .json()
+    },
+    async readWebAuthnAuthenticationChallenge(credentialId) {
+      return await wretch
+        .url("/auth/webauthn/start-authenticate")
+        .json({ credential_id: credentialId })
+        .post()
+        .notFound(() => null)
+        .forbidden(() => null)
+        .json<WebAuthnChallenge | null>()
+    },
+    async completeWebAuthnAuthenticationChallenge(token, response) {
+      return await wretch
+        .url("/auth/webauthn/authenticate")
+        .json({
+          token: token,
+          response: response,
+        })
+        .post()
+        .json()
     },
     async refreshToken(refreshToken) {
       return await wretch

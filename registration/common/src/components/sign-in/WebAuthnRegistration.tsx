@@ -6,16 +6,21 @@ import {
   FullPageMenuLayoutContentProps,
 } from "../layout/index.js"
 
-export type WebAuthnAuthProps = Omit<
+export type WebAuthnRegistrationProps = Omit<
   FullPageMenuLayoutContentProps,
   "onSelect"
 > & {
   _userAgent?: string
+  error?: boolean
   onSelect?: (select: boolean) => void
 }
 
-export const WebAuthnAuth = (props: WebAuthnAuthProps) => {
-  const { _userAgent, onSelect, ...other } = useProps("WebAuthnAuth", {}, props)
+export const WebAuthnRegistration = (props: WebAuthnRegistrationProps) => {
+  const { _userAgent, error, onSelect, ...other } = useProps(
+    "WebAuthnRegistration",
+    {},
+    props,
+  )
 
   const userAgent = _userAgent || window.navigator.userAgent
 
@@ -28,7 +33,8 @@ export const WebAuthnAuth = (props: WebAuthnAuthProps) => {
       <Card.Section>
         <NavLink
           label={info.registerName}
-          description={info.registerDescription}
+          c={error ? "red" : undefined}
+          description={error ? "Try again" : info.registerDescription}
           leftSection={<Icon />}
           component="button"
           onClick={() => onSelect && onSelect(true)}

@@ -100,6 +100,7 @@ export const App = () => {
                       router={router}
                       context={{
                         authStore: authStore,
+                        authAPI: authAPI,
                       }}
                     />
                   </FullscreenLoader>
