@@ -86,7 +86,7 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
       <Box className="InterviewPanel-contentCol">
         <ContentComponent
           className="InterviewPanel-content"
-          title={<Title />}
+          title={!isSmall ? <Title /> : undefined}
           footer={<Controls />}
           onSubmit={(e) => {
             e.preventDefault()

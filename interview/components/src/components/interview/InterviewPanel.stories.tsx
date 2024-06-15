@@ -56,8 +56,21 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
                 title: "Name",
                 minLength: 1,
               },
+              field_1: {
+                type: "string",
+                "x-type": "select",
+                "x-component": "buttons",
+                default: "1",
+                oneOf: [
+                  {
+                    const: "1",
+                    title: "Continue",
+                    "x-primary": true,
+                  },
+                ],
+              },
             },
-            required: ["field_0"],
+            required: ["field_0", "field_1"],
           },
         },
       },

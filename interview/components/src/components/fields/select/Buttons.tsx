@@ -1,11 +1,11 @@
-import { Button, ButtonProps, Group, GroupProps, useProps } from "@mantine/core"
+import { Button, ButtonProps, Grid, GridProps, useProps } from "@mantine/core"
 import { observer } from "mobx-react-lite"
 import { useFieldContext } from "../context.js"
 import { getOptions } from "./util.js"
 import clsx from "clsx"
 import { useRef } from "react"
 
-export type ButtonsSelectFieldProps = Omit<GroupProps, "children"> & {
+export type ButtonsSelectFieldProps = Omit<GridProps, "children"> & {
   ButtonProps?: Partial<ButtonProps>
 }
 
@@ -20,9 +20,11 @@ export const ButtonsSelectField = observer((props: ButtonsSelectFieldProps) => {
   const defaultOpt = options.find((v) => v.default)
 
   return (
-    <Group
-      className="ButtonsSelectField-root"
-      preventGrowOverflow={false}
+    <Grid
+      classNames={{
+        root: "ButtonsSelectField-root",
+      }}
+      justify="flex-end"
       {...other}
     >
       <button
@@ -44,27 +46,29 @@ export const ButtonsSelectField = observer((props: ButtonsSelectFieldProps) => {
         }}
       ></button>
       {options.map((opt) => (
-        <Button
-          key={opt.value}
-          variant={opt.primary ? "filled" : "outline"}
-          type={opt.default ? "submit" : "button"}
-          className={clsx("ButtonsSelectField-button", {
-            "ButtonsSelectField-primary": opt.primary,
-            "ButtonsSelectField-default": opt.default,
-          })}
-          onClick={() => {
-            state?.setValue(path, opt.value)
-            clickedRef.current = true
-            if (!opt.default) {
-              // submit via the default button
-              defaultSubmitRef.current?.click()
-            }
-          }}
-          {...ButtonProps}
-        >
-          {opt.label}
-        </Button>
+        <Grid.Col key={opt.value} span={{ base: 12, xs: 12, sm: "content" }}>
+          <Button
+            variant={opt.primary ? "filled" : "outline"}
+            type={opt.default ? "submit" : "button"}
+            fullWidth
+            className={clsx("ButtonsSelectField-button", {
+              "ButtonsSelectField-primary": opt.primary,
+              "ButtonsSelectField-default": opt.default,
+            })}
+            onClick={() => {
+              state?.setValue(path, opt.value)
+              clickedRef.current = true
+              if (!opt.default) {
+                // submit via the default button
+                defaultSubmitRef.current?.click()
+              }
+            }}
+            {...ButtonProps}
+          >
+            {opt.label}
+          </Button>
+        </Grid.Col>
       ))}
-    </Group>
+    </Grid>
   )
 })

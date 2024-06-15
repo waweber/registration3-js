@@ -42,19 +42,23 @@ export const Content = (props: ContentProps) => {
       {...other}
     >
       <Box className={clsx("Content-header", classes?.header)}>
-        <Title
-          className={clsx("Content-title", classes?.title)}
-          order={3}
-          {...TitleProps}
-        >
-          {title}
-        </Title>
+        {title && (
+          <Title
+            className={clsx("Content-title", classes?.title)}
+            order={3}
+            {...TitleProps}
+          >
+            {title}
+          </Title>
+        )}
         <Divider />
       </Box>
       <Box className={clsx("Content-content", classes?.content)}>
         {children}
       </Box>
-      <Box className={clsx("Content-footer", classes?.footer)}>{footer}</Box>
+      {footer && (
+        <Box className={clsx("Content-footer", classes?.footer)}>{footer}</Box>
+      )}
     </Box>
   )
 }

@@ -18,6 +18,7 @@ export const Question = (props: QuestionProps) => {
 
   const context = useContext(InterviewContext)
   const [state] = useState(() => makeFormState(schema, initialData))
+  const showControls = useMemo(() => !hasButtons(schema), [schema])
 
   const componentProps = useMemo(
     () => ({
@@ -33,13 +34,17 @@ export const Question = (props: QuestionProps) => {
         )
       },
       Controls() {
-        return (
-          <Group preventGrowOverflow={false} justify="flex-end">
-            <Button type="submit" variant="filled">
-              Next
-            </Button>
-          </Group>
-        )
+        if (!showControls) {
+          return null
+        } else {
+          return (
+            <Group preventGrowOverflow={false} justify="flex-end">
+              <Button type="submit" variant="filled">
+                Next
+              </Button>
+            </Group>
+          )
+        }
       },
     }),
     [],
@@ -66,4 +71,15 @@ export const Question = (props: QuestionProps) => {
       </FieldContextProvider>
     </InterviewContext.Provider>
   )
+}
+
+const hasButtons = (schema: Schema) => {
+  const properties = schema.properties ?? {}
+  for (const key of Object.keys(properties)) {
+    const propSchema = properties[key]
+    if (propSchema["x-component"] == "buttons") {
+      return true
+    }
+  }
+  return false
 }
