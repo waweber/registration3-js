@@ -8,6 +8,7 @@ import {
 import { observer } from "mobx-react-lite"
 import { useFieldContext } from "../context.js"
 import { getOptions } from "./util.js"
+import { Markdown } from "../../markdown/Markdown.js"
 
 export type RadioSelectFieldProps = Omit<RadioGroupProps, "children"> & {
   RadioProps?: Partial<RadioProps>
@@ -49,7 +50,7 @@ export const RadioSelectField = observer((props: RadioSelectFieldProps) => {
             autoFocus={autoFocus && i == 0 ? true : undefined}
             className="RadioSelectField-radio-root"
             value={opt.value}
-            label={opt.label}
+            label={<Markdown inline>{opt.label}</Markdown>}
             {...RadioProps}
           />
         ))}

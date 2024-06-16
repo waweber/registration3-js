@@ -43,6 +43,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      markdown-it:
+        specifier: ^14.1.0
+        version: 14.1.0
       mobx:
         specifier: ^6.12.3
         version: 6.12.3
@@ -80,6 +83,9 @@ importers:
       "@storybook/test":
         specifier: ^8.0.10
         version: 8.1.1(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.12))
+      "@types/markdown-it":
+        specifier: ^14.1.1
+        version: 14.1.1
       "@types/react":
         specifier: ^18.3.1
         version: 18.3.2
@@ -141,9 +147,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      markdown-it:
-        specifier: ^14.1.0
-        version: 14.1.0
     devDependencies:
       "@mantine/core":
         specifier: ^7.9.1
@@ -175,9 +178,6 @@ importers:
       "@storybook/test":
         specifier: ^8.0.10
         version: 8.1.1(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.12.12))
-      "@types/markdown-it":
-        specifier: ^14.1.1
-        version: 14.1.1
       "@types/react":
         specifier: ^18.3.1
         version: 18.3.2

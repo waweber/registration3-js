@@ -24,7 +24,8 @@
     "@open-event-systems/interview-lib": "^0.3.0",
     "clsx": "^2.1.1",
     "mobx": "^6.12.3",
-    "mobx-react-lite": "^4.0.7"
+    "mobx-react-lite": "^4.0.7",
+    "markdown-it": "^14.1.0"
   },
   "devDependencies": {
     "@mantine/core": "^7.9.1",
@@ -44,7 +45,8 @@
     "sass-loader": "^14.2.1",
     "storybook": "^8.0.10",
     "style-loader": "^4.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@types/markdown-it": "^14.1.1"
   },
   "peerDependencies": {
     "@mantine/core": "^7.9.1",

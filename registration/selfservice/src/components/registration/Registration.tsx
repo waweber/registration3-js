@@ -9,8 +9,8 @@ import {
   Title,
   useProps,
 } from "@mantine/core"
-import { Markdown } from "@open-event-systems/registration-common/components"
 import { IconDotsVertical } from "@tabler/icons-react"
+import { Markdown } from "@open-event-systems/interview-components"
 import clsx from "clsx"
 
 export type RegistrationMenuItem = {

@@ -1,7 +1,8 @@
-import { Box, Button, Group } from "@mantine/core"
+import { Button, Group } from "@mantine/core"
 import { useContext, useMemo } from "react"
 import { InterviewComponentProps } from "../types.js"
 import { InterviewContext } from "../interview/Context.js"
+import { Markdown } from "../markdown/Markdown.js"
 
 export type ErrorProps = InterviewComponentProps & {
   title: string
@@ -18,7 +19,7 @@ export const Error = (props: ErrorProps) => {
         return title
       },
       Content() {
-        return <Box>{message}</Box>
+        return <Markdown>{message}</Markdown>
       },
       Controls() {
         return (

@@ -34,7 +34,6 @@
     "@storybook/react": "^8.0.10",
     "@storybook/react-webpack5": "^8.0.10",
     "@storybook/test": "^8.0.10",
-    "@types/markdown-it": "^14.1.1",
     "@types/react": "^18.3.1",
     "css-loader": "^7.1.1",
     "mobx": "^6.12.3",
@@ -60,7 +59,6 @@
     "@open-event-systems/interview-lib": "^0.3.0",
     "@tabler/icons-react": "^3.3.0",
     "@tanstack/react-router": "^1.32.5",
-    "clsx": "^2.1.1",
-    "markdown-it": "^14.1.0"
+    "clsx": "^2.1.1"
   }
 }

@@ -9,6 +9,7 @@ import {
 } from "@mantine/core"
 import { useFieldContext } from "../context.js"
 import { getOptions } from "./util.js"
+import { Markdown } from "../../markdown/Markdown.js"
 
 export type CheckboxSelectFieldProps = Omit<CheckboxGroupProps, "children"> & {
   CheckboxProps?: Partial<CheckboxProps>
@@ -72,7 +73,7 @@ export const CheckboxSelectField = observer(
               autoFocus={autoFocus && i == 0 ? true : undefined}
               className="CheckboxSelectField-checkbox-root"
               value={opt.value}
-              label={opt.label}
+              label={<Markdown inline>{opt.label}</Markdown>}
               {...CheckboxProps}
             />
           ))}

@@ -7,6 +7,7 @@ import { FieldContextProvider } from "../fields/context.js"
 import { InterviewComponentProps } from "../types.js"
 import clsx from "clsx"
 import { InterviewContext } from "../interview/Context.js"
+import { Markdown } from "../markdown/Markdown.js"
 
 export type QuestionProps = InterviewComponentProps & {
   schema: Schema
@@ -28,7 +29,7 @@ export const Question = (props: QuestionProps) => {
       Content() {
         return (
           <Stack className={clsx("Question-content")}>
-            <Box>{state.schema.description}</Box>
+            <Markdown>{state.schema.description}</Markdown>
             <ObjectField autoFocus />
           </Stack>
         )

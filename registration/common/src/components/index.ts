@@ -1,5 +1,4 @@
 export * from "./currency/Currency.js"
-export * from "./markdown/Markdown.js"
 export * from "./options/Options.js"
 export * from "./options/OptionsDialog.js"
 export * from "./cart/Modifier.js"
