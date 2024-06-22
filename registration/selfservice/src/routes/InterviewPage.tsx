@@ -7,7 +7,14 @@ import {
   registrationsRoute,
 } from "./index.js"
 import { useCartInterviewRecord, useCurrentCart } from "../hooks/cart.js"
-import { Suspense, useCallback, useLayoutEffect, useRef, useState } from "react"
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {
@@ -26,7 +33,7 @@ export const AddRegistrationPage = () => {
     <Title title="New Registration" subtitle="Add a new registration">
       <Suspense fallback={<Skeleton h={300} />}>
         <InterviewPage
-          key={`${eventId}-${interviewId}`}
+          key={eventId}
           eventId={eventId}
           interviewId={interviewId}
         />
@@ -44,7 +51,7 @@ export const ChangeRegistrationPage = () => {
     <Title title="Change Registration" subtitle="Change a registration">
       <Suspense fallback={<Skeleton h={300} />}>
         <InterviewPage
-          key={`${eventId}-${interviewId}`}
+          key={eventId}
           eventId={eventId}
           interviewId={interviewId}
           registrationId={registrationId}

@@ -1,4 +1,4 @@
-import { Box, Button, Group, Stack } from "@mantine/core"
+import { Button, Group, Stack } from "@mantine/core"
 import { Schema, UserResponse } from "@open-event-systems/interview-lib"
 import { makeFormState } from "../../state/form.js"
 import { useContext, useMemo, useState } from "react"

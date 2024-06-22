@@ -2,6 +2,7 @@
   flex: auto;
   display: flex;
   align-items: stretch;
+  position: relative;
 
   @media (max-width: 48em) {
     & {
