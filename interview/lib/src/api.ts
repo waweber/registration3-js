@@ -59,7 +59,7 @@ class InterviewAPIImpl {
     })
     let newResp: InterviewResponse
     if (!res.ok) {
-      newResp = await handleError(response, res)
+      newResp = getErrorResponse(response, res.status)
     } else {
       newResp = await res.json()
     }
@@ -67,21 +67,12 @@ class InterviewAPIImpl {
   }
 }
 
-const handleError = async (
+export const getErrorResponse = (
   prev: InterviewResponse,
-  resp: Response,
-): Promise<IncompleteInterviewResponse> => {
-  let title: string | undefined
-  let message: string | undefined
-  try {
-    ;[title, message] = await parseError(resp)
-  } catch (_) {
-    // ignore
-  }
-  const defaults =
-    defaultErrorMessages[String(resp.status)] ?? defaultErrorMessages[""]
-  title = title || defaults[0]
-  message = message || defaults[1]
+  status: number,
+): IncompleteInterviewResponse => {
+  const [title, message] =
+    defaultErrorMessages[String(status)] ?? defaultErrorMessages[""]
   return {
     state: `${prev.state}-error`,
     completed: false,
@@ -94,22 +85,7 @@ const handleError = async (
   }
 }
 
-const parseError = async (resp: Response) => {
-  const bodyJson = await resp.json()
-  let title: string | undefined
-  let message: string | undefined
-  if (typeof bodyJson == "object" && bodyJson) {
-    if ("description" in bodyJson) {
-      title = bodyJson.description
-    }
-    if ("message" in bodyJson) {
-      message = bodyJson.message
-    }
-  }
-  return [title, message]
-}
-
-export const defaultErrorMessages: {
+const defaultErrorMessages: {
   "": [string, string]
   [statusStr: string]: [string, string] | undefined
 } = {

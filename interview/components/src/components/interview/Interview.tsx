@@ -1,10 +1,11 @@
 import {
   IncompleteInterviewResponse,
   InterviewAPI,
+  InterviewResponse,
   InterviewResponseRecord,
   InterviewResponseStore,
   UserResponse,
-  defaultErrorMessages,
+  getErrorResponse,
 } from "@open-event-systems/interview-lib"
 import { ReactNode, useCallback, useState } from "react"
 import { InterviewComponentProps } from "../types.js"
@@ -64,17 +65,7 @@ export const Interview = (props: InterviewProps) => {
           .catch((e) => {
             setSubmitting(false)
             if (typeof e == "object" && e) {
-              const [errTitle, errMsg] = getError(e)
-              const errResp: IncompleteInterviewResponse = {
-                completed: false,
-                state: `${response.state}-error`,
-                update_url: "",
-                content: {
-                  type: "error",
-                  title: errTitle,
-                  description: errMsg,
-                },
-              }
+              const errResp = getError(response, e)
               const record = store.add(errResp, response.state)
               return onUpdate && onUpdate(record)
             } else {
@@ -139,12 +130,14 @@ export const Interview = (props: InterviewProps) => {
   )
 }
 
-const getError = (e: unknown): [string, string] => {
+const getError = (
+  prev: InterviewResponse,
+  e: unknown,
+): IncompleteInterviewResponse => {
   if (isResponseError(e)) {
-    const statusStr = String(e.status)
-    return defaultErrorMessages[statusStr] ?? defaultErrorMessages[""]
+    return getErrorResponse(prev, e.status)
   } else {
-    return defaultErrorMessages[""]
+    return getErrorResponse(prev, 0)
   }
 }
 
