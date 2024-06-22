@@ -4,6 +4,7 @@ import {
   InterviewResponseRecord,
   InterviewResponseStore,
   UserResponse,
+  defaultErrorMessages,
 } from "@open-event-systems/interview-lib"
 import { ReactNode, useCallback, useState } from "react"
 import { InterviewComponentProps } from "../types.js"
@@ -63,18 +64,21 @@ export const Interview = (props: InterviewProps) => {
           .catch((e) => {
             setSubmitting(false)
             if (typeof e == "object" && e) {
+              const [errTitle, errMsg] = getError(e)
               const errResp: IncompleteInterviewResponse = {
                 completed: false,
                 state: `${response.state}-error`,
                 update_url: "",
                 content: {
                   type: "error",
-                  title: "Error",
-                  description: formatError(e.message),
+                  title: errTitle,
+                  description: errMsg,
                 },
               }
               const record = store.add(errResp, response.state)
               return onUpdate && onUpdate(record)
+            } else {
+              throw e
             }
           })
       } catch (_) {
@@ -135,11 +139,17 @@ export const Interview = (props: InterviewProps) => {
   )
 }
 
-const formatError = (e: string) => {
-  try {
-    const obj = JSON.parse(e)
-    return obj.message
-  } catch (_) {
-    return e
+const getError = (e: unknown): [string, string] => {
+  if (isResponseError(e)) {
+    const statusStr = String(e.status)
+    return defaultErrorMessages[statusStr] ?? defaultErrorMessages[""]
+  } else {
+    return defaultErrorMessages[""]
   }
+}
+
+const isResponseError = (e: unknown): e is { status: number } => {
+  return (
+    typeof e == "object" && !!e && "status" in e && typeof e.status == "number"
+  )
 }

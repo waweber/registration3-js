@@ -78,13 +78,10 @@ const handleError = async (
   } catch (_) {
     // ignore
   }
-  const defaults = defaultErrorMessages[String(resp.status)] ?? [
-    undefined,
-    undefined,
-  ]
-  title = title || defaults[0] || "Error"
-  message =
-    message || defaults[1] || "An error occurred. Please go back and try again."
+  const defaults =
+    defaultErrorMessages[String(resp.status)] ?? defaultErrorMessages[""]
+  title = title || defaults[0]
+  message = message || defaults[1]
   return {
     state: `${prev.state}-error`,
     completed: false,
@@ -112,7 +109,11 @@ const parseError = async (resp: Response) => {
   return [title, message]
 }
 
-const defaultErrorMessages: Record<string, [string, string] | undefined> = {
+export const defaultErrorMessages: {
+  "": [string, string]
+  [statusStr: string]: [string, string] | undefined
+} = {
+  "": ["Error", "An error occurred. Please go back and try again."],
   "404": [
     "Expired",
     "Your session may have timed out, or the form may have changed or is no longer available.",
