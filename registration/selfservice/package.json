@@ -12,8 +12,6 @@
   "keywords": [],
   "author": "",
   "devDependencies": {
-    "@mantine/core": "^7.9.1",
-    "@mantine/hooks": "^7.9.1",
     "@storybook/addon-essentials": "^8.0.10",
     "@storybook/addon-interactions": "^8.0.10",
     "@storybook/addon-links": "^8.0.10",
@@ -22,14 +20,11 @@
     "@storybook/react": "^8.0.10",
     "@storybook/react-webpack5": "^8.0.10",
     "@storybook/test": "^8.0.10",
-    "@tanstack/router-cli": "^1.32.10",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@types/webpack": "^5.28.5",
     "css-loader": "^7.1.1",
     "html-webpack-plugin": "^5.6.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "sass": "^1.77.1",
     "sass-loader": "^14.2.1",
     "storybook": "^8.0.10",
@@ -40,23 +35,21 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
   },
-  "peerDependencies": {
-    "@mantine/core": "^7.9.1",
-    "@mantine/hooks": "^7.9.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
   "dependencies": {
-    "@open-event-systems/interview-components": "^0.3.0",
-    "@open-event-systems/interview-lib": "^0.3.0",
-    "@open-event-systems/registration-common": "^0.1.0",
-    "@open-event-systems/registration-payment": "^0.1.0",
     "@tabler/icons-react": "^3.4.0",
-    "@tanstack/react-query": "^5.36.2",
-    "@tanstack/react-router": "^1.33.1",
     "clsx": "^2.1.1",
     "mobx": "^6.12.3",
     "mobx-react-lite": "^4.0.7",
-    "wretch": "^2.8.1"
+    "wretch": "^2.8.1",
+    "@mantine/core": "^7.9.1",
+    "@mantine/hooks": "^7.9.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@tanstack/react-query": "^5.36.2",
+    "@tanstack/react-router": "^1.33.1",
+    "@open-event-systems/interview-components": "^0.3.0",
+    "@open-event-systems/interview-lib": "^0.3.0",
+    "@open-event-systems/registration-common": "^0.1.0",
+    "@open-event-systems/registration-payment": "^0.1.0"
   }
 }

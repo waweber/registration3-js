@@ -52,6 +52,7 @@ export const FullscreenLoader = (props: FullscreenLoaderProps) => {
         className={clsx("FullscreenLoader-root", className)}
         classNames={{
           overlay: "FullscreenLoader-overlay",
+          loader: "FullscreenLoader-loader",
         }}
         loaderProps={{
           type: "dots",

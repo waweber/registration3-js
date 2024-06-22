@@ -10,11 +10,17 @@ import { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { FullscreenLoader } from "@open-event-systems/registration-common/components"
 import {
+  AuthAPIContext,
+  AuthContext,
+  AuthProvider,
+  AuthStore,
   InterviewRecordLocalStorage,
-  createAuth,
+  createAuthAPI,
   isNotFound,
   isResponseError,
   makeCartAPI,
+  useCreateAuth,
+  useSetupAuth,
 } from "@open-event-systems/registration-common"
 import { CartAPIProvider } from "./providers/cart.js"
 import { InterviewAPIProvider } from "@open-event-systems/interview-components"
@@ -26,6 +32,9 @@ import {
   PaymentAPIContext,
   makePaymentAPI,
 } from "@open-event-systems/registration-payment"
+
+// TODO:
+import exampleLogo from "@open-event-systems/registration-common/example-logo.svg"
 
 export const App = () => {
   const [queryClient] = useState(
@@ -47,10 +56,13 @@ export const App = () => {
       }),
   )
 
-  const [authWretch, authStore] = createAuth(
-    "http://localhost:8000",
-    wretch("http://localhost:8000"),
+  const [authStore, authAPI] = useCreateAuth("http://localhost:8000")
+
+  const [authWretch] = useState(() =>
+    wretch("http://localhost:8000").middlewares([authStore.authMiddleware]),
   )
+
+  const setupAuth = useSetupAuth(authStore, authAPI)
 
   const [cartAPI] = useState(() => makeCartAPI(authWretch))
   const [paymentAPI] = useState(() => makePaymentAPI(authWretch))
@@ -60,23 +72,43 @@ export const App = () => {
   const [selfServiceAPI] = useState(() => makeSelfServiceAPI(authWretch))
 
   useEffect(() => {
-    authStore.load()
-  }, [authStore])
+    setupAuth()
+  }, [setupAuth])
 
   return (
-    <MantineProvider theme={DEFAULT_THEME} forceColorScheme="light">
+    <MantineProvider
+      theme={{
+        ...DEFAULT_THEME,
+        components: {
+          Logo: {
+            defaultProps: {
+              src: exampleLogo,
+            },
+          },
+        },
+      }}
+      forceColorScheme="light"
+    >
       <QueryClientProvider client={queryClient}>
-        <CartAPIProvider cartAPI={cartAPI}>
-          <PaymentAPIContext.Provider value={paymentAPI}>
-            <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
-              <SelfServiceAPIContext.Provider value={selfServiceAPI}>
-                <FullscreenLoader>
-                  <RouterProvider router={router} />
-                </FullscreenLoader>
-              </SelfServiceAPIContext.Provider>
-            </InterviewAPIProvider>
-          </PaymentAPIContext.Provider>
-        </CartAPIProvider>
+        <AuthProvider api={authAPI} store={authStore}>
+          <CartAPIProvider cartAPI={cartAPI}>
+            <PaymentAPIContext.Provider value={paymentAPI}>
+              <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
+                <SelfServiceAPIContext.Provider value={selfServiceAPI}>
+                  <FullscreenLoader>
+                    <RouterProvider
+                      router={router}
+                      context={{
+                        authStore: authStore,
+                        authAPI: authAPI,
+                      }}
+                    />
+                  </FullscreenLoader>
+                </SelfServiceAPIContext.Provider>
+              </InterviewAPIProvider>
+            </PaymentAPIContext.Provider>
+          </CartAPIProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </MantineProvider>
   )

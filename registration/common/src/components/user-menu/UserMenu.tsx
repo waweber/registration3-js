@@ -32,7 +32,9 @@ export const UserMenu = (props: UserMenuProps) => {
   return (
     <Menu position="bottom-end" {...other}>
       <Menu.Target>
-        <Anchor component="button">{userName ?? "Guest"}</Anchor>
+        <Anchor component="button" size="sm">
+          {userName ?? "Guest"}
+        </Anchor>
       </Menu.Target>
       <Menu.Dropdown>
         {userName == null ? (

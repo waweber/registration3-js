@@ -1,19 +1,15 @@
 import {
   ActionIcon,
-  Anchor,
   AppShell,
   AppShellProps,
   Box,
-  Breadcrumbs,
-  Paper,
-  Space,
-  Tabs,
   Text,
   Title,
   useProps,
 } from "@mantine/core"
-import { IconChevronRight, IconHome } from "@tabler/icons-react"
+import { IconHome } from "@tabler/icons-react"
 import { ReactNode } from "react"
+import { Logo } from "../../logo/Logo.js"
 
 export type SelfServiceLayoutProps = Omit<AppShellProps, "title"> & {
   title?: ReactNode
@@ -70,7 +66,7 @@ export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
             </Title>
             <Text className="SelfServiceLayout-subtitle">{subtitle}</Text>
           </Box>
-          <img className="SelfServiceLayout-logo" src={logoSrc} alt="" />
+          <Logo className="SelfServiceLayout-logo" src={logoSrc} />
         </Box>
         <Box className="SelfServiceLayout-mainContent">{children}</Box>
       </AppShell.Main>
