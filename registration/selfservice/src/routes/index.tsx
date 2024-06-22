@@ -4,7 +4,6 @@ import {
   createRoute,
   redirect,
   useLocation,
-  useNavigate,
 } from "@tanstack/react-router"
 
 import {
@@ -12,7 +11,6 @@ import {
   SelfServiceLayout,
   Title,
   UserMenu,
-  WebAuthnRegistration,
   useTitle,
 } from "@open-event-systems/registration-common/components"
 import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
@@ -30,6 +28,7 @@ import {
   saveToken,
   useAuth,
 } from "@open-event-systems/registration-common"
+import { EventsPage } from "./EventsPage.js"
 
 export interface RouterContext {
   authAPI: AuthAPI
@@ -67,6 +66,12 @@ export const webAuthnRegisterRoute = createRoute({
   component: SignInWebAuthnRegisterRoute,
 })
 
+export const eventsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: EventsPage,
+})
+
 export const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/events/$eventId",
@@ -81,7 +86,6 @@ export const eventRoute = createRoute({
   component: observer(() => {
     const [title, subtitle] = useTitle()
     const auth = useAuth()
-    const navigate = useNavigate()
     const loc = useLocation()
     return (
       <SelfServiceLayout
@@ -144,6 +148,7 @@ export const cartRoute = createRoute({
 })
 
 export const routeTree = rootRoute.addChildren([
+  eventsRoute,
   signInRoute.addChildren([
     signInMenuRoute,
     signInEmailRoute,

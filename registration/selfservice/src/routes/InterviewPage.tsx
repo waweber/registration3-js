@@ -7,14 +7,7 @@ import {
   registrationsRoute,
 } from "./index.js"
 import { useCartInterviewRecord, useCurrentCart } from "../hooks/cart.js"
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { Suspense, useCallback, useLayoutEffect, useRef, useState } from "react"
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {

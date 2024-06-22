@@ -48,7 +48,7 @@ export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
         {homeHref != null && (
           <ActionIcon
             component="a"
-            href=""
+            href={homeHref}
             variant="transparent"
             c="inherit"
             size="sm"
