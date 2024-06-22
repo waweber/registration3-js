@@ -1,12 +1,13 @@
 import { createBrowserHistory, createRouter } from "@tanstack/react-router"
-import { RouterContext, routeTree } from "./routes/index.js"
+import { routeTree } from "./routes/index.js"
 import { FullscreenLoader } from "@open-event-systems/registration-common/components"
+import { AppContextValue } from "./appContext.js"
 
 export const router = createRouter({
   routeTree,
   history: createBrowserHistory(),
   defaultPendingComponent: FullscreenLoader.Show,
-  context: undefined as unknown as RouterContext,
+  context: undefined as unknown as AppContextValue,
 })
 
 declare module "@tanstack/react-router" {

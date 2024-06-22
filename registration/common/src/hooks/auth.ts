@@ -1,10 +1,11 @@
-import { useCallback, useContext, useState } from "react"
+import { useCallback, useState } from "react"
 import { AuthStore } from "../api/auth.js"
 import { AuthAPI } from "../api/types.js"
 import { AuthAPIContext, AuthContext } from "../api/AuthProvider.js"
 import { createAuthAPI } from "../api/authApi.js"
 import wretch from "wretch"
 import { Token } from "../api/token.js"
+import { useRequiredContext } from "../utils.js"
 
 export const useCreateAuth = (baseURL: string): [AuthStore, AuthAPI] => {
   const urlObj = new URL(baseURL, window.location.href)
@@ -26,18 +27,5 @@ export const useSetupAuth = (
   }, [store, api])
 }
 
-export const useAuth = (): AuthStore => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) {
-    throw new Error("Auth context not provided")
-  }
-  return ctx
-}
-
-export const useAuthAPI = (): AuthAPI => {
-  const ctx = useContext(AuthAPIContext)
-  if (!ctx) {
-    throw new Error("Auth API context not provided")
-  }
-  return ctx
-}
+export const useAuth = (): AuthStore => useRequiredContext(AuthContext)
+export const useAuthAPI = (): AuthAPI => useRequiredContext(AuthAPIContext)

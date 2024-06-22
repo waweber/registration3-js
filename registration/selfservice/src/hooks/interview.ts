@@ -1,12 +1,13 @@
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback } from "react"
 import { addRegistrationRoute } from "../routes/index.js"
-import { useRegistrations } from "./api.js"
 import {
   UseOptionsDialogHook,
   UseOptionsDialogOptions,
   useOptionsDialog,
 } from "@open-event-systems/registration-common"
+import { RegistrationListResponse } from "../api/types.js"
+import { useRegistrations } from "./api.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -21,7 +22,6 @@ export type InterviewOptionsDialogHook = {
 
 export const useInterviewOptionsDialog = (
   eventId: string,
-  cartId: string,
   accessCode?: string | null,
   opts?: Pick<UseOptionsDialogOptions, "disableAutoselect">,
 ): InterviewOptionsDialogHook => {

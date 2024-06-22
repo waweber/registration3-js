@@ -1,3 +1,5 @@
+import { Context, useContext } from "react"
+
 export class NotFoundError extends Error {
   isNotFound = true as const
   constructor(message = "Not found") {
@@ -78,4 +80,15 @@ export const catchNotFound = async <T>(
     }
     throw e
   }
+}
+
+/**
+ * useContext that throws an error if the context is null.
+ */
+export const useRequiredContext = <T>(ctx: Context<T | null>): T => {
+  const val = useContext(ctx)
+  if (val == null) {
+    throw new Error("Required context not provided")
+  }
+  return val
 }

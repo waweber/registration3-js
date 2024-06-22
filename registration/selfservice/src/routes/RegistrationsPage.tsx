@@ -1,16 +1,19 @@
 import {
+  AlertProvider,
   OptionsDialog,
+  SelfServiceLayout,
   Spacer,
   Title,
+  UserMenu,
+  useTitle,
 } from "@open-event-systems/registration-common/components"
 import {
-  accessCodeRoute,
   cartRoute,
   changeRegistrationRoute,
-  eventRoute,
+  rootRoute,
+  signInMenuRoute,
 } from "./index.js"
-import { useAccessCodeCheck, useEvent, useRegistrations } from "../hooks/api.js"
-import { Event } from "../api/types.js"
+import { Event, RegistrationListResponse } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
 import {
@@ -23,28 +26,146 @@ import {
 } from "@mantine/core"
 import { IconPlus, IconSparkles } from "@tabler/icons-react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
-import { Link, useNavigate } from "@tanstack/react-router"
-import { useCartPricingResult, useCurrentCart } from "../hooks/cart.js"
+import {
+  Link,
+  Outlet,
+  createRoute,
+  notFound,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router"
+import { observer } from "mobx-react-lite"
+import { saveToken, useAuth } from "@open-event-systems/registration-common"
+import { getSelfServiceQueryOptions } from "../api/queries.js"
+import { getCartQueryOptions } from "../cart/queries.js"
+import { useRegistrations } from "../hooks/api.js"
+import { useCartPricingResult, useCurrentCart } from "../cart/hooks.js"
 
-export const RegistrationsPage = () => {
-  const { eventId } = eventRoute.useParams()
-  const event = useEvent(eventId)
+export const eventRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "events/$eventId",
+  async beforeLoad({ context, location }) {
+    const { authStore } = context
+    await authStore.ready
+    if (!authStore.token) {
+      authStore.returnURL = location.href
+      throw redirect({ to: signInMenuRoute.to })
+    }
+  },
+  async loader({ context, params }) {
+    const { eventId } = params
+    const { queryClient, selfServiceAPI } = context
+    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
+    const events = await queryClient.ensureQueryData(selfServiceQueries.events)
 
-  return (
-    <Title title="Registrations" subtitle="View and manage registrations">
-      <Suspense fallback={<RegistrationList.Placeholder />}>
-        <Registrations event={event} />
-      </Suspense>
-    </Title>
-  )
-}
+    const event = events.get(eventId)
+    if (!event) {
+      throw notFound()
+    }
+    return event
+  },
+  component: observer(() => {
+    const [title, subtitle] = useTitle()
+    const auth = useAuth()
+    const loc = useLocation()
+    return (
+      <SelfServiceLayout
+        title={title}
+        subtitle={subtitle}
+        homeHref="/"
+        userMenu={
+          <UserMenu
+            userName={auth.token?.email}
+            onSignIn={() => {
+              auth.returnURL = loc.pathname
+              window.location.href = signInMenuRoute.to
+            }}
+            onSignOut={() => {
+              saveToken(null)
+              window.location.reload()
+            }}
+            signInOptions={[{ id: "sign-in", label: "Sign In" }]}
+          />
+        }
+      >
+        <Title title="Registration">
+          <AlertProvider>
+            <Outlet />
+          </AlertProvider>
+        </Title>
+      </SelfServiceLayout>
+    )
+  }),
+})
 
-export const AccessCodePage = () => {
-  const { eventId, accessCode } = accessCodeRoute.useParams()
-  const event = useEvent(eventId)
-  const accessCodeResult = useAccessCodeCheck(eventId, accessCode)
+export const registrationsRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "/",
+  async loader({ context, params }) {
+    const { selfServiceAPI, queryClient } = context
+    const { eventId } = params
+    const queries = getSelfServiceQueryOptions(selfServiceAPI)
+    const cartQueries = getCartQueryOptions(context)
+    const currentCart = await queryClient.ensureQueryData(
+      cartQueries.currentCart(eventId),
+    )
+    const pricingResult = await queryClient.ensureQueryData(
+      cartQueries.cartPricingResult(currentCart.id),
+    )
+    const registrations = await queryClient.ensureQueryData(
+      queries.registrations(eventId),
+    )
+    return {
+      pricingResult,
+      registrations,
+    }
+  },
+  component() {
+    const event = eventRoute.useLoaderData()
+    return (
+      <Title title="Registrations" subtitle="View and manage registrations">
+        <Suspense fallback={<RegistrationList.Placeholder />}>
+          <Registrations event={event} />
+        </Suspense>
+      </Title>
+    )
+  },
+})
 
-  if (!accessCodeResult) {
+export const accessCodeRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "access-code/$accessCode",
+  async loader({ context, params }) {
+    const { selfServiceAPI, queryClient } = context
+    const { eventId, accessCode } = params
+    const queries = getSelfServiceQueryOptions(selfServiceAPI)
+    const cartQueries = getCartQueryOptions(context)
+
+    const checkResult = await queryClient.ensureQueryData(
+      queries.accessCodeCheck(eventId, accessCode),
+    )
+    if (!checkResult) {
+      throw notFound()
+    }
+
+    const currentCart = await queryClient.ensureQueryData(
+      cartQueries.currentCart(eventId),
+    )
+    const pricingResult = await queryClient.ensureQueryData(
+      cartQueries.cartPricingResult(currentCart.id),
+    )
+
+    const registrations = await queryClient.ensureQueryData(
+      queries.registrations(eventId, accessCode),
+    )
+
+    return {
+      registrations,
+      pricingResult,
+    }
+  },
+  notFoundComponent() {
     return (
       <Title title="Not Found">
         <Text component="p">
@@ -53,20 +174,24 @@ export const AccessCodePage = () => {
         </Text>
       </Title>
     )
-  }
+  },
+  component() {
+    const { accessCode } = accessCodeRoute.useParams()
+    const event = eventRoute.useLoaderData()
 
-  return (
-    <Title title="Registrations" subtitle="View and manage registrations">
-      <Alert title="Access Code" icon={<IconSparkles />}>
-        You are using an access code. Add a registration or select a
-        registration to change.
-      </Alert>
-      <Suspense fallback={<RegistrationList.Placeholder />}>
-        <Registrations event={event} accessCode={accessCode} />
-      </Suspense>
-    </Title>
-  )
-}
+    return (
+      <Title title="Registrations" subtitle="View and manage registrations">
+        <Alert title="Access Code" icon={<IconSparkles />}>
+          You are using an access code. Add a registration or select a
+          registration to change.
+        </Alert>
+        <Suspense fallback={<RegistrationList.Placeholder />}>
+          <Registrations event={event} accessCode={accessCode} />
+        </Suspense>
+      </Title>
+    )
+  },
+})
 
 const Registrations = ({
   event,
@@ -75,16 +200,12 @@ const Registrations = ({
   event: Event
   accessCode?: string | null
 }) => {
-  const registrations = useRegistrations(event.id, accessCode)
   const navigate = useNavigate()
+  const registrations = useRegistrations(event.id, accessCode)
   const [currentCart] = useCurrentCart(event.id)
   const currentPricingResult = useCartPricingResult(currentCart.id)
 
-  const interviewOptions = useInterviewOptionsDialog(
-    event.id,
-    currentCart.id,
-    accessCode,
-  )
+  const interviewOptions = useInterviewOptionsDialog(event.id, accessCode)
 
   return (
     <>

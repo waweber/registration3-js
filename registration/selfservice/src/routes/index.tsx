@@ -1,39 +1,24 @@
-import {
-  Outlet,
-  createRootRouteWithContext,
-  createRoute,
-  redirect,
-  useLocation,
-} from "@tanstack/react-router"
+import { createRootRouteWithContext, createRoute } from "@tanstack/react-router"
 
 import {
-  AlertProvider,
-  SelfServiceLayout,
-  Title,
-  UserMenu,
-  useTitle,
-} from "@open-event-systems/registration-common/components"
-import { AccessCodePage, RegistrationsPage } from "./RegistrationsPage.js"
+  accessCodeRoute,
+  eventRoute,
+  registrationsRoute,
+} from "./RegistrationsPage.js"
 import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
 import { CartPage } from "./CartPage.js"
-import { observer } from "mobx-react-lite"
 import {
-  AuthAPI,
-  AuthStore,
   NotFound,
   SignInEmailRoute,
   SignInMenuRoute,
   SignInRoute,
   SignInWebAuthnRegisterRoute,
-  saveToken,
-  useAuth,
 } from "@open-event-systems/registration-common"
-import { EventsPage } from "./EventsPage.js"
+import { AppContextValue } from "../appContext.js"
+import { getCartQueryOptions } from "../cart/queries.js"
+import { eventsRoute } from "./EventsPage.js"
 
-export interface RouterContext {
-  authAPI: AuthAPI
-  authStore: AuthStore
-}
+export type RouterContext = AppContextValue
 
 export const rootRoute = createRootRouteWithContext<RouterContext>()({
   notFoundComponent() {
@@ -66,79 +51,68 @@ export const webAuthnRegisterRoute = createRoute({
   component: SignInWebAuthnRegisterRoute,
 })
 
-export const eventsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: EventsPage,
-})
-
-export const eventRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/events/$eventId",
-  async beforeLoad({ context, location }) {
-    const { authStore } = context
-    await authStore.ready
-    if (!authStore.token) {
-      authStore.returnURL = location.href
-      throw redirect({ to: signInMenuRoute.to })
-    }
-  },
-  component: observer(() => {
-    const [title, subtitle] = useTitle()
-    const auth = useAuth()
-    const loc = useLocation()
-    return (
-      <SelfServiceLayout
-        title={title}
-        subtitle={subtitle}
-        homeHref="/"
-        userMenu={
-          <UserMenu
-            userName={auth.token?.email}
-            onSignIn={() => {
-              auth.returnURL = loc.pathname
-              window.location.href = signInMenuRoute.to
-            }}
-            onSignOut={() => {
-              saveToken(null)
-              window.location.reload()
-            }}
-            signInOptions={[{ id: "sign-in", label: "Sign In" }]}
-          />
-        }
-      >
-        <Title title="Registration">
-          <AlertProvider>
-            <Outlet />
-          </AlertProvider>
-        </Title>
-      </SelfServiceLayout>
-    )
-  }),
-})
-
-export const registrationsRoute = createRoute({
-  getParentRoute: () => eventRoute,
-  path: "/",
-  component: RegistrationsPage,
-})
-
-export const accessCodeRoute = createRoute({
-  getParentRoute: () => eventRoute,
-  path: "access-code/$accessCode",
-  component: AccessCodePage,
-})
-
 export const addRegistrationRoute = createRoute({
   getParentRoute: () => eventRoute,
   path: "cart/add/$interviewId",
   component: AddRegistrationPage,
+  async loader({ context, params, location }) {
+    const { queryClient } = context
+    const { eventId, interviewId } = params
+    const hashParams = new URLSearchParams(location.hash)
+    const accessCode = hashParams.get("a")
+    const stateId = hashParams.get("s")
+
+    const queries = getCartQueryOptions(context)
+
+    if (stateId) {
+      return await queryClient.ensureQueryData(queries.interviewRecord(stateId))
+    } else {
+      const currentCart = await queryClient.ensureQueryData(
+        queries.currentCart(eventId),
+      )
+      return await queryClient.ensureQueryData(
+        queries.initialInterviewRecord(
+          eventId,
+          currentCart.id,
+          interviewId,
+          null,
+          accessCode,
+        ),
+      )
+    }
+  },
 })
 
 export const changeRegistrationRoute = createRoute({
   getParentRoute: () => eventRoute,
   path: "cart/change/$registrationId/$interviewId",
   component: ChangeRegistrationPage,
+  async loader({ context, params, location }) {
+    const { queryClient } = context
+    const { eventId, interviewId, registrationId } = params
+    const hashParams = new URLSearchParams(location.hash)
+    const accessCode = hashParams.get("a")
+    const stateId = hashParams.get("s")
+
+    const queries = getCartQueryOptions(context)
+
+    if (stateId) {
+      return await queryClient.ensureQueryData(queries.interviewRecord(stateId))
+    } else {
+      const currentCart = await queryClient.ensureQueryData(
+        queries.currentCart(eventId),
+      )
+      return await queryClient.ensureQueryData(
+        queries.initialInterviewRecord(
+          eventId,
+          currentCart.id,
+          interviewId,
+          registrationId,
+          accessCode,
+        ),
+      )
+    }
+  },
 })
 
 export const cartRoute = createRoute({
@@ -149,16 +123,16 @@ export const cartRoute = createRoute({
 
 export const routeTree = rootRoute.addChildren([
   eventsRoute,
-  signInRoute.addChildren([
-    signInMenuRoute,
-    signInEmailRoute,
-    webAuthnRegisterRoute,
-  ]),
   eventRoute.addChildren([
     registrationsRoute,
     addRegistrationRoute,
     changeRegistrationRoute,
     accessCodeRoute,
     cartRoute,
+  ]),
+  signInRoute.addChildren([
+    signInMenuRoute,
+    signInEmailRoute,
+    webAuthnRegisterRoute,
   ]),
 ])

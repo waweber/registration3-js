@@ -8,13 +8,7 @@ import {
   Options,
   Spacer,
 } from "@open-event-systems/registration-common/components"
-import { useEvent } from "../hooks/api.js"
-import {
-  useCartAPI,
-  useCartPricingResult,
-  useCurrentCart,
-} from "../hooks/cart.js"
-import { cartRoute, registrationsRoute } from "./index.js"
+import { cartRoute } from "./index.js"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
@@ -27,7 +21,6 @@ import {
   Modal,
   Stack,
   Text,
-  Title as MTitle,
   Divider,
 } from "@mantine/core"
 import { IconPlus, IconShoppingCartCheck } from "@tabler/icons-react"
@@ -52,6 +45,9 @@ import {
   CartPricingResult,
   isResponseError,
 } from "@open-event-systems/registration-common"
+import { useCartPricingResult, useStickyCurrentCart } from "../cart/hooks.js"
+import { useApp } from "../appContext.js"
+import { registrationsRoute } from "./RegistrationsPage.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -61,8 +57,6 @@ declare module "@tanstack/react-router" {
 
 export const CartPage = () => {
   const { eventId } = cartRoute.useParams()
-
-  useEvent(eventId)
 
   return (
     <Title title="Cart" subtitle="Your current shopping cart">
@@ -82,18 +76,14 @@ export const CartPage = () => {
 }
 
 const CartComponent = ({ eventId }: { eventId: string }) => {
-  const [currentCart, setCurrentCart] = useCurrentCart(eventId)
-
-  // keep the current cart until unmounted
-  const currentCartRef = useRef(currentCart)
-  const currentCartId = currentCartRef.current.id
+  const [currentCart, setCurrentCart] = useStickyCurrentCart(eventId)
 
   const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null)
   const [paymentId, setPaymentId] = useState<string | null>(null)
 
-  const pricingResult = useCartPricingResult(currentCartId)
+  const pricingResult = useCartPricingResult(currentCart.id)
 
-  const interviewOptions = useInterviewOptionsDialog(eventId, currentCartId)
+  const interviewOptions = useInterviewOptionsDialog(eventId)
 
   const showCheckout = pricingResult.registrations.length > 0
 
@@ -102,10 +92,9 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
       {pricingResult.registrations.length > 0 ? (
         <CartPricingResultComponent
           eventId={eventId}
-          cartId={currentCartId}
+          cartId={currentCart.id}
           setCurrentCart={(c) => {
-            currentCartRef.current = c
-            setCurrentCart(c)
+            setCurrentCart(c, true)
           }}
         />
       ) : (
@@ -117,7 +106,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
             <CartAddButton
               eventId={eventId}
-              cartId={currentCartId}
+              cartId={currentCart.id}
               showCheckout={showCheckout}
             />
           </Grid.Col>
@@ -125,7 +114,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
         {showCheckout && (
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
             <CartCheckoutButton
-              cartId={currentCartId}
+              cartId={currentCart.id}
               setPaymentId={setPaymentId}
               setPaymentMethodId={setPaymentMethodId}
             />
@@ -133,7 +122,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
         )}
       </Grid>
       <CartPageDialog
-        cartId={currentCartId}
+        cartId={currentCart.id}
         eventId={eventId}
         paymentId={paymentId}
         paymentMethodId={paymentMethodId}
@@ -154,7 +143,7 @@ const CartPricingResultComponent = ({
   cartId: string
   setCurrentCart: (cart: Cart) => void
 }) => {
-  const cartAPI = useCartAPI()
+  const { cartAPI } = useApp()
   const pricingResult = useCartPricingResult(cartId)
 
   const removeFromCart = useMutation({
@@ -214,7 +203,7 @@ const CartAddButton = ({
   cartId: string
   showCheckout?: boolean
 }) => {
-  const interviewOptions = useInterviewOptionsDialog(eventId, cartId)
+  const interviewOptions = useInterviewOptionsDialog(eventId)
   return (
     <Button
       fullWidth

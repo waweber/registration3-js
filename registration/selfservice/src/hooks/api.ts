@@ -1,20 +1,11 @@
-import { createContext, useContext } from "react"
-import { makeMockSelfServiceAPI } from "../api/mock.js"
-import {
-  Event,
-  RegistrationListResponse,
-  SelfServiceAPI,
-} from "../api/types.js"
+import { Event, RegistrationListResponse } from "../api/types.js"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { notFound } from "@tanstack/react-router"
-
-export const SelfServiceAPIContext = createContext(makeMockSelfServiceAPI())
-
-export const useSelfServiceAPI = (): SelfServiceAPI =>
-  useContext(SelfServiceAPIContext)
+import { useApp } from "../appContext.js"
+import { getSelfServiceQueryOptions } from "../api/queries.js"
 
 export const useEvents = (): Map<string, Event> => {
-  const api = useSelfServiceAPI()
+  const { selfServiceAPI: api } = useApp()
   const query = useSuspenseQuery({
     queryKey: ["self-service", "events"],
     async queryFn() {
@@ -40,19 +31,10 @@ export const useRegistrations = (
   eventId: string,
   accessCode?: string | null,
 ): RegistrationListResponse => {
-  const api = useSelfServiceAPI()
+  const { selfServiceAPI: api } = useApp()
+  const queries = getSelfServiceQueryOptions(api)
   const query = useSuspenseQuery({
-    queryKey: [
-      "self-service",
-      "events",
-      eventId,
-      "registrations",
-      { accessCode },
-    ],
-    async queryFn() {
-      const regs = await api.listRegistrations(eventId, accessCode)
-      return regs
-    },
+    ...queries.registrations(eventId, accessCode),
   })
   return query.data
 }
@@ -61,7 +43,7 @@ export const useAccessCodeCheck = (
   eventId: string,
   accessCode: string,
 ): boolean => {
-  const api = useSelfServiceAPI()
+  const { selfServiceAPI: api } = useApp()
   const query = useSuspenseQuery({
     queryKey: ["events", eventId, "access-codes", accessCode, "check"],
     async queryFn() {

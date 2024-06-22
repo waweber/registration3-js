@@ -10,8 +10,6 @@ import { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { FullscreenLoader } from "@open-event-systems/registration-common/components"
 import {
-  AuthAPIContext,
-  AuthContext,
   AuthProvider,
   AuthStore,
   InterviewRecordLocalStorage,
@@ -19,14 +17,11 @@ import {
   isNotFound,
   isResponseError,
   makeCartAPI,
-  useCreateAuth,
   useSetupAuth,
 } from "@open-event-systems/registration-common"
-import { CartAPIProvider } from "./providers/cart.js"
 import { InterviewAPIProvider } from "@open-event-systems/interview-components"
 import wretch from "wretch"
 import { makeSelfServiceAPI } from "./api/api.js"
-import { SelfServiceAPIContext } from "./hooks/api.js"
 import { makeInterviewAPI } from "@open-event-systems/interview-lib"
 import {
   PaymentAPIContext,
@@ -35,41 +30,53 @@ import {
 
 // TODO:
 import exampleLogo from "@open-event-systems/registration-common/example-logo.svg"
+import { AppContext, AppContextValue } from "./appContext.js"
 
 export const App = () => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry(failureCount, error) {
-              if (
-                isNotFound(error) ||
-                (isResponseError(error) && error.status == 401)
-              ) {
-                return false
-              }
-              return failureCount < 3
-            },
+  const [appCtx] = useState((): AppContextValue => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry(failureCount, error) {
+            if (
+              isNotFound(error) ||
+              (isResponseError(error) && error.status == 401)
+            ) {
+              return false
+            }
+            return failureCount < 3
           },
         },
-      }),
-  )
+      },
+    })
 
-  const [authStore, authAPI] = useCreateAuth("http://localhost:8000")
+    const baseURL = "http://localhost:8000" // TODO
+    const authAPI = createAuthAPI(wretch(baseURL))
+    const authStore = new AuthStore(authAPI, new URL(baseURL).origin)
 
-  const [authWretch] = useState(() =>
-    wretch("http://localhost:8000").middlewares([authStore.authMiddleware]),
-  )
+    const authWretch = wretch(baseURL.toString()).middlewares([
+      authStore.authMiddleware,
+    ])
 
-  const setupAuth = useSetupAuth(authStore, authAPI)
+    const cartAPI = makeCartAPI(authWretch)
+    const paymentAPI = makePaymentAPI(authWretch)
+    const interviewAPI = makeInterviewAPI()
+    const interviewStore = InterviewRecordLocalStorage.load()
+    const selfServiceAPI = makeSelfServiceAPI(authWretch)
 
-  const [cartAPI] = useState(() => makeCartAPI(authWretch))
-  const [paymentAPI] = useState(() => makePaymentAPI(authWretch))
-  const [interviewAPI] = useState(() => makeInterviewAPI())
-  const [interviewStore] = useState(() => InterviewRecordLocalStorage.load())
+    return {
+      queryClient,
+      authAPI,
+      authStore,
+      cartAPI,
+      paymentAPI,
+      interviewAPI,
+      interviewStore,
+      selfServiceAPI,
+    }
+  })
 
-  const [selfServiceAPI] = useState(() => makeSelfServiceAPI(authWretch))
+  const setupAuth = useSetupAuth(appCtx.authStore, appCtx.authAPI)
 
   useEffect(() => {
     setupAuth()
@@ -89,27 +96,22 @@ export const App = () => {
       }}
       forceColorScheme="light"
     >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider api={authAPI} store={authStore}>
-          <CartAPIProvider cartAPI={cartAPI}>
-            <PaymentAPIContext.Provider value={paymentAPI}>
-              <InterviewAPIProvider api={interviewAPI} store={interviewStore}>
-                <SelfServiceAPIContext.Provider value={selfServiceAPI}>
-                  <FullscreenLoader>
-                    <RouterProvider
-                      router={router}
-                      context={{
-                        authStore: authStore,
-                        authAPI: authAPI,
-                      }}
-                    />
-                  </FullscreenLoader>
-                </SelfServiceAPIContext.Provider>
-              </InterviewAPIProvider>
-            </PaymentAPIContext.Provider>
-          </CartAPIProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+      <AppContext.Provider value={appCtx}>
+        <QueryClientProvider client={appCtx.queryClient}>
+          <AuthProvider api={appCtx.authAPI} store={appCtx.authStore}>
+            <InterviewAPIProvider
+              api={appCtx.interviewAPI}
+              store={appCtx.interviewStore}
+            >
+              <PaymentAPIContext.Provider value={appCtx.paymentAPI}>
+                <FullscreenLoader>
+                  <RouterProvider router={router} context={appCtx} />
+                </FullscreenLoader>
+              </PaymentAPIContext.Provider>
+            </InterviewAPIProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </AppContext.Provider>
     </MantineProvider>
   )
 }
