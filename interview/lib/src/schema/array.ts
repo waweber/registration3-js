@@ -1,12 +1,12 @@
 import { Schema } from "./types.js"
 
 import { z } from "zod"
-import { getValidationSchema } from "./validate.js"
+import { getValidationSchema, jsonSchema } from "./validate.js"
 
 export const getArrayValidator = (schema: Schema): z.ZodType<unknown[]> => {
   const itemSchema = schema.items
     ? getValidationSchema(schema.items)
-    : z.unknown()
+    : jsonSchema
   let s = z.array(itemSchema)
 
   s = schema.minItems

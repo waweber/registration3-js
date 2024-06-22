@@ -4,6 +4,7 @@ export type SchemaTypes =
   | "string"
   | "number"
   | "integer"
+  | "boolean"
   | "array"
   | "object"
   | "null"

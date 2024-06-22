@@ -11,6 +11,15 @@ import {
 } from "./types.js"
 import { z } from "zod"
 
+const jsonScalar = z.union([z.string(), z.number(), z.boolean(), z.null()])
+type JsonType =
+  | z.infer<typeof jsonScalar>
+  | JsonType[]
+  | { [key: string]: JsonType }
+export const jsonSchema: z.ZodType<JsonType> = z.lazy(() =>
+  z.union([jsonScalar, z.record(jsonSchema), z.array(jsonSchema)]),
+)
+
 export const getValidator = (schema: Schema): Validator => {
   const validationSchema = getValidationSchema(schema)
 
@@ -69,80 +78,114 @@ const formatError = (err: z.ZodFormattedError<unknown>): ValidationError => {
 }
 
 export const getValidationSchema = (schema: Schema): z.ZodType<unknown> => {
-  let s: z.ZodType<unknown> = getNullValidator(schema)
+  let s = jsonSchema
 
-  s = schema.type ? s.and(getTypeValidator(schema.type)) : s
+  s = s.superRefine((v, ctx) => validateType(schema, v, ctx))
+
+  const strSchema = getStringValidator(schema)
+  const numberSchema = getNumberValidator(schema)
+  const objectSchema = getObjectValidator(schema)
+  const arraySchema = getArrayValidator(schema)
+
+  s = s.superRefine((v, ctx) => {
+    if (typeof v == "string") {
+      validateSubSchema(strSchema, v, ctx)
+    } else if (typeof v == "number") {
+      validateSubSchema(numberSchema, v, ctx)
+    } else if (Array.isArray(v)) {
+      validateSubSchema(arraySchema, v, ctx)
+    } else if (typeof v == "object" && v !== null) {
+      validateSubSchema(objectSchema, v, ctx)
+    }
+  })
+
   s = schema.const != null ? s.and(getConstValidator(schema.const)) : s
   s = schema.oneOf ? s.and(getOneOfValidator(schema.oneOf)) : s
 
-  s = s.and(
-    getStringValidator(schema).or(
-      z.unknown().refine((v) => typeof v != "string"),
-    ),
-  )
-  s = s.and(
-    getArrayValidator(schema).or(z.unknown().refine((v) => !Array.isArray(v))),
-  )
-  s = s.and(
-    getNumberValidator(schema).or(
-      z.unknown().refine((v) => typeof v != "number"),
-    ),
-  )
-
-  if (schema.properties) {
-    s = s.and(
-      getObjectValidator(schema).or(
-        z.unknown().refine((v) => typeof v != "object" || v === null),
-      ),
-    )
-  }
-
   const preprocessed = z.preprocess(
-    (v) => (typeof v == "string" ? v.trim() : v),
+    (v, ctx) => {
+      if (v === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          fatal: true,
+          message: "Required",
+        })
+      }
+      return v
+    },
     z.preprocess(
-      (v) => (v === "" && schema.type && includesNull(schema.type) ? null : v),
-      s,
+      (v) => (typeof v == "string" ? v.trim() : v),
+      z.preprocess(
+        (v) => (v === "" && schema.type && isOfType(schema, "null") ? null : v),
+        s,
+      ),
     ),
   )
 
   return preprocessed
 }
 
-const getTypeValidator = (
-  type: SchemaTypes | readonly SchemaTypes[],
-): z.ZodType<unknown> => {
-  const typesArr: readonly SchemaTypes[] = Array.isArray(type) ? type : [type]
-  const tests = typesArr.map((t) => typeTests[t])
-  return z
-    .unknown()
-    .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value")
+const validateType = (schema: Schema, v: unknown, ctx: z.RefinementCtx) => {
+  if (!schema.type) {
+    return
+  } else if (v === null && !isOfType(schema, "null")) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Required",
+    })
+  } else if (
+    (typeof v == "number" &&
+      !isOfType(schema, "number") &&
+      !isOfType(schema, "integer")) ||
+    (typeof v == "boolean" && !isOfType(schema, "boolean")) ||
+    (typeof v == "string" && !isOfType(schema, "string")) ||
+    (Array.isArray(v) && !isOfType(schema, "array")) ||
+    (typeof v == "object" &&
+      v !== null &&
+      !Array.isArray(v) &&
+      !isOfType(schema, "object"))
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Invalid value",
+    })
+  }
 }
 
-const getNullValidator = (schema: Schema): z.ZodType<unknown> => {
-  return z
-    .unknown()
-    .refine(
-      (v) => v != null || !schema.type || includesNull(schema.type),
-      "Required",
-    )
-}
+// const getTypeValidator = (
+//   type: SchemaTypes | readonly SchemaTypes[],
+// ): z.ZodType<unknown> => {
+//   const typesArr: readonly SchemaTypes[] = Array.isArray(type) ? type : [type]
+//   const tests = typesArr.map((t) => typeTests[t])
+//   return z
+//     .unknown()
+//     .refine((v) => v == null || tests.some((t) => t(v)), "Invalid value")
+// }
 
-const includesNull = (t: SchemaTypes | readonly SchemaTypes[]) => {
-  return (Array.isArray(t) && t.includes("null")) || t == "null"
-}
+// const getNullValidator = (schema: Schema): z.ZodType<unknown> => {
+//   return z
+//     .unknown()
+//     .refine(
+//       (v) => v != null || !schema.type || includesNull(schema.type),
+//       "Required",
+//     )
+// }
 
-const typeTests = {
-  string: (v) => typeof v == "string",
-  number: (v) => typeof v == "number",
-  integer: (v) => typeof v == "number",
-  array: (v) => Array.isArray(v),
-  object: (v) => typeof v == "object" && v !== null,
-  null: (v) => v === null,
-} satisfies { [K in SchemaTypes]: (v: unknown) => boolean }
+// const includesNull = (t: SchemaTypes | readonly SchemaTypes[]) => {
+//   return (Array.isArray(t) && t.includes("null")) || t == "null"
+// }
+
+// const typeTests = {
+//   string: (v) => typeof v == "string",
+//   number: (v) => typeof v == "number",
+//   integer: (v) => typeof v == "number",
+//   array: (v) => Array.isArray(v),
+//   object: (v) => typeof v == "object" && v !== null,
+//   null: (v) => v === null,
+// } satisfies { [K in SchemaTypes]: (v: unknown) => boolean }
 
 const getConstValidator = (value: unknown): z.ZodType<unknown> => {
-  return z
-    .unknown()
+  return jsonSchema
     .refine((v) => v !== null || value === null, "Required")
     .refine((v) => v === null || v === value, "Invalid value")
 }
@@ -150,4 +193,22 @@ const getConstValidator = (value: unknown): z.ZodType<unknown> => {
 const getOneOfValidator = (oneOf: readonly Schema[]): z.ZodType<unknown> => {
   const s: z.ZodType<unknown> = z.never()
   return oneOf.reduce((s, v) => s.or(getValidationSchema(v)), s)
+}
+
+const isOfType = (schema: Schema, type: SchemaTypes): boolean => {
+  return (
+    (Array.isArray(schema.type) && schema.type.includes(type)) ||
+    schema.type == type
+  )
+}
+
+const validateSubSchema = (
+  zodSchema: z.ZodType<unknown>,
+  v: unknown,
+  ctx: z.RefinementCtx,
+) => {
+  const res = zodSchema.safeParse(v)
+  if (res.error) {
+    res.error.issues.forEach((i) => ctx.addIssue(i))
+  }
 }
