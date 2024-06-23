@@ -33,7 +33,6 @@ export const addRegistrationRoute = createRoute({
       const currentCart = await queryClient.fetchQuery(
         queries.currentCart(eventId),
       )
-      console.log("initial record")
       const initialRecord = await queryClient.fetchQuery({
         ...queries.initialInterviewRecord(
           eventId,

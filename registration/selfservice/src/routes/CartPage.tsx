@@ -67,23 +67,39 @@ export const cartRoute = createRoute({
     const cartQueries = getCartQueryOptions(context)
     const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
     const paymentQueries = getPaymentQueryOptions(paymentAPI)
+
     const currentCart = await queryClient.fetchQuery(
       cartQueries.currentCart(eventId),
     )
     const registrations = await queryClient.fetchQuery(
       selfServiceQueries.registrations(eventId),
     )
-    const pricingResult = await queryClient.fetchQuery(
-      cartQueries.cartPricingResult(currentCart.id),
-    )
-    const paymentOptions = await queryClient.fetchQuery(
-      paymentQueries.paymentMethods(currentCart.id),
-    )
+
+    const [pricingResult, paymentOptions] = await Promise.all([
+      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
+      queryClient.fetchQuery(paymentQueries.paymentMethods(currentCart.id)),
+    ])
+
     return {
       registrations,
       pricingResult,
       paymentOptions,
     }
+  },
+  pendingComponent() {
+    return (
+      <Title title="Cart" subtitle="Your current shopping cart">
+        <Text component="p">
+          Be sure to finish adding or changing all registrations before
+          selecting Checkout.
+        </Text>
+        <Anchor component={Link} to={registrationsRoute.to}>
+          &laquo; View registrations
+        </Anchor>
+        <Divider />
+        <CartView.Placeholder />
+      </Title>
+    )
   },
   component() {
     const { eventId } = cartRoute.useParams()

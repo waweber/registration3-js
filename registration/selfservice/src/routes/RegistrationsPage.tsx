@@ -107,16 +107,23 @@ export const registrationsRoute = createRoute({
     const currentCart = await queryClient.fetchQuery(
       cartQueries.currentCart(eventId),
     )
-    const pricingResult = await queryClient.fetchQuery(
-      cartQueries.cartPricingResult(currentCart.id),
-    )
-    const registrations = await queryClient.fetchQuery(
-      queries.registrations(eventId),
-    )
+
+    const [pricingResult, registrations] = await Promise.all([
+      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
+      queryClient.fetchQuery(queries.registrations(eventId)),
+    ])
+
     return {
       pricingResult,
       registrations,
     }
+  },
+  pendingComponent() {
+    return (
+      <Title title="Registrations" subtitle="View and manage registrations">
+        <RegistrationList.Placeholder />
+      </Title>
+    )
   },
   component() {
     const event = eventRoute.useLoaderData()
@@ -139,23 +146,19 @@ export const accessCodeRoute = createRoute({
     const queries = getSelfServiceQueryOptions(selfServiceAPI)
     const cartQueries = getCartQueryOptions(context)
 
-    const checkResult = await queryClient.fetchQuery(
-      queries.accessCodeCheck(eventId, accessCode),
-    )
+    const [checkResult, currentCart] = await Promise.all([
+      queryClient.fetchQuery(queries.accessCodeCheck(eventId, accessCode)),
+      queryClient.fetchQuery(cartQueries.currentCart(eventId)),
+    ])
+
     if (!checkResult) {
       throw notFound()
     }
 
-    const currentCart = await queryClient.fetchQuery(
-      cartQueries.currentCart(eventId),
-    )
-    const pricingResult = await queryClient.fetchQuery(
-      cartQueries.cartPricingResult(currentCart.id),
-    )
-
-    const registrations = await queryClient.fetchQuery(
-      queries.registrations(eventId, accessCode),
-    )
+    const [pricingResult, registrations] = await Promise.all([
+      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
+      queryClient.fetchQuery(queries.registrations(eventId)),
+    ])
 
     return {
       registrations,
