@@ -5,8 +5,10 @@ import {
   eventRoute,
   registrationsRoute,
 } from "./RegistrationsPage.js"
-import { AddRegistrationPage, ChangeRegistrationPage } from "./InterviewPage.js"
-import { CartPage } from "./CartPage.js"
+import {
+  addRegistrationRoute,
+  changeRegistrationRoute,
+} from "./InterviewPage.js"
 import {
   NotFound,
   SignInEmailRoute,
@@ -15,8 +17,8 @@ import {
   SignInWebAuthnRegisterRoute,
 } from "@open-event-systems/registration-common"
 import { AppContextValue } from "../appContext.js"
-import { getCartQueryOptions } from "../cart/queries.js"
 import { eventsRoute } from "./EventsPage.js"
+import { cartRoute } from "./CartPage.js"
 
 export type RouterContext = AppContextValue
 
@@ -49,76 +51,6 @@ export const webAuthnRegisterRoute = createRoute({
   getParentRoute: () => signInRoute,
   path: "webauthn-register",
   component: SignInWebAuthnRegisterRoute,
-})
-
-export const addRegistrationRoute = createRoute({
-  getParentRoute: () => eventRoute,
-  path: "cart/add/$interviewId",
-  component: AddRegistrationPage,
-  async loader({ context, params, location }) {
-    const { queryClient } = context
-    const { eventId, interviewId } = params
-    const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
-    const stateId = hashParams.get("s")
-
-    const queries = getCartQueryOptions(context)
-
-    if (stateId) {
-      return await queryClient.ensureQueryData(queries.interviewRecord(stateId))
-    } else {
-      const currentCart = await queryClient.ensureQueryData(
-        queries.currentCart(eventId),
-      )
-      return await queryClient.ensureQueryData(
-        queries.initialInterviewRecord(
-          eventId,
-          currentCart.id,
-          interviewId,
-          null,
-          accessCode,
-        ),
-      )
-    }
-  },
-})
-
-export const changeRegistrationRoute = createRoute({
-  getParentRoute: () => eventRoute,
-  path: "cart/change/$registrationId/$interviewId",
-  component: ChangeRegistrationPage,
-  async loader({ context, params, location }) {
-    const { queryClient } = context
-    const { eventId, interviewId, registrationId } = params
-    const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
-    const stateId = hashParams.get("s")
-
-    const queries = getCartQueryOptions(context)
-
-    if (stateId) {
-      return await queryClient.ensureQueryData(queries.interviewRecord(stateId))
-    } else {
-      const currentCart = await queryClient.ensureQueryData(
-        queries.currentCart(eventId),
-      )
-      return await queryClient.ensureQueryData(
-        queries.initialInterviewRecord(
-          eventId,
-          currentCart.id,
-          interviewId,
-          registrationId,
-          accessCode,
-        ),
-      )
-    }
-  },
-})
-
-export const cartRoute = createRoute({
-  getParentRoute: () => eventRoute,
-  path: "cart",
-  component: CartPage,
 })
 
 export const routeTree = rootRoute.addChildren([

@@ -1,13 +1,12 @@
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router"
 import { useCallback } from "react"
-import { addRegistrationRoute } from "../routes/index.js"
 import {
   UseOptionsDialogHook,
   UseOptionsDialogOptions,
   useOptionsDialog,
 } from "@open-event-systems/registration-common"
-import { RegistrationListResponse } from "../api/types.js"
 import { useRegistrations } from "./api.js"
+import { addRegistrationRoute } from "../routes/InterviewPage.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {

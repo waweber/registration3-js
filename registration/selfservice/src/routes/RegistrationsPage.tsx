@@ -7,13 +7,8 @@ import {
   UserMenu,
   useTitle,
 } from "@open-event-systems/registration-common/components"
-import {
-  cartRoute,
-  changeRegistrationRoute,
-  rootRoute,
-  signInMenuRoute,
-} from "./index.js"
-import { Event, RegistrationListResponse } from "../api/types.js"
+import { rootRoute, signInMenuRoute } from "./index.js"
+import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
 import { Suspense } from "react"
 import {
@@ -41,6 +36,8 @@ import { getSelfServiceQueryOptions } from "../api/queries.js"
 import { getCartQueryOptions } from "../cart/queries.js"
 import { useRegistrations } from "../hooks/api.js"
 import { useCartPricingResult, useCurrentCart } from "../cart/hooks.js"
+import { cartRoute } from "./CartPage.js"
+import { changeRegistrationRoute } from "./InterviewPage.js"
 
 export const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -57,7 +54,7 @@ export const eventRoute = createRoute({
     const { eventId } = params
     const { queryClient, selfServiceAPI } = context
     const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
-    const events = await queryClient.ensureQueryData(selfServiceQueries.events)
+    const events = await queryClient.fetchQuery(selfServiceQueries.events)
 
     const event = events.get(eventId)
     if (!event) {
@@ -107,13 +104,13 @@ export const registrationsRoute = createRoute({
     const { eventId } = params
     const queries = getSelfServiceQueryOptions(selfServiceAPI)
     const cartQueries = getCartQueryOptions(context)
-    const currentCart = await queryClient.ensureQueryData(
+    const currentCart = await queryClient.fetchQuery(
       cartQueries.currentCart(eventId),
     )
-    const pricingResult = await queryClient.ensureQueryData(
+    const pricingResult = await queryClient.fetchQuery(
       cartQueries.cartPricingResult(currentCart.id),
     )
-    const registrations = await queryClient.ensureQueryData(
+    const registrations = await queryClient.fetchQuery(
       queries.registrations(eventId),
     )
     return {
@@ -142,21 +139,21 @@ export const accessCodeRoute = createRoute({
     const queries = getSelfServiceQueryOptions(selfServiceAPI)
     const cartQueries = getCartQueryOptions(context)
 
-    const checkResult = await queryClient.ensureQueryData(
+    const checkResult = await queryClient.fetchQuery(
       queries.accessCodeCheck(eventId, accessCode),
     )
     if (!checkResult) {
       throw notFound()
     }
 
-    const currentCart = await queryClient.ensureQueryData(
+    const currentCart = await queryClient.fetchQuery(
       cartQueries.currentCart(eventId),
     )
-    const pricingResult = await queryClient.ensureQueryData(
+    const pricingResult = await queryClient.fetchQuery(
       cartQueries.cartPricingResult(currentCart.id),
     )
 
-    const registrations = await queryClient.ensureQueryData(
+    const registrations = await queryClient.fetchQuery(
       queries.registrations(eventId, accessCode),
     )
 

@@ -6,15 +6,12 @@ import {
   UseOptionsDialogOptions,
   useOptionsDialog,
 } from "@open-event-systems/registration-common"
+import { getPaymentQueryOptions } from "../queries.js"
 
 export const usePaymentMethods = (cartId: string): PaymentMethod[] => {
   const paymentAPI = usePaymentAPI()
-  const methodsQuery = useSuspenseQuery({
-    queryKey: ["carts", cartId, "payment-methods"],
-    async queryFn() {
-      return await paymentAPI.getPaymentMethods(cartId)
-    },
-  })
+  const queries = getPaymentQueryOptions(paymentAPI)
+  const methodsQuery = useSuspenseQuery(queries.paymentMethods(cartId))
   return methodsQuery.data
 }
 

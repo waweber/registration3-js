@@ -12,7 +12,7 @@ export const eventsRoute = createRoute({
   async loader({ context }) {
     const { queryClient, selfServiceAPI } = context
     const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
-    const events = await queryClient.ensureQueryData(selfServiceQueries.events)
+    const events = await queryClient.fetchQuery(selfServiceQueries.events)
     return events
   },
   component() {

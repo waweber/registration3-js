@@ -8,7 +8,6 @@ import {
   Options,
   Spacer,
 } from "@open-event-systems/registration-common/components"
-import { cartRoute } from "./index.js"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { useInterviewOptionsDialog } from "../hooks/interview.js"
@@ -26,6 +25,7 @@ import {
 import { IconPlus, IconShoppingCartCheck } from "@tabler/icons-react"
 import {
   Link,
+  createRoute,
   useLocation,
   useNavigate,
   useRouter,
@@ -33,6 +33,7 @@ import {
 import {
   PaymentContext,
   PaymentResult,
+  getPaymentQueryOptions,
   usePayment,
   usePaymentAPI,
   usePaymentMethods,
@@ -47,7 +48,9 @@ import {
 } from "@open-event-systems/registration-common"
 import { useCartPricingResult, useStickyCurrentCart } from "../cart/hooks.js"
 import { useApp } from "../appContext.js"
-import { registrationsRoute } from "./RegistrationsPage.js"
+import { eventRoute, registrationsRoute } from "./RegistrationsPage.js"
+import { getCartQueryOptions } from "../cart/queries.js"
+import { getSelfServiceQueryOptions } from "../api/queries.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -55,25 +58,53 @@ declare module "@tanstack/react-router" {
   }
 }
 
-export const CartPage = () => {
-  const { eventId } = cartRoute.useParams()
+export const cartRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  path: "cart",
+  async loader({ context, params }) {
+    const { queryClient, selfServiceAPI, paymentAPI } = context
+    const { eventId } = params
+    const cartQueries = getCartQueryOptions(context)
+    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
+    const paymentQueries = getPaymentQueryOptions(paymentAPI)
+    const currentCart = await queryClient.fetchQuery(
+      cartQueries.currentCart(eventId),
+    )
+    const registrations = await queryClient.fetchQuery(
+      selfServiceQueries.registrations(eventId),
+    )
+    const pricingResult = await queryClient.fetchQuery(
+      cartQueries.cartPricingResult(currentCart.id),
+    )
+    const paymentOptions = await queryClient.fetchQuery(
+      paymentQueries.paymentMethods(currentCart.id),
+    )
+    return {
+      registrations,
+      pricingResult,
+      paymentOptions,
+    }
+  },
+  component() {
+    const { eventId } = cartRoute.useParams()
 
-  return (
-    <Title title="Cart" subtitle="Your current shopping cart">
-      <Text component="p">
-        Be sure to finish adding or changing all registrations before selecting
-        Checkout.
-      </Text>
-      <Anchor component={Link} to={registrationsRoute.to}>
-        &laquo; View registrations
-      </Anchor>
-      <Divider />
-      <Suspense fallback={<CartView.Placeholder />}>
-        <CartComponent eventId={eventId} />
-      </Suspense>
-    </Title>
-  )
-}
+    return (
+      <Title title="Cart" subtitle="Your current shopping cart">
+        <Text component="p">
+          Be sure to finish adding or changing all registrations before
+          selecting Checkout.
+        </Text>
+        <Anchor component={Link} to={registrationsRoute.to}>
+          &laquo; View registrations
+        </Anchor>
+        <Divider />
+        <Suspense fallback={<CartView.Placeholder />}>
+          <CartComponent eventId={eventId} />
+        </Suspense>
+      </Title>
+    )
+  },
+})
 
 const CartComponent = ({ eventId }: { eventId: string }) => {
   const [currentCart, setCurrentCart] = useStickyCurrentCart(eventId)
