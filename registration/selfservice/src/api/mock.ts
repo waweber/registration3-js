@@ -53,7 +53,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
         id: "empty",
       }
     },
-    async checkAccessCode(eventId, accessCode) {
+    async checkAccessCode(_eventId, _accessCode) {
       return false
     },
   }

@@ -20,16 +20,8 @@ export type SelfServiceLayoutProps = Omit<AppShellProps, "title"> & {
 }
 
 export const SelfServiceLayout = (props: SelfServiceLayoutProps) => {
-  const {
-    className,
-    logoSrc,
-    homeHref,
-    title,
-    subtitle,
-    userMenu,
-    children,
-    ...other
-  } = useProps("SelfServiceLayout", {}, props)
+  const { logoSrc, homeHref, title, subtitle, userMenu, children, ...other } =
+    useProps("SelfServiceLayout", {}, props)
 
   return (
     <AppShell

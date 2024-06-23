@@ -79,7 +79,8 @@ const EmailAuthCodeForm = ({
       }}
     >
       <Text span>
-        We've sent a code to your email address. Enter the code to continue.
+        We&apos;ve sent a code to your email address. Enter the code to
+        continue.
       </Text>
       <TextInput
         autoFocus

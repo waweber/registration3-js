@@ -135,11 +135,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
       <Grid justify="space-between">
         {interviewOptions.options.length > 0 && (
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
-            <CartAddButton
-              eventId={eventId}
-              cartId={currentCart.id}
-              showCheckout={showCheckout}
-            />
+            <CartAddButton eventId={eventId} showCheckout={showCheckout} />
           </Grid.Col>
         )}
         {showCheckout && (
@@ -227,11 +223,9 @@ const CartPricingResultComponent = ({
 
 const CartAddButton = ({
   eventId,
-  cartId,
   showCheckout,
 }: {
   eventId: string
-  cartId: string
   showCheckout?: boolean
 }) => {
   const interviewOptions = useInterviewOptionsDialog(eventId)

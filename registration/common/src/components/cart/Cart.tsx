@@ -168,9 +168,7 @@ const CartPlaceholder = (props: CartPlaceholderProps) => {
 
 Cart.Placeholder = CartPlaceholder
 
-export type CartEmptyProps = BoxProps
-
-const CartEmpty = (props: CartEmptyProps) => (
+const CartEmpty = () => (
   <Group align="center" m="xl" c="dimmed">
     <IconAlertCircle />
     <Text span>Your cart is empty.</Text>

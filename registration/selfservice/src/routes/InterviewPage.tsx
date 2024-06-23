@@ -1,11 +1,6 @@
 import { Title } from "@open-event-systems/registration-common/components"
 import { Suspense, useCallback, useState } from "react"
-import {
-  createRoute,
-  redirect,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router"
+import { createRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {
   Interview,
@@ -211,20 +206,4 @@ const InterviewPage = ({
       )}
     </Interview>
   )
-}
-
-const getStateId = (hash: string) => {
-  if (!hash) {
-    return null
-  }
-  const params = new URLSearchParams(hash)
-  return params.get("s")
-}
-
-const getAccessCode = (hash: string) => {
-  if (!hash) {
-    return null
-  }
-  const params = new URLSearchParams(hash)
-  return params.get("a")
 }

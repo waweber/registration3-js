@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable, runInAction, when } from "mobx"
+import { action, makeAutoObservable, observable, when } from "mobx"
 import { AuthAPI } from "./types.js"
 import { FetchLike, WretchResponse } from "wretch"
 import {
