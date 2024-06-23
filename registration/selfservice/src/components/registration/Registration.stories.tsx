@@ -2,8 +2,13 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Registration } from "./Registration.js"
 import { Box } from "@mantine/core"
 
+import exampleLogo from "@open-event-systems/registration-common/example-logo.svg"
+
 const meta: Meta<typeof Registration> = {
   component: Registration,
+  parameters: {
+    layout: "centered",
+  },
 }
 
 export default meta
@@ -15,6 +20,21 @@ export const Default: StoryObj<typeof Registration> = {
     headerColor: undefined,
     description: "Example description.\n\n- Markdown formatted\n- Item 2",
     style: {
+      minWidth: 250,
+      maxWidth: 300,
+    },
+  },
+}
+
+export const With_Image: StoryObj<typeof Registration> = {
+  args: {
+    title: "Copley Deer",
+    subtitle: "Sponsor",
+    headerColor: undefined,
+    headerImage: exampleLogo,
+    description: "Example description.\n\n- Markdown formatted\n- Item 2",
+    style: {
+      minWidth: 250,
       maxWidth: 300,
     },
   },
@@ -27,6 +47,7 @@ export const Menu_Items: StoryObj<typeof Registration> = {
     headerColor: undefined,
     description: "Example description.\n\n- Markdown formatted\n- Item 2",
     style: {
+      minWidth: 250,
       maxWidth: 300,
     },
     menuItems: [
@@ -39,7 +60,7 @@ export const Menu_Items: StoryObj<typeof Registration> = {
 export const Placeholder: StoryObj<typeof Registration> = {
   render() {
     return (
-      <Box maw={300}>
+      <Box miw={250} maw={300}>
         <Registration.Placeholder />
       </Box>
     )

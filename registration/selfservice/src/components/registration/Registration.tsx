@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Box,
+  CSSProperties,
   Card,
   CardProps,
   Menu,
@@ -23,6 +24,9 @@ export type RegistrationProps = CardProps & {
   subtitle?: string
   description?: string
   headerColor?: string
+  headerImage?: string
+  new?: boolean
+  n?: number
   menuItems?: RegistrationMenuItem[]
 }
 
@@ -34,14 +38,31 @@ export const Registration = (props: RegistrationProps) => {
     subtitle,
     description,
     headerColor,
+    headerImage,
+    new: _new,
+    n = 0,
     menuItems = [],
     ...other
   } = useProps("Registration", {}, props)
 
+  const cssProps: CSSProperties = {
+    "--registration-n": n,
+  }
+
+  if (headerColor) {
+    cssProps["--header-color"] = headerColor
+  }
+
+  if (headerImage) {
+    cssProps["--header-image"] = `url(${headerImage})`
+  }
+
   return (
     <Card
-      className={clsx("Registration-root", className)}
-      style={{ "--header-color": headerColor, ...style }}
+      className={clsx("Registration-root", className, {
+        "Registration-new": _new,
+      })}
+      style={{ ...cssProps, ...style }}
       {...other}
     >
       <Card.Section className="Registration-header">

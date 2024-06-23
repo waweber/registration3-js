@@ -10,7 +10,7 @@ import {
 import { rootRoute, signInMenuRoute } from "./index.js"
 import { Event } from "../api/types.js"
 import { RegistrationList } from "../components/registration/RegistrationList.js"
-import { Suspense } from "react"
+import { Suspense, useEffect, useRef } from "react"
 import {
   Alert,
   Button,
@@ -38,6 +38,8 @@ import { useRegistrations } from "../hooks/api.js"
 import { useCartPricingResult, useCurrentCart } from "../cart/hooks.js"
 import { cartRoute } from "./CartPage.js"
 import { changeRegistrationRoute } from "./InterviewPage.js"
+
+const changedRegistrationsKey = "oes-changed-registrations"
 
 export const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -207,17 +209,37 @@ const Registrations = ({
 
   const interviewOptions = useInterviewOptionsDialog(event.id, accessCode)
 
+  const changedRegistrations = getChangedRegistrations() ?? []
+  const changedRegistrationsRef = useRef(changedRegistrations)
+
+  useEffect(() => {
+    const curIds = registrations.registrations.map((r) => r.id)
+    setChangedRegistrations(
+      changedRegistrations.filter((id) => !curIds.includes(id)),
+    )
+    changedRegistrationsRef.current = [
+      ...changedRegistrationsRef.current,
+      ...changedRegistrations.filter(
+        (id) => !changedRegistrationsRef.current.includes(id),
+      ),
+    ]
+  }, [registrations, changedRegistrations])
+
   return (
     <>
       <MTitle order={4}>{event.title}</MTitle>
       <Text component="p">These are your registrations for {event.title}.</Text>
       <Divider />
       <RegistrationList
-        registrations={registrations.registrations.map((r) => ({
+        registrations={registrations.registrations.map((r, i) => ({
           key: r.id,
           title: r.title,
           subtitle: r.subtitle,
           description: r.description,
+          headerColor: r.header_color,
+          headerImage: r.header_image,
+          new: changedRegistrationsRef.current.includes(r.id),
+          n: i,
           menuItems: r.change_options?.map((o) => ({
             label: o.title,
             onClick: () => {
@@ -272,4 +294,16 @@ const Registrations = ({
       />
     </>
   )
+}
+
+export const setChangedRegistrations = (ids: string[]) => {
+  window.sessionStorage.setItem(changedRegistrationsKey, JSON.stringify(ids))
+}
+
+export const getChangedRegistrations = (): string[] | null => {
+  const dataStr = window.sessionStorage.getItem(changedRegistrationsKey)
+  if (!dataStr) {
+    return null
+  }
+  return JSON.parse(dataStr)
 }

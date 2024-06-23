@@ -17,6 +17,7 @@ export type Registration = Readonly<{
   title?: string
   subtitle?: string
   description?: string
+  header_color?: string
   header_image?: string
   change_options?: InterviewOption[]
 }>

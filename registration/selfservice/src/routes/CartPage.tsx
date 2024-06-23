@@ -48,7 +48,12 @@ import {
 } from "@open-event-systems/registration-common"
 import { useCartPricingResult, useStickyCurrentCart } from "../cart/hooks.js"
 import { useApp } from "../appContext.js"
-import { eventRoute, registrationsRoute } from "./RegistrationsPage.js"
+import {
+  eventRoute,
+  getChangedRegistrations,
+  registrationsRoute,
+  setChangedRegistrations,
+} from "./RegistrationsPage.js"
 import { getCartQueryOptions } from "../cart/queries.js"
 import { getSelfServiceQueryOptions } from "../api/queries.js"
 
@@ -438,6 +443,11 @@ const CartPageDialog = ({
   useEffect(() => {
     if (payment.result?.status == "completed") {
       setCurrentCart(null)
+      const curChanged = getChangedRegistrations() ?? []
+      setChangedRegistrations([
+        ...curChanged,
+        ...pricingResult.registrations.map((r) => r.id),
+      ])
     }
   }, [payment.result?.status])
 
