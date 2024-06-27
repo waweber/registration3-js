@@ -2,26 +2,18 @@ import path from "path"
 import webpack from "webpack"
 import HtmlWebpackPlugin from "html-webpack-plugin"
 
-import packageJson from "./package.json" with { type: "json" }
-const deps = packageJson.dependencies
-const peerDeps = packageJson.peerDependencies
-
 const config = (env, argv) => {
   const isProd = argv.mode != "development"
   /** @type {import("webpack").Configuration} */
   const config = {
     mode: isProd ? "production" : "development",
     entry: {
-      main: "./src/bootstrap.ts",
+      main: "./src/app/entry.tsx",
     },
     output: {
       path: path.resolve("./dist"),
       publicPath: "/",
       filename: isProd ? "[name].[contenthash].js" : undefined,
-      library: {
-        name: "registration_selfservice",
-        type: "var",
-      },
     },
     resolve: {
       extensionAlias: {
@@ -30,8 +22,10 @@ const config = (env, argv) => {
     },
     module: {
       rules: [
+        // development: only transpile ts/tsx/jsx
+        // production: transpile everything
         {
-          test: /\.tsx?$/,
+          test: isProd ? /\.([jt]sx?)$/ : /\.(tsx?|jsx)$/,
           use: "swc-loader",
         },
         {
@@ -92,6 +86,10 @@ const config = (env, argv) => {
         }
       : undefined,
     devtool: isProd ? undefined : "eval-source-map",
+    cache: {
+      type: "filesystem",
+      cacheDirectory: ".cache/webpack",
+    },
     devServer: {
       historyApiFallback: true,
       client: {

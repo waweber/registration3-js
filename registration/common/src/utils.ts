@@ -1,4 +1,4 @@
-import { Context, useContext } from "react"
+import { Context, createContext, useContext } from "react"
 
 export class NotFoundError extends Error {
   isNotFound = true as const
@@ -80,6 +80,15 @@ export const catchNotFound = async <T>(
     }
     throw e
   }
+}
+
+/**
+ * createContext that allows omitting the value.
+ */
+export const createOptionalContext = <T>(
+  value: T | null = null,
+): Context<T | null> => {
+  return createContext(value)
 }
 
 /**

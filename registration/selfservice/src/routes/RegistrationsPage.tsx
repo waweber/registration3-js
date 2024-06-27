@@ -9,7 +9,7 @@ import {
 } from "@open-event-systems/registration-common/components"
 import { rootRoute, signInMenuRoute } from "./index.js"
 import { Event } from "../api/types.js"
-import { RegistrationList } from "../components/registration/RegistrationList.js"
+import { RegistrationList } from "../../../common/src/features/selfservice/components/registration/RegistrationList.js"
 import { Suspense, useEffect, useRef } from "react"
 import {
   Alert,

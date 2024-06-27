@@ -34,7 +34,7 @@ const format = (amount: number, code: string, fracDigits: number): string => {
     amount: number,
     code: string,
     fracDigits: number,
-    display?: string,
+    display?: Intl.NumberFormatOptions["currencyDisplay"],
   ) => string)[] = [
     (a, c, d) => formatIntl(a, c, d, "symbol"),
     (a, c, d) => formatIntl(a, c, d),
@@ -55,9 +55,9 @@ const formatIntl = (
   amount: number,
   code: string,
   fracDigits: number,
-  display?: string,
+  display?: Intl.NumberFormatOptions["currencyDisplay"],
 ): string => {
-  const opts: Intl.NumberFormatOptions & { currencyDisplay?: string } = {
+  const opts: Intl.NumberFormatOptions = {
     style: "currency",
     minimumFractionDigits: fracDigits,
     maximumFractionDigits: fracDigits,

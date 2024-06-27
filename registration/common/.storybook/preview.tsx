@@ -1,9 +1,12 @@
 import type { Preview } from "@storybook/react"
-import { DEFAULT_THEME, MantineProvider } from "@mantine/core"
+import { MantineProvider } from "@mantine/core"
 import React from "react"
 
 import "@mantine/core/styles.css"
+import "@open-event-systems/interview-components/styles.scss"
 import "../src/styles.scss"
+
+// @ts-ignore
 import exampleLogo from "../resources/example-logo.svg"
 
 const preview: Preview = {
@@ -20,7 +23,6 @@ const preview: Preview = {
     (Story) => (
       <MantineProvider
         theme={{
-          ...DEFAULT_THEME,
           components: {
             Logo: {
               defaultProps: {
