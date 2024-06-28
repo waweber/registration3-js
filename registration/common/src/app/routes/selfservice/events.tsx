@@ -1,5 +1,5 @@
-import { authRoute } from "#src/app/routes/auth"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api"
+import { authRoute } from "#src/app/routes/auth.js"
+import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
 import { createRoute } from "@tanstack/react-router"
 import { lazy } from "react"
 
@@ -13,6 +13,6 @@ export const eventsRoute = createRoute({
     return events
   },
   component: lazy(
-    () => import("#src/features/selfservice/components/EventsRoute"),
+    () => import("#src/features/selfservice/components/EventsRoute.js"),
   ),
 })

@@ -3,12 +3,12 @@ import { useCallback, useState } from "react"
 import {
   PaymentServiceComponentProps,
   usePaymentContext,
-} from "#src/features/payment"
-import { Currency } from "#src/components"
+} from "#src/features/payment/index.js"
+import { Currency } from "#src/components/index.js"
 import {
   PaymentCloseButton,
   PaymentComplete,
-} from "#src/features/payment/components"
+} from "#src/features/payment/components/index.js"
 
 export type MockPaymentRequestBody = {
   card_number: string
@@ -20,7 +20,7 @@ export type MockPaymentResultBody = {
   total_price_string: string
 }
 
-declare module "#src/features/payment" {
+declare module "#src/features/payment/types.js" {
   interface PaymentRequestBodyMap {
     mock: MockPaymentRequestBody
   }

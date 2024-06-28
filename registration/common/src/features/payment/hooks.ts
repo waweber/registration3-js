@@ -1,22 +1,25 @@
-import { getPaymentQueryOptions, usePaymentAPI } from "#src/features/payment"
+import {
+  getPaymentQueryOptions,
+  usePaymentAPI,
+} from "#src/features/payment/index.js"
 import {
   PaymentMethod,
   PaymentRequestBodyMap,
   PaymentResult,
   PaymentServiceComponent,
-} from "#src/features/payment"
-import { PaymentPlaceholder } from "#src/features/payment/components"
-import { getPaymentComponent } from "#src/features/payment/services"
+} from "#src/features/payment/index.js"
+import { PaymentPlaceholder } from "#src/features/payment/components/index.js"
+import { getPaymentComponent } from "#src/features/payment/services/index.js"
 import {
   UseOptionsDialogHook,
   UseOptionsDialogOptions,
   useOptionsDialog,
-} from "#src/hooks/options"
+} from "#src/hooks/options.js"
 import {
   createOptionalContext,
   isResponseError,
   useRequiredContext,
-} from "#src/utils"
+} from "#src/utils.js"
 import {
   useMutation,
   useQueryClient,

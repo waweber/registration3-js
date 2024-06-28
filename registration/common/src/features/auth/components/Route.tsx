@@ -1,4 +1,4 @@
-import { FullPageMenuLayout, Title } from "#src/components/index"
+import { FullPageMenuLayout, Title } from "#src/components/index.js"
 import { Outlet } from "@tanstack/react-router"
 
 export const SignInRoute = () => {

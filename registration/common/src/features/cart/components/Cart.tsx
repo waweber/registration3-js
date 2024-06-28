@@ -1,4 +1,4 @@
-import { Currency } from "#src/components"
+import { Currency } from "#src/components/index.js"
 import {
   Box,
   BoxProps,

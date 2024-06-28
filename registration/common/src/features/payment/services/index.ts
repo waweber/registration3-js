@@ -1,4 +1,4 @@
-import { PaymentServiceComponentProps } from "#src/features/payment"
+import { PaymentServiceComponentProps } from "#src/features/payment/index.js"
 import { ComponentType } from "react"
 
 const paymentComponents: Record<

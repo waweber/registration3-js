@@ -1,6 +1,6 @@
-import { authRoute } from "#src/app/routes/auth"
-import { getCartQueryOptions } from "#src/features/cart/api"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api"
+import { authRoute } from "#src/app/routes/auth.js"
+import { getCartQueryOptions } from "#src/features/cart/api.js"
+import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
 import {
   createRoute,
   lazyRouteComponent,
@@ -24,7 +24,8 @@ export const eventRoute = createRoute({
     return event
   },
   component: lazy(
-    () => import("#src/features/selfservice/components/SelfServiceLayoutRoute"),
+    () =>
+      import("#src/features/selfservice/components/SelfServiceLayoutRoute.js"),
   ),
 })
 
@@ -51,11 +52,11 @@ export const selfServiceRegistrationsRoute = createRoute({
     }
   },
   pendingComponent: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/RegistrationsRoute"),
+    () => import("#src/features/selfservice/components/RegistrationsRoute.js"),
     "RegistrationsPendingRoute",
   ),
   component: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/RegistrationsRoute"),
+    () => import("#src/features/selfservice/components/RegistrationsRoute.js"),
     "RegistrationsRoute",
   ),
 })
@@ -89,11 +90,11 @@ export const accessCodeRoute = createRoute({
     }
   },
   notFoundComponent: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/AccessCodeRoute"),
+    () => import("#src/features/selfservice/components/AccessCodeRoute.js"),
     "AccessCodeNotFound",
   ),
   component: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/AccessCodeRoute"),
+    () => import("#src/features/selfservice/components/AccessCodeRoute.js"),
     "AccessCodeRoute",
   ),
 })

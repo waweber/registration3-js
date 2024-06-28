@@ -2,8 +2,8 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { useCallback, useMemo, useRef } from "react"
 import { getCartQueryOptions } from "./api.js"
 import { currentCartStore } from "./stores.js"
-import { Cart, CartPricingResult } from "#src/features/cart"
-import { useApp } from "#src/hooks/app"
+import { Cart, CartPricingResult } from "#src/features/cart/index.js"
+import { useApp } from "#src/hooks/app.js"
 
 export const useStickyCurrentCart = (
   eventId: string,

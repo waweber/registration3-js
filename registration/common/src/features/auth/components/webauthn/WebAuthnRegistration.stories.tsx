@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { WebAuthnRegistration } from "./WebAuthnRegistration.js"
-import { FullPageMenuLayout } from "#src/components/index"
+import { FullPageMenuLayout } from "#src/components/index.js"
 
 const meta: Meta<typeof WebAuthnRegistration> = {
   component: WebAuthnRegistration,

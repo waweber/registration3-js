@@ -1,7 +1,7 @@
 import {
   PaymentServiceRenderProps,
   usePaymentContext,
-} from "#src/features/payment"
+} from "#src/features/payment/index.js"
 import {
   Group,
   LoadingOverlay,

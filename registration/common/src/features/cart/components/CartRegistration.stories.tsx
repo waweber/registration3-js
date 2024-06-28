@@ -2,7 +2,7 @@ import {
   CartRegistration,
   LineItem,
   Modifier,
-} from "#src/features/cart/components"
+} from "#src/features/cart/components/index.js"
 import { Box } from "@mantine/core"
 import { Meta, StoryObj } from "@storybook/react"
 

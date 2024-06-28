@@ -4,13 +4,13 @@ import { IconUserOff } from "@tabler/icons-react"
 import {
   FullPageMenuLayout,
   FullPageMenuLayoutContentProps,
-} from "#src/components/index"
-import { useAuth, useAuthAPI } from "#src/hooks/auth"
+} from "#src/components/index.js"
+import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { startRegistration } from "@simplewebauthn/browser"
 import { RegistrationResponseJSON } from "@simplewebauthn/types"
-import { makeTokenFromResponse } from "#src/api/token"
+import { makeTokenFromResponse } from "#src/api/token.js"
 
 export type WebAuthnRegistrationProps = Omit<
   FullPageMenuLayoutContentProps,

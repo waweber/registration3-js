@@ -12,22 +12,16 @@
   },
   "imports": {
     "#src/*.scss": "./src/*.scss",
-    "#src/*": {
+    "#src/*.js": {
       "storybook": [
         "./src/*.ts",
-        "./src/*.tsx",
-        "./src/*/index.ts"
+        "./src/*.tsx"
       ],
       "webpack": [
         "./src/*.ts",
-        "./src/*.tsx",
-        "./src/*/index.ts"
+        "./src/*.tsx"
       ],
-      "default": [
-        "./dist/src/*.js",
-        "./dist/src/*/index.js",
-        "./dist/src/*"
-      ]
+      "default": "./dist/src/*.js"
     }
   },
   "scripts": {

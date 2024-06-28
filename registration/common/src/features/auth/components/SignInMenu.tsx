@@ -1,14 +1,14 @@
-import { makeTokenFromResponse } from "#src/api/token"
-import { signInEmailRoute, signInMenuRoute } from "#src/app/routes/signin"
+import { makeTokenFromResponse } from "#src/api/token.js"
+import { signInEmailRoute, signInMenuRoute } from "#src/app/routes/signin.js"
 import {
   FullPageMenuLayout,
   FullPageMenuLayoutContentProps,
-} from "#src/components/index"
+} from "#src/components/index.js"
 import {
   getPlatformWebAuthnDetails,
   getSupportsWebAuthn,
-} from "#src/features/auth/components/webauthn/webauthn"
-import { useAuth, useAuthAPI } from "#src/hooks/auth"
+} from "#src/features/auth/components/webauthn/webauthn.js"
+import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
 import { Card, NavLink, useProps } from "@mantine/core"
 import { startAuthentication } from "@simplewebauthn/browser"
 import { AuthenticationResponseJSON } from "@simplewebauthn/types"

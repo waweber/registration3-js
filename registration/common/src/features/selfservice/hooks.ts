@@ -8,14 +8,14 @@ import {
 } from "@tanstack/react-router"
 import { getSelfServiceQueryOptions } from "./api.js"
 import { useCallback } from "react"
-import { useApp } from "#src/hooks/app"
-import { createOptionalContext, useRequiredContext } from "#src/utils"
+import { useApp } from "#src/hooks/app.js"
+import { createOptionalContext, useRequiredContext } from "#src/utils.js"
 import {
   UseOptionsDialogHook,
   UseOptionsDialogOptions,
   useOptionsDialog,
-} from "#src/hooks/options"
-import { addRegistrationRoute } from "#src/app/routes/selfservice/cart"
+} from "#src/hooks/options.js"
+import { addRegistrationRoute } from "#src/app/routes/selfservice/cart.js"
 
 export const SelfServiceAPIContext = createOptionalContext<SelfServiceAPI>()
 

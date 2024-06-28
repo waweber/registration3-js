@@ -1,7 +1,7 @@
-import { eventRoute } from "#src/app/routes/selfservice/registrations"
-import { getCartQueryOptions } from "#src/features/cart/api"
-import { getPaymentQueryOptions } from "#src/features/payment"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api"
+import { eventRoute } from "#src/app/routes/selfservice/registrations.js"
+import { getCartQueryOptions } from "#src/features/cart/api.js"
+import { getPaymentQueryOptions } from "#src/features/payment/index.js"
+import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
 import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
 
 export const cartRoute = createRoute({
@@ -33,11 +33,11 @@ export const cartRoute = createRoute({
     }
   },
   component: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/CartRoute"),
+    () => import("#src/features/selfservice/components/CartRoute.js"),
     "CartRoute",
   ),
   notFoundComponent: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/CartRoute"),
+    () => import("#src/features/selfservice/components/CartRoute.js"),
     "CartNotFound",
   ),
 })
@@ -73,7 +73,7 @@ export const addRegistrationRoute = createRoute({
     }
   },
   component: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/InterviewRoute"),
+    () => import("#src/features/selfservice/components/InterviewRoute.js"),
     "AddRegistrationRoute",
   ),
 })
@@ -108,7 +108,7 @@ export const changeRegistrationRoute = createRoute({
     }
   },
   component: lazyRouteComponent(
-    () => import("#src/features/selfservice/components/InterviewRoute"),
+    () => import("#src/features/selfservice/components/InterviewRoute.js"),
     "ChangeRegistrationRoute",
   ),
 })

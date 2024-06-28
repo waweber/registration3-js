@@ -22,10 +22,10 @@ import {
 import {
   getChangedRegistrations,
   setChangedRegistrations,
-} from "#src/features/selfservice/components/RegistrationsRoute"
-import { getCartQueryOptions } from "#src/features/cart/api"
-import { Cart as CartView } from "#src/features/cart/components/Cart"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api"
+} from "#src/features/selfservice/components/RegistrationsRoute.js"
+import { getCartQueryOptions } from "#src/features/cart/api.js"
+import { Cart as CartView } from "#src/features/cart/components/Cart.js"
+import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
 import {
   PaymentContext,
   PaymentResult,
@@ -34,26 +34,31 @@ import {
   usePaymentAPI,
   usePaymentMethods,
   usePaymentMethodsDialog,
-} from "#src/features/payment"
-import { CurrencyContext, Options, Spacer, Title } from "#src/components/index"
+} from "#src/features/payment/index.js"
+import {
+  CurrencyContext,
+  Options,
+  Spacer,
+  Title,
+} from "#src/components/index.js"
 import {
   useCartPricingResult,
   useStickyCurrentCart,
-} from "#src/features/cart/hooks"
-import { useInterviewOptionsDialog } from "#src/features/selfservice/hooks"
-import { useApp } from "#src/hooks/app"
+} from "#src/features/cart/hooks.js"
+import { useInterviewOptionsDialog } from "#src/features/selfservice/hooks.js"
+import { useApp } from "#src/hooks/app.js"
 import {
   Cart,
   CartConflictError,
   CartConflictResult,
   CartPricingResult,
-} from "#src/features/cart/types"
-import { CartRegistration } from "#src/features/cart/components/CartRegistration"
-import { LineItem } from "#src/features/cart/components/LineItem"
-import { Modifier } from "#src/features/cart/components/Modifier"
-import { isResponseError } from "#src/utils"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations"
-import { cartRoute } from "#src/app/routes/selfservice/cart"
+} from "#src/features/cart/types.js"
+import { CartRegistration } from "#src/features/cart/components/CartRegistration.js"
+import { LineItem } from "#src/features/cart/components/LineItem.js"
+import { Modifier } from "#src/features/cart/components/Modifier.js"
+import { isResponseError } from "#src/utils.js"
+import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
+import { cartRoute } from "#src/app/routes/selfservice/cart.js"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {

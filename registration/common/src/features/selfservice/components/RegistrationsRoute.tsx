@@ -2,19 +2,22 @@ import { useEffect, useRef } from "react"
 import { Button, Grid, Text, Title as MTitle, Divider } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
 import { Link, useNavigate } from "@tanstack/react-router"
-import { RegistrationList } from "#src/features/selfservice/components/index"
+import { RegistrationList } from "#src/features/selfservice/components/index.js"
 import {
   useInterviewOptionsDialog,
   useRegistrations,
-} from "#src/features/selfservice/hooks"
-import { useCartPricingResult, useCurrentCart } from "#src/features/cart/hooks"
-import { Event } from "#src/features/selfservice/types"
-import { OptionsDialog, Spacer, Title } from "#src/components/index"
-import { eventRoute } from "#src/app/routes/selfservice/registrations"
+} from "#src/features/selfservice/hooks.js"
+import {
+  useCartPricingResult,
+  useCurrentCart,
+} from "#src/features/cart/hooks.js"
+import { Event } from "#src/features/selfservice/types.js"
+import { OptionsDialog, Spacer, Title } from "#src/components/index.js"
+import { eventRoute } from "#src/app/routes/selfservice/registrations.js"
 import {
   cartRoute,
   changeRegistrationRoute,
-} from "#src/app/routes/selfservice/cart"
+} from "#src/app/routes/selfservice/cart.js"
 
 const changedRegistrationsKey = "oes-changed-registrations"
 

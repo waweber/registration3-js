@@ -1,10 +1,10 @@
 import {
   accessCodeRoute,
   eventRoute,
-} from "#src/app/routes/selfservice/registrations"
-import { Title } from "#src/components/index"
-import { Registrations } from "#src/features/selfservice/components/RegistrationsRoute"
-import { RegistrationList } from "#src/features/selfservice/components/registration/RegistrationList"
+} from "#src/app/routes/selfservice/registrations.js"
+import { Title } from "#src/components/index.js"
+import { Registrations } from "#src/features/selfservice/components/RegistrationsRoute.js"
+import { RegistrationList } from "#src/features/selfservice/components/registration/RegistrationList.js"
 import { Alert, Text } from "@mantine/core"
 import { IconSparkles } from "@tabler/icons-react"
 import { Suspense } from "react"

@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { EmailAuth } from "./EmailAuth.js"
 
 import { useState } from "react"
-import { FullPageMenuLayout } from "#src/components/index"
+import { FullPageMenuLayout } from "#src/components/index.js"
 
 const meta: Meta<typeof EmailAuth> = {
   component: EmailAuth,

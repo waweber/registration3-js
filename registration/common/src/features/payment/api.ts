@@ -1,14 +1,14 @@
 import { createContext, useContext } from "react"
 import { Wretch } from "wretch"
 import { queryStringAddon } from "wretch/addons"
-import { CartAPI } from "#src/features/cart"
-import { NotFoundError } from "#src/utils"
+import { CartAPI } from "#src/features/cart/index.js"
+import { NotFoundError } from "#src/utils.js"
 import {
   PaymentAPI,
   PaymentError,
   PaymentMethod,
   PaymentResult,
-} from "#src/features/payment"
+} from "#src/features/payment/index.js"
 
 import { UseQueryOptions } from "@tanstack/react-query"
 

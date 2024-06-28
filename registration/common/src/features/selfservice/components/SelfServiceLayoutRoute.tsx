@@ -1,13 +1,13 @@
-import { saveToken } from "#src/api/token"
-import { signInMenuRoute } from "#src/app/routes/signin"
+import { saveToken } from "#src/api/token.js"
+import { signInMenuRoute } from "#src/app/routes/signin.js"
 import {
   AlertProvider,
   SelfServiceLayout,
   Title,
   UserMenu,
   useTitle,
-} from "#src/components/index"
-import { useAuth } from "#src/hooks/auth"
+} from "#src/components/index.js"
+import { useAuth } from "#src/hooks/auth.js"
 import { Outlet } from "@tanstack/react-router"
 import { useLocation } from "@tanstack/react-router"
 import { observer } from "mobx-react-lite"

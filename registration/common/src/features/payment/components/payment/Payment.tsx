@@ -2,7 +2,7 @@ import { Box, Button, ButtonProps, Skeleton, Text } from "@mantine/core"
 import {
   PaymentServiceComponentProps,
   usePaymentContext,
-} from "#src/features/payment"
+} from "#src/features/payment/index.js"
 
 export const PaymentPlaceholder = ({
   children,

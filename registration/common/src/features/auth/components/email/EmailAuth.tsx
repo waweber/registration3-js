@@ -1,12 +1,12 @@
-import { makeTokenFromResponse } from "#src/api/token"
-import { webAuthnRegisterRoute } from "#src/app/routes/signin"
+import { makeTokenFromResponse } from "#src/api/token.js"
+import { webAuthnRegisterRoute } from "#src/app/routes/signin.js"
 import {
   FullPageMenuLayout,
   FullPageMenuLayoutContentProps,
-} from "#src/components/index"
-import { getSupportsWebAuthn } from "#src/features/auth/components/webauthn/webauthn"
-import { useAuth, useAuthAPI } from "#src/hooks/auth"
-import { getErrorMessage } from "#src/utils"
+} from "#src/components/index.js"
+import { getSupportsWebAuthn } from "#src/features/auth/components/webauthn/webauthn.js"
+import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
+import { getErrorMessage } from "#src/utils.js"
 import { Button, Stack, Text, TextInput, useProps } from "@mantine/core"
 import { useQuery } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"

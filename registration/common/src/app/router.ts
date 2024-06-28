@@ -1,23 +1,23 @@
-import { AppContextValue } from "#src/app/context"
-import { authRoute } from "#src/app/routes/auth"
-import { rootRoute } from "#src/app/routes/index"
+import { AppContextValue } from "#src/app/context.js"
+import { authRoute } from "#src/app/routes/auth.js"
+import { rootRoute } from "#src/app/routes/index.js"
 import {
   addRegistrationRoute,
   cartRoute,
   changeRegistrationRoute,
-} from "#src/app/routes/selfservice/cart"
-import { eventsRoute } from "#src/app/routes/selfservice/events"
+} from "#src/app/routes/selfservice/cart.js"
+import { eventsRoute } from "#src/app/routes/selfservice/events.js"
 import {
   eventRoute,
   selfServiceRegistrationsRoute,
-} from "#src/app/routes/selfservice/registrations"
+} from "#src/app/routes/selfservice/registrations.js"
 import {
   signInEmailRoute,
   signInMenuRoute,
   signInRoute,
   webAuthnRegisterRoute,
-} from "#src/app/routes/signin"
-import { FullscreenLoader } from "#src/components/index"
+} from "#src/app/routes/signin.js"
+import { FullscreenLoader } from "#src/components/index.js"
 import { createBrowserHistory, createRouter } from "@tanstack/react-router"
 
 declare module "@tanstack/react-router" {

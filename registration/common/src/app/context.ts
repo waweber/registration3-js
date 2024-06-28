@@ -1,15 +1,15 @@
-import { CartAPI } from "#src/features/cart"
-import { PaymentAPI } from "#src/features/payment"
-import { SelfServiceAPI } from "#src/features/selfservice"
-import { AuthStore } from "#src/api/auth"
-import { AuthAPI } from "#src/api/types"
-import { createOptionalContext } from "#src/utils"
+import { CartAPI } from "#src/features/cart/index.js"
+import { PaymentAPI } from "#src/features/payment/index.js"
+import { SelfServiceAPI } from "#src/features/selfservice/index.js"
+import { AuthStore } from "#src/api/auth.js"
+import { AuthAPI } from "#src/api/types.js"
+import { createOptionalContext } from "#src/utils.js"
 import {
   InterviewAPI,
   InterviewResponseStore,
 } from "@open-event-systems/interview-lib"
 import { QueryClient } from "@tanstack/react-query"
-import { Config } from "#src/types"
+import { Config } from "#src/types.js"
 
 export interface AppContextValue {
   config: Config

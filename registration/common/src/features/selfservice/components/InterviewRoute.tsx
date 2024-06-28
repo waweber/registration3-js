@@ -8,16 +8,16 @@ import {
 } from "@open-event-systems/interview-components"
 import { Skeleton } from "@mantine/core"
 import { useQueryClient } from "@tanstack/react-query"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations"
-import { getCartQueryOptions } from "#src/features/cart/api"
-import { Title } from "#src/components/index"
-import { useStickyCurrentCart } from "#src/features/cart/hooks"
-import { useApp } from "#src/hooks/app"
+import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
+import { getCartQueryOptions } from "#src/features/cart/api.js"
+import { Title } from "#src/components/index.js"
+import { useStickyCurrentCart } from "#src/features/cart/hooks.js"
+import { useApp } from "#src/hooks/app.js"
 import {
   addRegistrationRoute,
   cartRoute,
   changeRegistrationRoute,
-} from "#src/app/routes/selfservice/cart"
+} from "#src/app/routes/selfservice/cart.js"
 
 export const AddRegistrationRoute = () => {
   const { eventId, interviewId } = addRegistrationRoute.useParams()

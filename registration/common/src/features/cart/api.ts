@@ -11,10 +11,10 @@ import {
   CartAPI,
   CartPricingResult,
   currentCartStore,
-} from "#src/features/cart"
-import { NotFoundError, catchNotFound } from "#src/utils"
-import { SelfServiceAPI } from "#src/features/selfservice"
-import { AppContextValue } from "#src/app/context"
+} from "#src/features/cart/index.js"
+import { NotFoundError, catchNotFound } from "#src/utils.js"
+import { SelfServiceAPI } from "#src/features/selfservice/index.js"
+import { AppContextValue } from "#src/app/context.js"
 const defaultUpdateURL = "http://localhost:8000/update-interview" // TODO
 
 export const getCartQueryOptions = ({

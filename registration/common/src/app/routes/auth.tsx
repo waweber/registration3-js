@@ -1,4 +1,4 @@
-import { rootRoute } from "#src/app/routes/index"
+import { rootRoute } from "#src/app/routes/index.js"
 import { createRoute, notFound } from "@tanstack/react-router"
 
 export const authRoute = createRoute({
