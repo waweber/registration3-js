@@ -2,5 +2,3 @@ packages:
   - interview/lib
   - interview/components
   - registration/common
-  - registration/payment
-  - registration/selfservice
