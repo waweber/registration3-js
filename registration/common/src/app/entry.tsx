@@ -3,9 +3,7 @@ import { createRoot } from "react-dom/client"
 import { MantineProvider } from "@mantine/core"
 import { StrictMode, Suspense, lazy } from "react"
 import { FullscreenLoader } from "#src/components/index"
-import config from "../../custom.js"
-
-// import logoSrc from "../../resources/example-logo.svg"
+import config from "#src/config"
 
 const App = lazy(() => import("./App.js"))
 

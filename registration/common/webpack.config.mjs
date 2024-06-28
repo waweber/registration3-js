@@ -18,6 +18,12 @@ const config = (env, argv) => {
       assetModuleFilename: isProd ? "_assets/[contenthash][ext]" : undefined,
     },
     resolve: {
+      alias: {
+        "#src/config": [
+          path.resolve("./custom.ts"),
+          path.resolve("./src/config.ts"),
+        ],
+      },
       extensionAlias: {
         ".js": [".js", ".jsx", ".ts", ".tsx"],
       },
@@ -70,6 +76,15 @@ const config = (env, argv) => {
       ? {
           splitChunks: {
             chunks: "all",
+            cacheGroups: {
+              config: {
+                name: "config",
+                filename: "config.js",
+                enforce: true,
+                reuseExistingChunk: false,
+                test: (module) => module.rawRequest == "#src/config",
+              },
+            },
           },
         }
       : undefined,
