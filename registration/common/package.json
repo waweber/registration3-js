@@ -12,6 +12,12 @@
   },
   "imports": {
     "#src/*.scss": "./src/*.scss",
+    "#src/config.js": {
+      "webpack": [
+        "./custom.ts",
+        "./src/config.ts"
+      ]
+    },
     "#src/*.js": {
       "storybook": [
         "./src/*.ts",

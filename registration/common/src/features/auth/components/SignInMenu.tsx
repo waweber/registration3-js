@@ -9,7 +9,7 @@ import {
   getSupportsWebAuthn,
 } from "#src/features/auth/components/webauthn/webauthn.js"
 import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
-import { Card, NavLink, useProps } from "@mantine/core"
+import { Card, NavLink, Space, useProps } from "@mantine/core"
 import { startAuthentication } from "@simplewebauthn/browser"
 import { AuthenticationResponseJSON } from "@simplewebauthn/types"
 import { IconMail } from "@tabler/icons-react"
@@ -49,6 +49,7 @@ export const SignInMenu = (props: SignInMenuProps) => {
           />
         ))}
       </Card.Section>
+      <Space />
     </FullPageMenuLayout.Content>
   )
 }

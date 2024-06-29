@@ -6,7 +6,6 @@ import {
   lazyRouteComponent,
   notFound,
 } from "@tanstack/react-router"
-import { lazy } from "react"
 
 export const eventRoute = createRoute({
   getParentRoute: () => authRoute,
@@ -28,7 +27,7 @@ export const eventRoute = createRoute({
 export const selfServiceLayoutRoute = createRoute({
   getParentRoute: () => eventRoute,
   id: "selfServiceLayout",
-  component: lazy(
+  component: lazyRouteComponent(
     () =>
       import("#src/features/selfservice/components/SelfServiceLayoutRoute.js"),
   ),

@@ -18,12 +18,12 @@ const config = (env, argv) => {
       assetModuleFilename: isProd ? "_assets/[contenthash][ext]" : undefined,
     },
     resolve: {
-      alias: {
-        "#src/config": [
-          path.resolve("./custom.ts"),
-          path.resolve("./src/config.ts"),
-        ],
-      },
+      // alias: {
+      //   "#src/config.js": [
+      //     path.resolve("./custom.ts"),
+      //     path.resolve("./src/config.ts"),
+      //   ],
+      // },
       extensionAlias: {
         ".js": [".js", ".jsx", ".ts", ".tsx"],
       },

@@ -1,7 +1,7 @@
 import { eventsRoute } from "#src/app/routes/selfservice/events.js"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { FullPageMenuLayout } from "#src/components/index.js"
-import { Card, NavLink } from "@mantine/core"
+import { Card, NavLink, Space } from "@mantine/core"
 import { IconChevronRight } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 
@@ -16,6 +16,7 @@ export const EventsRoute = () => {
               key={e.id}
               label={e.title}
               component={Link}
+              from={eventsRoute.fullPath}
               to={selfServiceRegistrationsRoute.to}
               params={{
                 eventId: e.id,
@@ -24,6 +25,7 @@ export const EventsRoute = () => {
             />
           ))}
         </Card.Section>
+        <Space />
       </FullPageMenuLayout.Content>
     </FullPageMenuLayout>
   )
