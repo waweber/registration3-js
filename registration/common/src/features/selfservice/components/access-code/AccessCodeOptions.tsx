@@ -8,7 +8,11 @@ import {
   Text,
   useProps,
 } from "@mantine/core"
-import { IconExclamationCircle, IconSparkles } from "@tabler/icons-react"
+import {
+  IconChevronRight,
+  IconExclamationCircle,
+  IconSparkles,
+} from "@tabler/icons-react"
 import { Fragment } from "react/jsx-runtime"
 
 export type AccessCodeOption = {
@@ -71,6 +75,7 @@ export const AccessCodeOptions = (props: AccessCodeOptionsProps) => {
                     onSelect &&
                     onSelect({ id: o.id, registrationId: ro.registrationId })
                   }
+                  rightSection={<IconChevronRight />}
                 />
               ))}
             </Card.Section>
@@ -94,6 +99,7 @@ export const AccessCodeOptions = (props: AccessCodeOptionsProps) => {
               onClick={() =>
                 onSelect && onSelect({ id: o.id, registrationId: null })
               }
+              rightSection={<IconChevronRight />}
             />
           ))}
         </Card.Section>
