@@ -1,35 +1,72 @@
 import {
+  addRegistrationRoute,
+  changeRegistrationRoute,
+} from "#src/app/routes/selfservice/cart.js"
+import {
   accessCodeRoute,
   eventRoute,
 } from "#src/app/routes/selfservice/registrations.js"
-import { Title } from "#src/components/index.js"
-import { Registrations } from "#src/features/selfservice/components/RegistrationsRoute.js"
-import { RegistrationList } from "#src/features/selfservice/components/registration/RegistrationList.js"
-import { Alert, Text } from "@mantine/core"
-import { IconSparkles } from "@tabler/icons-react"
-import { Suspense } from "react"
-
-export const AccessCodeNotFound = () => (
-  <Title title="Not Found">
-    <Text component="p">
-      The access code was not found. It may have been already used or expired.
-    </Text>
-  </Title>
-)
+import { FullPageMenuLayout, Title } from "#src/components/index.js"
+import AccessCodeOptions from "#src/features/selfservice/components/access-code/AccessCodeOptions.js"
 
 export const AccessCodeRoute = () => {
-  const { accessCode } = accessCodeRoute.useParams()
-  const event = eventRoute.useLoaderData()
+  const { eventId, accessCode } = accessCodeRoute.useParams()
+  const selfService = accessCodeRoute.useLoaderData()
+  const navigate = accessCodeRoute.useNavigate()
 
   return (
-    <Title title="Registrations" subtitle="View and manage registrations">
-      <Alert title="Access Code" icon={<IconSparkles />}>
-        You are using an access code. Add a registration or select a
-        registration to change.
-      </Alert>
-      <Suspense fallback={<RegistrationList.Placeholder />}>
-        <Registrations event={event} accessCode={accessCode} />
-      </Suspense>
-    </Title>
+    <FullPageMenuLayout>
+      <Title title="Access Code" subtitle="View and manage registrations">
+        <AccessCodeOptions
+          options={selfService.registrations.add_options?.map((o) => ({
+            id: o.id,
+            title: o.title,
+          }))}
+          changeOptions={selfService.registrations.registrations.map((r) => ({
+            registrationId: r.id,
+            title: r.title || "Registration",
+            options:
+              r.change_options?.map((o) => ({
+                id: o.id,
+                title: o.title,
+              })) ?? [],
+          }))}
+          onSelect={({ id, registrationId }) => {
+            if (registrationId) {
+              navigate({
+                to: changeRegistrationRoute.to,
+                params: {
+                  eventId: eventId,
+                  interviewId: id,
+                  registrationId: registrationId,
+                },
+                hash: `a=${accessCode}`,
+              })
+            } else {
+              navigate({
+                to: addRegistrationRoute.to,
+                params: {
+                  eventId: eventId,
+                  interviewId: id,
+                },
+                hash: `a=${accessCode}`,
+              })
+            }
+          }}
+        />
+      </Title>
+    </FullPageMenuLayout>
   )
 }
+
+export const AccessCodeNotFoundRoute = () => {
+  return (
+    <FullPageMenuLayout>
+      <Title title="Invalid Access Code">
+        <AccessCodeOptions.NotFound />
+      </Title>
+    </FullPageMenuLayout>
+  )
+}
+
+export default AccessCodeRoute

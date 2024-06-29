@@ -71,3 +71,5 @@ const FullPageMenuLayoutContent = (props: FullPageMenuLayoutContentProps) => {
 }
 
 FullPageMenuLayout.Content = FullPageMenuLayoutContent
+
+export default FullPageMenuLayout

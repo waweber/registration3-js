@@ -59,7 +59,7 @@ class InterviewAPIImpl {
     })
     let newResp: InterviewResponse
     if (!res.ok) {
-      newResp = getErrorResponse(response, res.status)
+      newResp = getErrorResponse(response.state, res.status)
     } else {
       newResp = await res.json()
     }
@@ -68,13 +68,13 @@ class InterviewAPIImpl {
 }
 
 export const getErrorResponse = (
-  prev: InterviewResponse,
+  prevState: string,
   status: number,
 ): IncompleteInterviewResponse => {
   const [title, message] =
     defaultErrorMessages[String(status)] ?? defaultErrorMessages[""]
   return {
-    state: `${prev.state}-error`,
+    state: `${prevState}-error`,
     completed: false,
     update_url: "",
     content: {

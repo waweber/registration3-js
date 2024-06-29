@@ -8,7 +8,9 @@ import {
 } from "#src/app/routes/selfservice/cart.js"
 import { eventsRoute } from "#src/app/routes/selfservice/events.js"
 import {
+  accessCodeRoute,
   eventRoute,
+  selfServiceLayoutRoute,
   selfServiceRegistrationsRoute,
 } from "#src/app/routes/selfservice/registrations.js"
 import {
@@ -40,10 +42,13 @@ export const makeRouter = (ctx: AppContextValue) => {
       authRoute.addChildren([
         eventsRoute,
         eventRoute.addChildren([
-          selfServiceRegistrationsRoute,
-          cartRoute,
-          addRegistrationRoute,
-          changeRegistrationRoute,
+          selfServiceLayoutRoute.addChildren([
+            selfServiceRegistrationsRoute,
+            cartRoute,
+            addRegistrationRoute,
+            changeRegistrationRoute,
+          ]),
+          accessCodeRoute,
         ]),
       ]),
     ]),

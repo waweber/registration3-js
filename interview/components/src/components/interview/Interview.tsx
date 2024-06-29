@@ -135,9 +135,9 @@ const getError = (
   e: unknown,
 ): IncompleteInterviewResponse => {
   if (isResponseError(e)) {
-    return getErrorResponse(prev, e.status)
+    return getErrorResponse(prev.state, e.status)
   } else {
-    return getErrorResponse(prev, 0)
+    return getErrorResponse(prev.state, 0)
   }
 }
 

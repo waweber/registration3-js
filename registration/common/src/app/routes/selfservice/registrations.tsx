@@ -23,6 +23,11 @@ export const eventRoute = createRoute({
     }
     return event
   },
+})
+
+export const selfServiceLayoutRoute = createRoute({
+  getParentRoute: () => eventRoute,
+  id: "selfServiceLayout",
   component: lazy(
     () =>
       import("#src/features/selfservice/components/SelfServiceLayoutRoute.js"),
@@ -30,7 +35,7 @@ export const eventRoute = createRoute({
 })
 
 export const selfServiceRegistrationsRoute = createRoute({
-  getParentRoute: () => eventRoute,
+  getParentRoute: () => selfServiceLayoutRoute,
   path: "/",
   async loader({ context, params }) {
     const { selfServiceAPI, queryClient } = context
@@ -81,7 +86,7 @@ export const accessCodeRoute = createRoute({
 
     const [pricingResult, registrations] = await Promise.all([
       queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
-      queryClient.fetchQuery(queries.registrations(eventId)),
+      queryClient.fetchQuery(queries.registrations(eventId, accessCode)),
     ])
 
     return {
@@ -91,7 +96,7 @@ export const accessCodeRoute = createRoute({
   },
   notFoundComponent: lazyRouteComponent(
     () => import("#src/features/selfservice/components/AccessCodeRoute.js"),
-    "AccessCodeNotFound",
+    "AccessCodeNotFoundRoute",
   ),
   component: lazyRouteComponent(
     () => import("#src/features/selfservice/components/AccessCodeRoute.js"),
