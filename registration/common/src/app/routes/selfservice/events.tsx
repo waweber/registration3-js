@@ -1,7 +1,6 @@
 import { authRoute } from "#src/app/routes/auth.js"
 import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
-import { createRoute } from "@tanstack/react-router"
-import { lazy } from "react"
+import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
 
 export const eventsRoute = createRoute({
   getParentRoute: () => authRoute,
@@ -12,7 +11,7 @@ export const eventsRoute = createRoute({
     const events = await queryClient.fetchQuery(selfServiceQueries.events)
     return events
   },
-  component: lazy(
+  component: lazyRouteComponent(
     () => import("#src/features/selfservice/components/EventsRoute.js"),
   ),
 })

@@ -94,7 +94,7 @@ const ShowFullscreenLoader = () => {
     return () => setLoading(false)
   }, [])
 
-  return null
+  return <></>
 }
 
 FullscreenLoader.Show = ShowFullscreenLoader
