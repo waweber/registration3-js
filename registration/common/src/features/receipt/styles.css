@@ -1,0 +1,18 @@
+@import "./components/Receipt.scss";
+
+html {
+  font-size: 16px;
+  font-family: "Montserrat", sans-serif;
+}
+
+html, body {
+  max-width: 800px;
+  margin: auto;
+}
+
+body {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: 8px;
+  margin-right: 8px;
+}

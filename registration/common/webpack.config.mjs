@@ -9,6 +9,7 @@ const config = (env, argv) => {
     mode: isProd ? "production" : "development",
     entry: {
       main: "./src/app/entry.tsx",
+      receipt: "./src/features/receipt/entry.tsx",
     },
     output: {
       path: path.resolve("./dist"),
@@ -70,6 +71,14 @@ const config = (env, argv) => {
         template: "./index.html",
         inject: "head",
         scriptLoading: "blocking",
+        chunks: ["main"],
+      }),
+      new HtmlWebpackPlugin({
+        template: "./index.html",
+        inject: "head",
+        scriptLoading: "blocking",
+        filename: "receipt.html",
+        chunks: ["receipt"],
       }),
     ],
     optimization: isProd
@@ -94,7 +103,14 @@ const config = (env, argv) => {
       cacheDirectory: path.resolve(".cache/webpack"),
     },
     devServer: {
-      historyApiFallback: true,
+      historyApiFallback: {
+        rewrites: [
+          {
+            from: /^\/receipt\/[^/]+/,
+            to: "/receipt.html",
+          },
+        ],
+      },
       client: {
         overlay: {
           runtimeErrors: false,
