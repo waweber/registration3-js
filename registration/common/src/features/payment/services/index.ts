@@ -8,6 +8,10 @@ const paymentComponents: Record<
     >)
   | undefined
 > = {
+  async system() {
+    const system = await import("./system/System.js")
+    return { Component: system.SystemPaymentComponent }
+  },
   async mock() {
     const mock = await import("./mock/Mock.js")
     return { Component: mock.MockPaymentComponent }
