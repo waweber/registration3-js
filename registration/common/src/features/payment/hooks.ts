@@ -25,14 +25,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react"
+import { useCallback, useLayoutEffect, useRef, useState } from "react"
 
 export const usePaymentMethods = (cartId: string): PaymentMethod[] => {
   const paymentAPI = usePaymentAPI()
@@ -171,6 +164,13 @@ export const usePayment = <S extends string = string>({
       })
     }
   }, [result?.service, componentContainer.service])
+
+  // reset error
+  useLayoutEffect(() => {
+    if (paymentId) {
+      return () => setError(null)
+    }
+  }, [paymentId])
 
   return {
     ...idAndRes,

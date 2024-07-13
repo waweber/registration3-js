@@ -12,6 +12,10 @@ const paymentComponents: Record<
     const mock = await import("./mock/Mock.js")
     return { Component: mock.MockPaymentComponent }
   },
+  async square() {
+    const square = await import("./square/Square.js")
+    return { Component: square.SquarePaymentComponent }
+  },
 }
 
 /**
