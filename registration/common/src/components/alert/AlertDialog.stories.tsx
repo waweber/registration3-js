@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { AlertDialog } from "./AlertDialog.js"
 import {
+  AnyRouter,
   RouterProvider,
   createHashHistory,
   createRootRoute,
@@ -57,7 +58,7 @@ export const Managed: StoryObj<typeof AlertDialog> = {
         routeTree: rootRoute,
         history: history,
       })
-      return <RouterProvider router={router} />
+      return <RouterProvider<AnyRouter> router={router} />
     },
   ],
   render() {
@@ -98,7 +99,7 @@ export const Managed_Confirm: StoryObj<typeof AlertDialog> = {
         routeTree: rootRoute,
         history: history,
       })
-      return <RouterProvider router={router} />
+      return <RouterProvider<AnyRouter> router={router} />
     },
   ],
   render() {
