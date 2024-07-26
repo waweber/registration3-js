@@ -68,12 +68,14 @@ const config = (env, argv) => {
         filename: "_styles/[contenthash].css",
       }),
       new HtmlWebpackPlugin({
+        title: "Registration",
         template: "./index.html",
         inject: "head",
         scriptLoading: "blocking",
         chunks: ["main"],
       }),
       new HtmlWebpackPlugin({
+        title: "Registration",
         template: "./index.html",
         inject: "head",
         scriptLoading: "blocking",
@@ -91,7 +93,7 @@ const config = (env, argv) => {
                 filename: "config.js",
                 enforce: true,
                 reuseExistingChunk: false,
-                test: (module) => module.rawRequest == "#src/config",
+                test: (module) => module.rawRequest == "#src/config.js",
               },
             },
           },
