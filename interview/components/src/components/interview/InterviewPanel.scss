@@ -25,13 +25,17 @@
     & {
       margin-right: var(--mantine-spacing-xs);
       width: 250px;
+      position: relative;
     }
   }
 }
 
 .InterviewPanel-history {
-  flex: auto;
-  align-self: flex-start;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .InterviewPanel-divider {
