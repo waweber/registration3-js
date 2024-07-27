@@ -1,15 +1,11 @@
 import { makeTokenFromResponse } from "#src/api/token.js"
-import { webAuthnRegisterRoute } from "#src/app/routes/signin.js"
 import {
   FullPageMenuLayout,
   FullPageMenuLayoutContentProps,
 } from "#src/components/index.js"
-import { getSupportsWebAuthn } from "#src/features/auth/components/webauthn/webauthn.js"
 import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
 import { getErrorMessage } from "#src/utils.js"
 import { Button, Stack, Text, TextInput, useProps } from "@mantine/core"
-import { useQuery } from "@tanstack/react-query"
-import { useNavigate } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 
 export type EmailAuthProps = FullPageMenuLayoutContentProps & {
@@ -109,25 +105,13 @@ export const SignInEmailRoute = () => {
   const [email, setEmail] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const navigate = useNavigate()
-  const webAuthnSupportQuery = useQuery({
-    queryKey: ["webAuthnSupported"],
-    async queryFn() {
-      return await getSupportsWebAuthn()
-    },
-  })
 
   const auth = useAuth()
   const authAPI = useAuthAPI()
 
   const onSubmit = useCallback(
     (value: string) => {
-      if (
-        submitting ||
-        !auth.isReady ||
-        !auth.token ||
-        webAuthnSupportQuery.isPending
-      ) {
+      if (submitting || !auth.isReady || !auth.token) {
         return
       }
       const token = auth.token.accessToken
@@ -141,13 +125,7 @@ export const SignInEmailRoute = () => {
           .then((res) => {
             if (res) {
               auth.setToken(makeTokenFromResponse(res))
-              if (webAuthnSupportQuery.data) {
-                navigate({
-                  to: webAuthnRegisterRoute.to,
-                })
-              } else {
-                auth.navigateToReturnURL()
-              }
+              auth.navigateToReturnURL()
             } else {
               setSubmitting(false)
               setError("Incorrect code")
@@ -175,7 +153,7 @@ export const SignInEmailRoute = () => {
           })
       }
     },
-    [email, submitting, webAuthnSupportQuery.isPending],
+    [email, submitting],
   )
 
   return (
