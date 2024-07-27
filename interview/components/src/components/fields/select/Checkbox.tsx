@@ -59,7 +59,7 @@ export const CheckboxSelectField = observer(
             if (arrayValue) {
               state?.setValue(path, e)
             } else {
-              state?.setValue(path, e[0])
+              state?.setValue(path, e[0] ?? null)
             }
             state?.setTouched(path)
           })
