@@ -5,28 +5,15 @@
   "type": "module",
   "exports": {
     "./*.scss": "./src/*.scss",
-    "./*": [
-      "./dist/src/*.js",
-      "./dist/src/*/index.js"
-    ]
+    "./*": "./dist/src/*.js"
   },
   "imports": {
     "#src/*.scss": "./src/*.scss",
-    "#src/config.js": {
-      "webpack": [
-        "./custom.ts",
-        "./src/config.ts"
-      ]
-    },
+    "#src/*.tsx": "./src/*.tsx",
+    "#src/*.ts": "./src/*.ts",
     "#src/*.js": {
-      "storybook": [
-        "./src/*.ts",
-        "./src/*.tsx"
-      ],
-      "webpack": [
-        "./src/*.ts",
-        "./src/*.tsx"
-      ],
+      "storybook": "./src/*.js",
+      "webpack": "./src/*.js",
       "default": "./dist/src/*.js"
     }
   },
@@ -51,33 +38,33 @@
     "@mantine/core": "^7.11.2",
     "@mantine/hooks": "^7.11.2",
     "@simplewebauthn/types": "^10.0.0",
-    "@square/web-payments-sdk-types": "^1.60.0",
-    "@storybook/addon-essentials": "^8.2.2",
-    "@storybook/addon-interactions": "^8.2.2",
-    "@storybook/addon-links": "^8.2.2",
+    "@square/web-payments-sdk-types": "^1.60.1",
+    "@storybook/addon-essentials": "^8.2.6",
+    "@storybook/addon-interactions": "^8.2.6",
+    "@storybook/addon-links": "^8.2.6",
     "@storybook/addon-webpack5-compiler-swc": "^1.0.4",
-    "@storybook/blocks": "^8.2.2",
-    "@storybook/react": "^8.2.2",
-    "@storybook/react-webpack5": "^8.2.2",
-    "@storybook/test": "^8.2.2",
-    "@tanstack/react-query": "^5.51.1",
-    "@tanstack/react-router": "^1.45.0",
+    "@storybook/blocks": "^8.2.6",
+    "@storybook/react": "^8.2.6",
+    "@storybook/react-webpack5": "^8.2.6",
+    "@storybook/test": "^8.2.6",
+    "@tanstack/react-query": "^5.51.15",
+    "@tanstack/react-router": "^1.45.11",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.0",
     "mini-css-extract-plugin": "^2.9.0",
-    "mobx": "^6.13.0",
+    "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
     "react-dom": "^18.3.1",
     "sass": "^1.77.8",
     "sass-loader": "^14.2.1",
-    "storybook": "^8.2.2",
+    "storybook": "^8.2.6",
     "style-loader": "^4.0.0",
     "svgo-loader": "^4.0.0",
     "swc-loader": "^0.2.6",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "webpack": "^5.93.0",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4",
@@ -99,7 +86,7 @@
     "@open-event-systems/interview-components": "workspace:^",
     "@open-event-systems/interview-lib": "workspace:^",
     "@simplewebauthn/browser": "^10.0.0",
-    "@tabler/icons-react": "^3.10.0",
+    "@tabler/icons-react": "^3.11.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "qrcode": "^1.5.3"

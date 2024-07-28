@@ -26,7 +26,7 @@ const config = (env, argv) => {
       //   ],
       // },
       extensionAlias: {
-        ".js": [".js", ".jsx", ".ts", ".tsx"],
+        ".js": [".tsx", ".ts", ".jsx", ".js"],
       },
     },
     module: {
