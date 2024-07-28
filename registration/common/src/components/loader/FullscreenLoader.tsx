@@ -24,37 +24,38 @@ export const FullscreenLoader = (props: FullscreenLoaderProps) => {
     {},
     props,
   )
-  const loadingRef = useRef(0)
+
+  const counter = useRef(0)
+  const hideTimeout = useRef<number | null>(null)
   const [initial, setInitial] = useState(true)
-  const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
 
-  const setLoadingFunc = useCallback(
-    (loading: boolean) => {
-      if (loading) {
-        loadingRef.current += 1
-
-        if (loadingRef.current == 1) {
-          setLoading(true)
-          setShow(true)
+  // use a delay to prevent flicker when loading changes multiple times
+  const setLoadingFunc = useCallback((loading: boolean) => {
+    if (loading) {
+      counter.current += 1
+      if (counter.current == 1) {
+        if (hideTimeout.current != null) {
+          window.clearTimeout(hideTimeout.current)
         }
-      } else {
-        loadingRef.current -= 1
-        if (loadingRef.current == 0) {
-          setLoading(false)
-          setInitial(false)
-        }
+        hideTimeout.current = null
+        setShow(true)
       }
-    },
-    [setLoading],
-  )
-
-  // hack to prevent flickering when hide/show happens in the same render cycle
-  useEffect(() => {
-    if (!loading && show) {
-      setShow(false)
+    } else {
+      counter.current -= 1
+      if (counter.current == 0) {
+        hideTimeout.current = window.setTimeout(() => {
+          setShow(false)
+        }, 10)
+      }
     }
-  }, [loading, show])
+  }, [])
+
+  useEffect(() => {
+    if (show) {
+      setInitial(false)
+    }
+  }, [show])
 
   return (
     <LoadingContext.Provider value={setLoadingFunc}>

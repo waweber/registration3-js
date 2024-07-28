@@ -9,13 +9,13 @@
   },
   "imports": {
     "#src/*.scss": "./src/*.scss",
-    "#src/*.tsx": "./src/*.tsx",
-    "#src/*.ts": "./src/*.ts",
     "#src/*.js": {
       "storybook": "./src/*.js",
       "webpack": "./src/*.js",
       "default": "./dist/src/*.js"
-    }
+    },
+    "#src/*.tsx": "./src/*.tsx",
+    "#src/*.ts": "./src/*.ts"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
