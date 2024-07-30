@@ -21,7 +21,7 @@ export const RegistrationList = (props: RegistrationListProps) => {
         <Grid.Col
           key={key}
           className="RegistrationList-col"
-          span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+          span={{ base: 12, sm: 6, md: 4 }}
         >
           <Registration {...regProps} />
         </Grid.Col>
