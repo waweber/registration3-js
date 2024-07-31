@@ -1,7 +1,9 @@
-import { Grid, GridProps, Text, useProps } from "@mantine/core"
+import { Anchor, Grid, GridProps, Text, useProps } from "@mantine/core"
 import clsx from "clsx"
 import { Registration, RegistrationProps } from "./Registration.js"
 import { IconAlertCircle } from "@tabler/icons-react"
+import { useContext } from "react"
+import { AuthContext } from "#src/api/AuthProvider.js"
 
 export type RegistrationListProps = Omit<GridProps, "children"> & {
   registrations?: (RegistrationProps & { key: string })[]
@@ -30,12 +32,29 @@ export const RegistrationList = (props: RegistrationListProps) => {
   )
 }
 
-const RegistrationListEmpty = () => (
-  <Grid.Col span="auto" c="dimmed" className="RegistrationList-empty">
-    <IconAlertCircle />
-    <Text span>You have no registrations for this event.</Text>
-  </Grid.Col>
-)
+const RegistrationListEmpty = () => {
+  const auth = useContext(AuthContext)
+
+  const showSignIn = !auth?.token?.email
+
+  return (
+    <Grid.Col span="auto" c="dimmed" className="RegistrationList-empty">
+      <Text span>
+        <IconAlertCircle />
+      </Text>
+      <Text span>
+        You have no registrations for this event.
+        {showSignIn && (
+          <>
+            {" "}
+            <Anchor href="/sign-in">Sign In</Anchor> to see your current
+            registrations.
+          </>
+        )}
+      </Text>
+    </Grid.Col>
+  )
+}
 
 const RegistrationListPlaceholder = () => (
   <Grid className="RegistrationList-root">
