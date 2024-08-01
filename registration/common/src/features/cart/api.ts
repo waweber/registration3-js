@@ -15,7 +15,7 @@ import {
 import { NotFoundError, catchNotFound } from "#src/utils.js"
 import { SelfServiceAPI } from "#src/features/selfservice/index.js"
 import { AppContextValue } from "#src/app/context.js"
-const defaultUpdateURL = "http://localhost:8000/update-interview" // TODO
+import config from "#src/config.js"
 
 export const getCartQueryOptions = ({
   queryClient,
@@ -62,7 +62,7 @@ export const getCartQueryOptions = ({
       return fetchInterviewResponse(
         interviewAPI,
         interviewStore,
-        defaultUpdateURL,
+        getDefaultUpdateURL(),
         stateId,
       )
     },
@@ -233,4 +233,8 @@ export const makeMockCartAPI = (): CartAPI => {
       return { id: newId }
     },
   }
+}
+
+const getDefaultUpdateURL = () => {
+  return `${config.apiURL}/update-interview`
 }
