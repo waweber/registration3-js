@@ -1,3 +1,7 @@
+import { AuthStore } from "#src/api/auth.js"
+import { DeviceAuthOptions } from "#src/features/auth/types.js"
+import { Wretch } from "wretch"
+
 export type TokenResponse = {
   access_token: string
   token_type: string
@@ -16,6 +20,15 @@ export type AuthInfo = {
 export type WebAuthnChallenge = {
   token: string
   challenge: string
+}
+
+export type DeviceAuthCreateResponse = {
+  device_code: string
+  user_code: string
+}
+
+export type DeviceAuthErrorResponse = {
+  error: string
 }
 
 export type AuthAPI = {
@@ -42,5 +55,15 @@ export type AuthAPI = {
     token: string,
     response: Record<string, unknown>,
   ): Promise<TokenResponse>
+  startDeviceAuth(): Promise<DeviceAuthCreateResponse>
+  checkDeviceAuth(authStore: AuthStore, userCode: string): Promise<boolean>
+  authorizeDevice(
+    authStore: AuthStore,
+    userCode: string,
+    options: DeviceAuthOptions,
+  ): Promise<void>
+  completeDeviceAuth(
+    deviceCode: string,
+  ): Promise<TokenResponse | DeviceAuthErrorResponse>
   refreshToken(refreshToken: string): Promise<TokenResponse | null>
 }

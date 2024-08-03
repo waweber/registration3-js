@@ -36,30 +36,32 @@ export const DeviceAuthOptions = (props: DeviceAuthOptionsProps) => {
 
   return (
     <Stack gap="xs" {...other}>
-      <Select
-        label="Role"
-        size="xs"
-        data={roles?.map((r) => ({
-          value: r.id,
-          label: r.title,
-        }))}
-        value={options?.role}
-        clearable
-        onChange={(v) => {
-          if (onChange) {
-            const newVal: Partial<DeviceAuthOptionsT> = {}
+      {roles && roles.length > 0 && (
+        <Select
+          label="Role"
+          size="xs"
+          data={roles?.map((r) => ({
+            value: r.id,
+            label: r.title,
+          }))}
+          value={options?.role}
+          clearable
+          onChange={(v) => {
+            if (onChange) {
+              const newVal: Partial<DeviceAuthOptionsT> = {}
 
-            newVal.role = v
-            if (v && scopesByRole[v]) {
-              newVal.scope = [...scopesByRole[v]]
-            } else {
-              newVal.scope = [...currentScope]
+              newVal.role = v
+              if (v && scopesByRole[v]) {
+                newVal.scope = [...scopesByRole[v]]
+              } else {
+                newVal.scope = [...currentScope]
+              }
+
+              onChange(newVal)
             }
-
-            onChange(newVal)
-          }
-        }}
-      />
+          }}
+        />
+      )}
       <ScopeMenu
         size="xs"
         value={options?.scope}

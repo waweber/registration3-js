@@ -18,15 +18,16 @@ export const ScopeMenu = (props: ScopeMenuProps) => {
   return (
     <Checkbox.Group label="Permissions" {...other}>
       <Stack mt="xs" gap={size}>
-        {Array.from(Object.keys(SCOPE) as (keyof typeof SCOPE)[], (s) => (
-          <Checkbox
-            size={size}
-            key={SCOPE[s]}
-            value={SCOPE[s]}
-            disabled={!combinedScope.includes(SCOPE[s])}
-            label={ScopeDescription[s]}
-          />
-        ))}
+        {Array.from(Object.keys(SCOPE) as (keyof typeof SCOPE)[])
+          .filter((s) => combinedScope.includes(SCOPE[s]))
+          .map((s) => (
+            <Checkbox
+              size={size}
+              key={SCOPE[s]}
+              value={SCOPE[s]}
+              label={ScopeDescription[s]}
+            />
+          ))}
       </Stack>
     </Checkbox.Group>
   )
