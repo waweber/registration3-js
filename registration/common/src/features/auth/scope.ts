@@ -4,6 +4,7 @@ export const SCOPE = {
   registration: "registration",
   registrationWrite: "registration:write",
   setEmail: "set-email",
+  setRole: "set-role",
   admin: "admin",
 } as const
 
@@ -17,6 +18,7 @@ export const ScopeDescription: {
   registration: "View/search registration data",
   registrationWrite: "Create/edit registrations",
   setEmail: "Authorize a different user",
+  setRole: "Set user role",
   admin: "Admin access",
 }
 

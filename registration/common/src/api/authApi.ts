@@ -1,6 +1,7 @@
 import { Wretch, WretchResponse } from "wretch"
 import {
   AuthAPI,
+  DeviceAuthCheckResponse,
   DeviceAuthCreateResponse,
   DeviceAuthErrorResponse,
   TokenResponse,
@@ -111,8 +112,7 @@ export const createAuthAPI = (wretch: Wretch): AuthAPI => {
         .url("/auth/device/check")
         .json({ user_code: userCode })
         .post()
-        .notFound(() => false)
-        .res(() => true)
+        .json<DeviceAuthCheckResponse>()
     },
     async authorizeDevice(authStore, userCode, options) {
       const now = new Date().getTime()
@@ -125,6 +125,7 @@ export const createAuthAPI = (wretch: Wretch): AuthAPI => {
         .json({
           user_code: userCode,
           options: {
+            role: options.role,
             scope: options.scope,
             email: options.email,
             anonymous: options.anonymous,

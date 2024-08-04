@@ -1,5 +1,10 @@
 import { authRoute } from "#src/app/routes/auth.js"
-import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
+import { isResponseError } from "#src/utils.js"
+import {
+  createRoute,
+  isNotFound,
+  lazyRouteComponent,
+} from "@tanstack/react-router"
 
 export const deviceAuthAuthorizeRoute = createRoute({
   getParentRoute: () => authRoute,
@@ -10,10 +15,19 @@ export const deviceAuthAuthorizeRoute = createRoute({
     const code = location.hash
 
     if (code && accessToken) {
-      const res = await authAPI.checkDeviceAuth(authStore, code)
-      queryClient.setQueryData(["authorize", { user_code: code }], res)
+      try {
+        const res = await authAPI.checkDeviceAuth(authStore, code)
+        queryClient.setQueryData(["authorize", { user_code: code }], res)
+      } catch (e) {
+        if (isNotFound(e)) {
+          queryClient.setQueryData(["authorize", { user_code: code }], null)
+        } else {
+          throw e
+        }
+      }
     }
   },
+  staleTime: 5000,
   component: lazyRouteComponent(
     () => import("#src/features/auth/components/DeviceAuthAuthorizeRoute.js"),
     "DeviceAuthAuthorizeRoute",

@@ -1,4 +1,5 @@
 import { AuthStore } from "#src/api/auth.js"
+import { Scope } from "#src/features/auth/scope.js"
 import { DeviceAuthOptions } from "#src/features/auth/types.js"
 import { Wretch } from "wretch"
 
@@ -25,6 +26,15 @@ export type WebAuthnChallenge = {
 export type DeviceAuthCreateResponse = {
   device_code: string
   user_code: string
+}
+
+export type AuthRole = {
+  title: string
+  scope: Scope[]
+}
+
+export type DeviceAuthCheckResponse = {
+  roles: Record<string, AuthRole>
 }
 
 export type DeviceAuthErrorResponse = {
@@ -56,7 +66,10 @@ export type AuthAPI = {
     response: Record<string, unknown>,
   ): Promise<TokenResponse>
   startDeviceAuth(): Promise<DeviceAuthCreateResponse>
-  checkDeviceAuth(authStore: AuthStore, userCode: string): Promise<boolean>
+  checkDeviceAuth(
+    authStore: AuthStore,
+    userCode: string,
+  ): Promise<DeviceAuthCheckResponse>
   authorizeDevice(
     authStore: AuthStore,
     userCode: string,

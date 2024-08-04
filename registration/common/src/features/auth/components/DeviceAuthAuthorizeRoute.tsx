@@ -4,7 +4,7 @@ import { DeviceAuthOptions } from "#src/features/auth/components/device/DeviceAu
 import { Scope } from "#src/features/auth/scope.js"
 import { DeviceAuthOptions as DeviceAuthOptionsT } from "#src/features/auth/types.js"
 import { useAuth, useAuthAPI } from "#src/hooks/auth.js"
-import { isResponseError } from "#src/utils.js"
+import { isNotFound, isResponseError } from "#src/utils.js"
 import {
   Alert,
   Button,
@@ -17,10 +17,9 @@ import {
 import {
   useIsMutating,
   useMutation,
-  useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query"
-import { notFound, useLocation, useRouter } from "@tanstack/react-router"
+import { useLocation } from "@tanstack/react-router"
 import { useEffect, useReducer, useState } from "react"
 
 export const DeviceAuthAuthorizeRoute = () => {
@@ -41,8 +40,16 @@ export const DeviceAuthAuthorizeRoute = () => {
       const accessToken = auth.token?.accessToken
       if (code && accessToken) {
         await new Promise((r) => window.setTimeout(r, 1000))
-        const res = await authAPI.checkDeviceAuth(auth, code)
-        return res
+        try {
+          const res = await authAPI.checkDeviceAuth(auth, code)
+          return res
+        } catch (e) {
+          if (isNotFound(e)) {
+            return null
+          } else {
+            throw e
+          }
+        }
       } else {
         return null
       }
@@ -80,7 +87,7 @@ export const DeviceAuthAuthorizeRoute = () => {
     }
   }, [code])
 
-  if (checkResult.data === false) {
+  if (checkResult.data == null && code) {
     return <DeviceAuthAuthorizeNotFound />
   }
 
@@ -113,7 +120,15 @@ export const DeviceAuthAuthorizeRoute = () => {
     content = (
       <Stack>
         <DeviceAuthOptions
-          roles={[]}
+          roles={
+            checkResult.data
+              ? Array.from(Object.keys(checkResult.data.roles), (r) => ({
+                  id: r,
+                  title: checkResult.data?.roles[r].title ?? "",
+                  scope: checkResult.data?.roles[r].scope ?? [],
+                }))
+              : []
+          }
           options={options}
           onChange={dispatch}
           currentScope={scope}
