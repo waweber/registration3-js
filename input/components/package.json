@@ -1,0 +1,42 @@
+{
+  "name": "@open-event-systems/input-components",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "author": "",
+  "devDependencies": {
+    "@mantine/core": "^7.11.2",
+    "@mantine/hooks": "^7.11.2",
+    "@storybook/addon-essentials": "^8.2.6",
+    "@storybook/addon-interactions": "^8.2.6",
+    "@storybook/addon-links": "^8.2.6",
+    "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
+    "@storybook/blocks": "^8.2.6",
+    "@storybook/react": "^8.2.6",
+    "@storybook/react-webpack5": "^8.2.6",
+    "@storybook/test": "^8.2.6",
+    "@types/react": "^18.3.3",
+    "react": "^18.3.1",
+    "storybook": "^8.2.6",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@open-event-systems/input-lib": "workspace:^",
+    "clsx": "^2.1.1",
+    "mobx": "^6.13.1",
+    "mobx-react-lite": "^4.0.7",
+    "react-hook-form": "^7.52.2",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "@mantine/core": "^7.11.2",
+    "@mantine/hooks": "^7.11.2",
+    "react": "^18.3.1"
+  }
+}
