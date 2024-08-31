@@ -42,3 +42,31 @@ export const Default: StoryObj<typeof TextField> = {
     return <TextField {...args} schema={schema.properties.field} name="field" />
   },
 }
+
+const emailSchema = {
+  type: "object",
+  properties: {
+    field: {
+      type: ["string", "null"],
+      title: "Email",
+      format: "email",
+    },
+  },
+  required: ["field"],
+} satisfies Schema<"object">
+
+export const Email: StoryObj<typeof TextField> = {
+  decorators: [
+    (Story) => {
+      const form = useSchemaForm(emailSchema)
+      return (
+        <SchemaFormProvider {...form}>
+          <Story />
+        </SchemaFormProvider>
+      )
+    },
+  ],
+  render(args) {
+    return <TextField {...args} schema={schema.properties.field} name="field" />
+  },
+}

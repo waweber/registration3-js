@@ -6,6 +6,8 @@ import { ObjectField } from "./components/object/ObjectField.js"
 import { NumberField } from "./components/number/NumberField.js"
 import { SelectField } from "./components/select/SelectField.js"
 import { ArrayField } from "./components/array/ArrayField.js"
+import { DateField } from "./components/date/DateField.js"
+import { ButtonField } from "./components/button/ButtonField.js"
 
 export const defaultRenderField = (
   props: FieldProps,
@@ -30,6 +32,10 @@ export const defaultGetFieldComponent = (
       return NumberField
     case "select":
       return SelectField
+    case "date":
+      return DateField
+    case "button":
+      return ButtonField
   }
 
   if (isType(schema, "object")) {
@@ -39,7 +45,11 @@ export const defaultGetFieldComponent = (
   } else if (isType(schema, "number")) {
     return NumberField
   } else if (isType(schema, "string")) {
-    return TextField
+    if (schema.format == "date") {
+      return DateField
+    } else {
+      return TextField
+    }
   } else {
     return TextField
   }
