@@ -80,17 +80,19 @@ export const getZodSchema = (schema: Schema): z.ZodType<JSONType> => {
   const arrSchema = getArrayZodSchema(schema)
   const objSchema = getObjectZodSchema(schema)
 
-  zs = zs.superRefine((v, ctx) => {
+  zs = zs.transform((v, ctx) => {
     if (typeof v == "string") {
-      validateSubSchema(strSchema, v, ctx)
+      return validateSubSchema(strSchema, v, ctx)
     } else if (typeof v == "number") {
-      validateSubSchema(numSchema, v, ctx)
+      return validateSubSchema(numSchema, v, ctx)
     } else if (typeof v == "boolean") {
-      validateSubSchema(boolSchema, v, ctx)
+      return validateSubSchema(boolSchema, v, ctx)
     } else if (Array.isArray(v)) {
-      validateSubSchema(arrSchema, v, ctx)
+      return validateSubSchema(arrSchema, v, ctx)
     } else if (typeof v == "object" && v !== null) {
-      validateSubSchema(objSchema, v, ctx)
+      return validateSubSchema(objSchema, v, ctx)
+    } else {
+      return v
     }
   })
 
@@ -197,12 +199,15 @@ const withPreprocess = (
 
 const validateSubSchema = <T>(
   zs: z.ZodType<T>,
-  v: JSONType,
+  v: T,
   ctx: z.RefinementCtx,
-): void => {
+): T => {
   const res = zs.safeParse(v)
 
   if (res.error) {
     res.error.issues.forEach((err) => ctx.addIssue(err))
+    return v
+  } else {
+    return res.data
   }
 }
