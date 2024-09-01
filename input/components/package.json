@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
+  "exports": {
+    ".": "./dist/src/index.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!*.stories.*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "storybook dev -p 6006",
