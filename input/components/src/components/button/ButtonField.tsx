@@ -11,7 +11,7 @@ export const ButtonField = (props: ButtonFieldProps) => {
   const clickedRef = useRef(false)
 
   const { setValue } = useFormContext()
-  useController({ name: name })
+  useController({ name: name, defaultValue: "" })
 
   const oneOf = schema.oneOf || []
 

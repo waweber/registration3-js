@@ -2,6 +2,7 @@ import { Meta, StoryObj } from "@storybook/react"
 import { Form } from "./Form.js"
 import { Schema } from "@open-event-systems/input-lib"
 import { Stack } from "@mantine/core"
+import { TextField } from "../text/TextField.js"
 
 const meta: Meta<typeof Form> = {
   component: Form,
@@ -55,7 +56,7 @@ const schema = {
       default: "1",
     },
   },
-  required: ["first_name", "last_name", "preferred_name", "birth_date"],
+  required: ["first_name", "last_name", "birth_date"],
 } satisfies Schema<"object">
 
 export const Default: StoryObj<typeof Form> = {
