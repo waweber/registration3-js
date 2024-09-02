@@ -9,7 +9,7 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
-    "!*.stories.*"
+    "!**/*.stories.*"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

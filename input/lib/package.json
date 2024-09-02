@@ -6,6 +6,11 @@
   "exports": {
     ".": "./dist/src/index.js"
   },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!**/*.test.*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
