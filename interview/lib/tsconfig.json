@@ -1,5 +1,6 @@
 {
   "extends": ["../../configs/tsconfig.base.json"],
+  "references": [{ "path": "../../input/lib" }],
   "compilerOptions": {
     "rootDir": "./",
     "outDir": "./dist"
