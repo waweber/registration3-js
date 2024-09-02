@@ -50,7 +50,7 @@ export function getInitialValue(schema: Schema): JSONType {
     const props = schema.properties ?? {}
     const required = schema.required ?? []
     for (const prop of Object.keys(props)) {
-      if (required.includes(prop)) {
+      if (required.includes(prop) || props[prop].default !== undefined) {
         record[prop] = getInitialValue(props[prop])
       }
     }
