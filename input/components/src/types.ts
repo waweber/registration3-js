@@ -1,13 +1,8 @@
 import { Schema } from "@open-event-systems/input-lib"
-import { ReactNode } from "react"
+import { ComponentType } from "react"
 
 export type FieldProps = {
   name: string
   schema: Schema
-  renderField?: FieldRenderFunc
+  fieldComponent?: ComponentType<FieldProps>
 }
-
-export type FieldRenderFunc = (
-  props: FieldProps,
-  key?: string | number,
-) => ReactNode

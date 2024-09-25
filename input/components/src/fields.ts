@@ -9,7 +9,7 @@ import { ArrayField } from "./components/array/ArrayField.js"
 import { DateField } from "./components/date/DateField.js"
 import { ButtonField } from "./components/button/ButtonField.js"
 
-export const defaultRenderField = (
+export const DefaultFieldComponent = (
   props: FieldProps,
   key?: string | number,
   getFieldComponent = defaultGetFieldComponent,

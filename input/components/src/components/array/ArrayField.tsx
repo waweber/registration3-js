@@ -1,15 +1,17 @@
 import { getInitialValue, Schema } from "@open-event-systems/input-lib"
-import { FieldRenderFunc } from "../../types.js"
+import { FieldProps } from "../../types.js"
 import { useFormContext, useWatch } from "react-hook-form"
 import { Button, Stack } from "@mantine/core"
-import { defaultRenderField } from "../../fields.js"
+import { DefaultFieldComponent } from "../../fields.js"
+import { ComponentType } from "react"
 
 export const ArrayField = (props: {
   name: string
   schema: Schema<"array">
-  renderField?: FieldRenderFunc
+  fieldComponent?: ComponentType<FieldProps>
 }) => {
-  const { name, schema, renderField = defaultRenderField } = props
+  const { name, schema, fieldComponent = DefaultFieldComponent } = props
+  const FieldComponent = fieldComponent
 
   const itemSchema = schema.items ?? {}
 
@@ -40,7 +42,11 @@ export const ArrayField = (props: {
     const childName = `${name}.${i}`
     children.push(
       <Stack key={i}>
-        {renderField({ name: childName, schema: itemSchema, renderField })}
+        <FieldComponent
+          name={childName}
+          schema={itemSchema}
+          fieldComponent={FieldComponent}
+        />
         <Button variant="outline" onClick={() => remove(i)}>
           Remove
         </Button>

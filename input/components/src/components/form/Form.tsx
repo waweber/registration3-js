@@ -5,22 +5,34 @@ import {
 } from "@open-event-systems/input-lib"
 import { useSchemaForm } from "../../hooks.js"
 import { SchemaFormProvider } from "../../providers.js"
-import { FieldRenderFunc } from "../../types.js"
-import { defaultRenderField } from "../../fields.js"
-import { ReactNode, useCallback, useMemo } from "react"
+import { FieldProps } from "../../types.js"
+import { DefaultFieldComponent } from "../../fields.js"
+import { ComponentType, useCallback, useMemo } from "react"
 
 export type FormProps = {
   schema: Schema<"object">
   initialValues?: Record<string, JSONType>
   onSubmit?: (values: Record<string, JSONType>) => void | Promise<void>
   className?: string
-  renderField?: FieldRenderFunc
-  children?: (fields: ReactNode) => ReactNode
+  fieldsComponent?: ComponentType<FormFieldsProps>
+  fieldComponent?: ComponentType<FieldProps>
+}
+
+export type FormFieldsProps = {
+  schema: Schema<"object">
+  fieldComponent?: ComponentType<FieldProps>
 }
 
 export const Form = (props: FormProps) => {
-  const { schema, initialValues, onSubmit, className, children, renderField } =
-    props
+  const {
+    schema,
+    initialValues,
+    onSubmit,
+    className,
+    fieldsComponent = Form.Fields,
+    fieldComponent,
+  } = props
+  const FieldsComponent = fieldsComponent
 
   const form = useSchemaForm(schema, initialValues)
   const { handleSubmit } = form
@@ -40,30 +52,31 @@ export const Form = (props: FormProps) => {
   return (
     <SchemaFormProvider {...form}>
       <form className={className} onSubmit={handleSubmit(submitFunc)}>
-        <FormContent schema={schema} renderField={renderField}>
-          {children}
-        </FormContent>
+        <FieldsComponent schema={schema} fieldComponent={fieldComponent} />
       </form>
     </SchemaFormProvider>
   )
 }
 
-const FormContent = ({
+const FormFields = ({
   schema,
-  children = (c) => c,
-  renderField = defaultRenderField,
-}: {
-  schema: Schema<"object">
-  children?: (fields: ReactNode) => ReactNode
-  renderField?: FieldRenderFunc
-}) => {
+  fieldComponent = DefaultFieldComponent,
+}: FormFieldsProps) => {
   const objProps = schema.properties ?? {}
+  const FieldComponent = fieldComponent
 
   const els = Object.keys(objProps).map((p) => {
     const propSchema = objProps[p]
-    const el = renderField({ name: p, schema: propSchema, renderField }, p)
-    return el
+    return (
+      <FieldComponent
+        name={p}
+        schema={propSchema}
+        fieldComponent={FieldComponent}
+      />
+    )
   })
 
-  return children(els)
+  return els
 }
+
+Form.Fields = FormFields

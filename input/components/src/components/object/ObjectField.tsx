@@ -1,13 +1,15 @@
 import { Schema } from "@open-event-systems/input-lib"
-import { FieldRenderFunc } from "../../types.js"
-import { defaultRenderField } from "../../fields.js"
+import { FieldProps } from "../../types.js"
+import { DefaultFieldComponent } from "../../fields.js"
+import { ComponentType } from "react"
 
 export const ObjectField = (props: {
   name: string
   schema: Schema<"object">
-  renderField?: FieldRenderFunc
+  fieldComponent?: ComponentType<FieldProps>
 }) => {
-  const { name, schema, renderField = defaultRenderField } = props
+  const { name, schema, fieldComponent = DefaultFieldComponent } = props
+  const FieldComponent = fieldComponent
 
   const children = []
   const schemaProps = schema.properties ?? {}
@@ -16,7 +18,11 @@ export const ObjectField = (props: {
     const childSchema = schemaProps[key]
     const childName = name ? `${name}.${key}` : key
     children.push(
-      renderField({ name: childName, schema: childSchema, renderField }, key),
+      <FieldComponent
+        name={childName}
+        schema={childSchema}
+        fieldComponent={FieldComponent}
+      />,
     )
   }
   return children

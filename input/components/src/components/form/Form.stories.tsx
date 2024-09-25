@@ -67,9 +67,12 @@ export const Default: StoryObj<typeof Form> = {
         onSubmit={(v) => {
           console.log(v)
         }}
-      >
-        {(fields) => <Stack>{fields}</Stack>}
-      </Form>
+        fieldsComponent={(props) => (
+          <Stack>
+            <Form.Fields {...props} />
+          </Stack>
+        )}
+      />
     )
   },
 }

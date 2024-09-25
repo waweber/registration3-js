@@ -141,6 +141,12 @@ importers:
 
   interview/components:
     dependencies:
+      "@open-event-systems/input-components":
+        specifier: workspace:^
+        version: link:../../input/components
+      "@open-event-systems/input-lib":
+        specifier: workspace:^
+        version: link:../../input/lib
       "@open-event-systems/interview-lib":
         specifier: workspace:^
         version: link:../lib

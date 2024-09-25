@@ -1,5 +1,4 @@
 import { Box, BoxProps, Divider, LoadingOverlay, useProps } from "@mantine/core"
-import { InterviewRenderProps } from "../types.js"
 import clsx from "clsx"
 import { HistoryPanel } from "../history/HistoryPanel.js"
 import { Content as ContentComponent } from "../content/Content.js"
@@ -11,14 +10,15 @@ import { useContext, useMemo } from "react"
 import { InterviewContext } from "./Context.js"
 import { useMediaQuery } from "@mantine/hooks"
 import { HistorySelector } from "../history/HistorySelector.js"
+import { InterviewContentComponentProps } from "../types.js"
 
 export type InterviewPanelProps = Omit<BoxProps, "onSubmit" | "children"> &
-  InterviewRenderProps & {
+  InterviewContentComponentProps & {
     getHistoryLink?: (state: string) => string
   }
 
 export const InterviewPanel = (props: InterviewPanelProps) => {
-  const { className, getHistoryLink, Title, Content, Controls, ...other } =
+  const { className, getHistoryLink, title, children, controls, ...other } =
     useProps("InterviewPanel", {}, props)
 
   const context = useContext(InterviewContext)
@@ -86,14 +86,14 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
       <Box className="InterviewPanel-contentCol">
         <ContentComponent
           className="InterviewPanel-content"
-          title={!isSmall ? <Title /> : undefined}
-          footer={<Controls />}
+          title={!isSmall ? title : undefined}
+          footer={controls}
           onSubmit={(e) => {
             e.preventDefault()
             context.onSubmit()
           }}
         >
-          <Content />
+          {children}
         </ContentComponent>
       </Box>
       <LoadingOverlay visible={context.submitting} />
