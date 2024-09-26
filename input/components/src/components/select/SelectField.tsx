@@ -142,7 +142,7 @@ export const CheckboxSelectField = (props: FieldProps) => {
         if (multi) {
           setValue(name, v, { shouldValidate: true })
         } else {
-          setValue(name, v[0] ?? null, { shouldValidate: true })
+          setValue(name, v[v.length - 1] ?? null, { shouldValidate: true })
         }
       }}
       error={error}
