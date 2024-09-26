@@ -77,6 +77,6 @@ export type Schema<T extends SchemaType = SchemaType> = {
   ConstSchemaProps &
   OneOfSchemaProps
 
-export type Validator = (
+export type Validator<T extends JSONType = JSONType> = (
   values: unknown,
-) => z.SafeParseReturnType<JSONType, JSONType>
+) => z.SafeParseReturnType<unknown, T>

@@ -31,31 +31,34 @@ export const ButtonField = (props: ButtonFieldProps) => {
     [name, setValue],
   )
 
-  const buttons = oneOf.map((o, i) => {
-    const isDefault = schema.default !== undefined && o.const == schema.default
-    const primary = !!o["x-primary"]
+  const buttons = oneOf
+    .filter((o) => o.const !== undefined)
+    .map((o, i) => {
+      const isDefault =
+        schema.default !== undefined && o.const == schema.default
+      const primary = !!o["x-primary"]
 
-    return (
-      <Grid.Col key={i} span={{ base: 12, xs: 12, sm: "content" }}>
-        <Button
-          className="ButtonField-button"
-          type={isDefault ? "submit" : "button"}
-          variant={primary ? "filled" : "outline"}
-          fullWidth
-          onClick={() => {
-            setValue(name, o.const)
-            clickedRef.current = true
-            if (!isDefault) {
-              //manually submit
-              defaultSubmitRef.current?.click()
-            }
-          }}
-        >
-          {o.title}
-        </Button>
-      </Grid.Col>
-    )
-  })
+      return (
+        <Grid.Col key={i} span={{ base: 12, xs: 12, sm: "content" }}>
+          <Button
+            className="ButtonField-button"
+            type={isDefault ? "submit" : "button"}
+            variant={primary ? "filled" : "outline"}
+            fullWidth
+            onClick={() => {
+              setValue(name, o.const)
+              clickedRef.current = true
+              if (!isDefault) {
+                //manually submit
+                defaultSubmitRef.current?.click()
+              }
+            }}
+          >
+            {o.title}
+          </Button>
+        </Grid.Col>
+      )
+    })
 
   return (
     <Grid

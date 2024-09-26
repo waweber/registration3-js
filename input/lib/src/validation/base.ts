@@ -1,15 +1,18 @@
 import { z } from "zod"
 import { JSONType, Schema, Validator } from "../types.js"
 import { isType } from "../schema.js"
+import { getTypeValidator } from "./type.js"
 import { getStringZodSchema } from "./string.js"
 import { getNumberZodSchema } from "./number.js"
 import { getArrayZodSchema } from "./array.js"
 import { getObjectZodSchema } from "./object.js"
+import { getOneOfZodSchema } from "./oneof.js"
+import { getConstZodSchema } from "./const.js"
 
 export const jsonScalarZodSchema = z.union([
+  z.string(),
   z.number(),
   z.boolean(),
-  z.string(),
   z.null(),
 ])
 
@@ -24,7 +27,14 @@ export const jsonZodSchema: z.ZodType<JSONType> = z.lazy(() =>
 /**
  * Get a validator function for a schema.
  */
-export const getSchemaValidator = (schema: Schema): Validator => {
+export function getSchemaValidator(
+  schema: Schema<"object">,
+): Validator<Record<string, JSONType>>
+export function getSchemaValidator(
+  schema: Schema<"array">,
+): Validator<JSONType[]>
+export function getSchemaValidator(schema: Schema): Validator
+export function getSchemaValidator(schema: Schema): Validator {
   const zs = getZodSchema(schema)
 
   return (value) => zs.safeParse(value)
@@ -67,12 +77,23 @@ export function getInitialValue(schema: Schema): JSONType {
 }
 
 /**
- * Get a Zod schema for a JSON schema.
+ * Get a zod schema to validate a JSON schema.
  */
-export const getZodSchema = (schema: Schema): z.ZodType<JSONType> => {
-  let zs = jsonZodSchema
+export function getZodSchema(
+  schema: Schema<"object">,
+): z.ZodType<Record<string, JSONType>, z.ZodTypeDef, unknown>
+export function getZodSchema(
+  schema: Schema<"array">,
+): z.ZodType<JSONType[], z.ZodTypeDef, unknown>
+export function getZodSchema(
+  schema: Schema,
+): z.ZodType<JSONType, z.ZodTypeDef, unknown>
+export function getZodSchema(
+  schema: Schema,
+): z.ZodType<JSONType, z.ZodTypeDef, unknown> {
+  let zs: z.ZodType<JSONType, z.ZodTypeDef, unknown> = jsonZodSchema
 
-  zs = zs.superRefine((v, ctx) => typeValidator(schema, v, ctx))
+  zs = zs.superRefine(getTypeValidator(schema))
 
   const strSchema = getStringZodSchema(schema)
   const numSchema = getNumberZodSchema(schema)
@@ -100,105 +121,15 @@ export const getZodSchema = (schema: Schema): z.ZodType<JSONType> => {
     zs = zs.and(getConstZodSchema(schema.const))
   }
 
-  if (schema.oneOf != null) {
+  if (schema.oneOf) {
     zs = zs.and(getOneOfZodSchema(schema.oneOf))
   }
 
   return withPreprocess(zs, schema)
 }
 
-/**
- * Validator for the type constraint.
- */
-export const typeValidator = (
-  schema: Schema,
-  v: unknown,
-  ctx: z.RefinementCtx,
-): void => {
-  if (!schema.type) {
-    return
-  } else if (v === null && !isType(schema, "null")) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Required",
-    })
-  } else if (
-    (typeof v == "number" &&
-      !isType(schema, "number") &&
-      !isType(schema, "integer")) ||
-    (typeof v == "boolean" && !isType(schema, "boolean")) ||
-    (typeof v == "string" && !isType(schema, "string")) ||
-    (Array.isArray(v) && !isType(schema, "array")) ||
-    (typeof v == "object" &&
-      v !== null &&
-      !Array.isArray(v) &&
-      !isType(schema, "object"))
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Invalid value",
-    })
-  }
-}
-
-/**
- * Get a schema that validates a const property.
- */
-export const getConstZodSchema = (
-  constValue: JSONType,
-): z.ZodType<JSONType> => {
-  return jsonZodSchema.superRefine((v, ctx) => {
-    if (v === null && constValue !== null) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_literal,
-        expected: constValue,
-        received: v,
-        message: "Required",
-      })
-    } else if (v !== constValue) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_literal,
-        expected: constValue,
-        received: v,
-        message: "Invalid value",
-      })
-    }
-  })
-}
-
-/**
- * Get a schema for a oneOf constraint.
- */
-export const getOneOfZodSchema = (
-  schemas: readonly Schema[],
-): z.ZodType<JSONType> => {
-  if (schemas.length == 0) {
-    return z.never()
-  } else if (schemas.length == 1) {
-    return getZodSchema(schemas[0])
-  } else {
-    return schemas.map((s) => getZodSchema(s)).reduce((zs, p) => p.or(zs))
-  }
-}
-
-const withPreprocess = (
-  zs: z.ZodType<JSONType>,
-  s: Schema,
-): z.ZodType<JSONType> => {
-  const strToNull = z.preprocess(
-    (v) => (v === "" && isType(s, "null") ? null : v),
-    zs,
-  )
-  const stripStr = z.preprocess(
-    (v) => (typeof v == "string" ? v.trim() : v),
-    strToNull,
-  )
-  const coerced = jsonZodSchema.pipe(stripStr)
-  return coerced
-}
-
-const validateSubSchema = <T>(
-  zs: z.ZodType<T>,
+const validateSubSchema = <T, D extends z.ZodTypeDef, I>(
+  zs: z.ZodType<T, D, I>,
   v: T,
   ctx: z.RefinementCtx,
 ): T => {
@@ -210,4 +141,33 @@ const validateSubSchema = <T>(
   } else {
     return res.data
   }
+}
+
+const withPreprocess = (
+  zs: z.ZodType<JSONType, z.ZodTypeDef, unknown>,
+  schema: Schema,
+): z.ZodType<JSONType, z.ZodTypeDef, unknown> => {
+  const trimStrings = (v: unknown) => (typeof v == "string" ? v.trim() : v)
+  const strToNull = (v: unknown) =>
+    v === "" && isType(schema, "null") ? null : v
+  const stripUndefProps = (v: unknown) => {
+    if (!v || typeof v != "object" || Array.isArray(v)) {
+      return v
+    }
+
+    const newObj: Record<string, unknown> = {}
+    for (const key of Object.keys(v)) {
+      const val = (v as Record<string, unknown>)[key]
+      if (val !== undefined) {
+        newObj[key] = val
+      }
+    }
+
+    return newObj
+  }
+
+  return [stripUndefProps, strToNull, trimStrings].reduce(
+    (p, c) => z.preprocess(c, p),
+    zs,
+  )
 }

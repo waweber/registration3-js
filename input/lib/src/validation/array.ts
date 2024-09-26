@@ -4,7 +4,7 @@ import { getZodSchema, jsonZodSchema } from "./base.js"
 
 export const getArrayZodSchema = (
   schema: ArraySchemaProps,
-): z.ZodType<JSONType[]> => {
+): z.ZodType<JSONType[], z.ZodTypeDef, unknown> => {
   const itemSchema = schema.items ? getZodSchema(schema.items) : jsonZodSchema
   let zs = z.array(itemSchema)
 

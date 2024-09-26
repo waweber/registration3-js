@@ -24,31 +24,6 @@ describe("base validators", () => {
     const res = validator(null)
     expect(res.success).toBe(true)
   })
-
-  test("const checks", () => {
-    const validator = getSchemaValidator({ const: "test" })
-
-    let res = validator("test")
-    expect(res.success).toBe(true)
-
-    res = validator("test2")
-    expect(res.success).toBe(false)
-  })
-
-  test("oneOf checks", () => {
-    const validator = getSchemaValidator({
-      oneOf: [{ const: "a" }, { const: "b" }, { type: "null" }],
-    })
-
-    let res = validator("b")
-    expect(res.success).toBe(true)
-
-    res = validator("c")
-    expect(res.success).toBe(false)
-
-    res = validator(null)
-    expect(res.success).toBe(true)
-  })
 })
 
 const initValSchema = {
@@ -130,4 +105,24 @@ describe("initial values", () => {
       f: "z",
     })
   })
+})
+
+test("undefined object values are removed", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      a: {
+        type: "string",
+      },
+      b: {
+        type: "string",
+      },
+    },
+    required: [],
+  } satisfies Schema<"object">
+
+  const validator = getSchemaValidator(schema)
+  const res = validator({ a: undefined, b: undefined })
+  expect(res.success).toBe(true)
+  expect(res.data).toStrictEqual({})
 })

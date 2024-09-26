@@ -13,7 +13,9 @@ export const getStringZodSchema = (
   if (schema.minLength != null) {
     zs = zs.min(
       schema.minLength,
-      `Must be at least ${schema.minLength} characters`,
+      schema.minLength > 1
+        ? `Must be at least ${schema.minLength} characters`
+        : "Required",
     )
   }
 

@@ -31,9 +31,9 @@ export const ArrayField = (props: {
     const first = curVal.slice(0, i)
     const last = curVal.slice(i + 1)
     const newVal = [...first, ...last]
-    const removedName = `${name}.${newVal.length}`
-    setValue(name, newVal, { shouldValidate: true })
+    const removedName = `${name}.${i}`
     unregister(removedName)
+    setValue(name, newVal, { shouldValidate: true })
   }
 
   const children = []

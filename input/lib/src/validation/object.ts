@@ -4,10 +4,13 @@ import { getZodSchema } from "./base.js"
 
 export const getObjectZodSchema = (
   schema: ObjectSchemaProps,
-): z.ZodType<Record<string, JSONType>> => {
+): z.ZodType<Record<string, JSONType>, z.ZodTypeDef, unknown> => {
   const props = schema.properties ?? {}
   const required = schema.required ?? []
-  const schemaRecords: Record<string, z.ZodType<JSONType>> = {}
+  const schemaRecords: Record<
+    string,
+    z.ZodType<JSONType, z.ZodTypeDef, unknown>
+  > = {}
   const requiredObj: Record<string, true> = {}
 
   for (const prop of Object.keys(props)) {

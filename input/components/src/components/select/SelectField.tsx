@@ -115,13 +115,35 @@ export const CheckboxSelectField = (props: FieldProps) => {
   const options = getOptions(schema)
   const error = useError(name)
 
+  const multi = isMulti(schema)
+
+  let arrValue
+
+  if (multi) {
+    if (field.value == null) {
+      arrValue = []
+    } else {
+      arrValue = field.value
+    }
+  } else {
+    if (field.value == null) {
+      arrValue = []
+    } else {
+      arrValue = [field.value]
+    }
+  }
+
   return (
     <Checkbox.Group
       ref={field.ref}
-      value={field.value}
+      value={arrValue}
       label={schema.title}
       onChange={(v) => {
-        setValue(name, v, { shouldValidate: true })
+        if (multi) {
+          setValue(name, v, { shouldValidate: true })
+        } else {
+          setValue(name, v[0] ?? null, { shouldValidate: true })
+        }
       }}
       error={error}
     >
