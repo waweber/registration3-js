@@ -5,7 +5,11 @@ import { useFormContext } from "react-hook-form"
 export type NumberFieldProps = NumberInputProps & FieldProps
 
 export const NumberField = (props: NumberFieldProps) => {
-  const { name, schema, ...other } = useProps("NumberField", {}, props)
+  const { name, schema, fieldComponent, ...other } = useProps(
+    "NumberField",
+    {},
+    props,
+  )
 
   const { register, setValue } = useFormContext()
   const registerProps = register(name)

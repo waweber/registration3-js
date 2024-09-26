@@ -6,7 +6,11 @@ import { FieldProps } from "../../types.js"
 export type TextFieldProps = TextInputProps & FieldProps
 
 export const TextField = (props: TextFieldProps) => {
-  const { name, schema, ...other } = useProps("TextField", {}, props)
+  const { name, schema, fieldComponent, ...other } = useProps(
+    "TextField",
+    {},
+    props,
+  )
 
   const { register } = useFormContext()
   const registerProps = register(name)

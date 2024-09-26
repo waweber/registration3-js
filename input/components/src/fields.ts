@@ -9,14 +9,9 @@ import { ArrayField } from "./components/array/ArrayField.js"
 import { DateField } from "./components/date/DateField.js"
 import { ButtonField } from "./components/button/ButtonField.js"
 
-export const DefaultFieldComponent = (
-  props: FieldProps,
-  key?: string | number,
-  getFieldComponent = defaultGetFieldComponent,
-): ReactNode => {
-  const Component = getFieldComponent(props)
-
-  return React.createElement(Component, { key, ...props })
+export const DefaultFieldComponent = (props: FieldProps): ReactNode => {
+  const field = defaultGetFieldComponent(props)
+  return React.createElement(field, props)
 }
 
 export const defaultGetFieldComponent = (

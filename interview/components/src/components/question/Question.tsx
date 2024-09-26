@@ -29,7 +29,7 @@ export const Question = (props: QuestionProps) => {
   const showControls = useMemo(() => !hasButtons(schema), [schema])
 
   const ChildComponent = useCallback(
-    ({ schema }: FormFieldsProps) => {
+    ({ schema, ...other }: FormFieldsProps) => {
       return (
         <ContentComponent
           title={schema.title || "Question"}
@@ -45,7 +45,7 @@ export const Question = (props: QuestionProps) => {
         >
           <Stack className={clsx("Question-content")}>
             <Markdown>{schema.description}</Markdown>
-            <FieldsComponent schema={schema} />
+            <FieldsComponent schema={schema} {...other} />
           </Stack>
         </ContentComponent>
       )
@@ -59,6 +59,7 @@ export const Question = (props: QuestionProps) => {
       className={clsx("Question-root", className)}
       initialValues={initialData}
       onSubmit={context.onSubmit}
+      autoFocus
       fieldsComponent={ChildComponent}
     />
   )

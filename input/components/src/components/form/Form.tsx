@@ -14,12 +14,14 @@ export type FormProps = {
   initialValues?: Record<string, JSONType>
   onSubmit?: (values: Record<string, JSONType>) => void | Promise<void>
   className?: string
+  autoFocus?: boolean
   fieldsComponent?: ComponentType<FormFieldsProps>
   fieldComponent?: ComponentType<FieldProps>
 }
 
 export type FormFieldsProps = {
   schema: Schema<"object">
+  autoFocus?: boolean
   fieldComponent?: ComponentType<FieldProps>
 }
 
@@ -29,6 +31,7 @@ export const Form = (props: FormProps) => {
     initialValues,
     onSubmit,
     className,
+    autoFocus,
     fieldsComponent = Form.Fields,
     fieldComponent,
   } = props
@@ -52,7 +55,11 @@ export const Form = (props: FormProps) => {
   return (
     <SchemaFormProvider {...form}>
       <form className={className} onSubmit={handleSubmit(submitFunc)}>
-        <FieldsComponent schema={schema} fieldComponent={fieldComponent} />
+        <FieldsComponent
+          schema={schema}
+          fieldComponent={fieldComponent}
+          autoFocus={autoFocus}
+        />
       </form>
     </SchemaFormProvider>
   )
@@ -60,18 +67,21 @@ export const Form = (props: FormProps) => {
 
 const FormFields = ({
   schema,
+  autoFocus,
   fieldComponent = DefaultFieldComponent,
 }: FormFieldsProps) => {
   const objProps = schema.properties ?? {}
   const FieldComponent = fieldComponent
 
-  const els = Object.keys(objProps).map((p) => {
+  const els = Object.keys(objProps).map((p, i) => {
     const propSchema = objProps[p]
     return (
       <FieldComponent
+        key={p}
         name={p}
         schema={propSchema}
         fieldComponent={FieldComponent}
+        autoFocus={autoFocus && i == 0}
       />
     )
   })

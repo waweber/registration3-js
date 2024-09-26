@@ -8,7 +8,7 @@ import { IconChevronDown } from "@tabler/icons-react"
 export type DateFieldProps = FieldProps
 
 export const DateField = (props: DateFieldProps) => {
-  const { schema, name } = useProps("DateField", {}, props)
+  const { schema, name, autoFocus } = useProps("DateField", {}, props)
 
   const monthRef = useRef<HTMLSelectElement | null>(null)
   const dayRef = useRef<HTMLInputElement | null>(null)
@@ -69,6 +69,7 @@ export const DateField = (props: DateFieldProps) => {
           value={month}
           onChange={handleChange}
           onBlur={handleBlur}
+          autoFocus={autoFocus}
         >
           <option value="">Month</option>
           {months.map((m) => (

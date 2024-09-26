@@ -18,7 +18,11 @@ export type SelectFieldProps = FieldProps & {
 }
 
 export const SelectField = (props: SelectFieldProps) => {
-  const { getSelectComponent = defaultGetSelectComponent, ...other } = props
+  const {
+    getSelectComponent = defaultGetSelectComponent,
+    fieldComponent,
+    ...other
+  } = props
   const Component = getSelectComponent(other)
   return <Component {...other} />
 }

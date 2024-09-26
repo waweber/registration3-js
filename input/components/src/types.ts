@@ -5,4 +5,5 @@ export type FieldProps = {
   name: string
   schema: Schema
   fieldComponent?: ComponentType<FieldProps>
+  autoFocus?: boolean
 }
