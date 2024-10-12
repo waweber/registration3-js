@@ -32,7 +32,7 @@ export const Interview = (props: InterviewProps) => {
     onClose,
     onNavigate,
     onUpdate,
-    children,
+    contentComponent: ContentComponent,
   } = props
   const record = recordId ? store.get(recordId) : null
   const response = record?.response
@@ -88,15 +88,16 @@ export const Interview = (props: InterviewProps) => {
       <Error
         title={content.title}
         message={content.description || "Your responses cannot be accepted."}
-      >
-        {children}
-      </Error>
+        contentComponent={ContentComponent}
+      />
     )
   } else if (content.type == "error") {
     child = (
-      <Error title={content.title} message={content.description}>
-        {children}
-      </Error>
+      <Error
+        title={content.title}
+        message={content.description}
+        contentComponent={ContentComponent}
+      />
     )
   } else if (content.type == "question") {
     child = (
@@ -104,9 +105,8 @@ export const Interview = (props: InterviewProps) => {
         key={response.state}
         schema={content.schema}
         initialData={record.userResponse}
-      >
-        {children}
-      </Question>
+        contentComponent={ContentComponent}
+      />
     )
   }
 

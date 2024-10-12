@@ -17,10 +17,12 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
-    "!*.stories.*",
+    "!**/*.stories.*",
     "src/**/*.scss"
   ],
   "dependencies": {
+    "@open-event-systems/input-components": "workspace:^",
+    "@open-event-systems/input-lib": "workspace:^",
     "@open-event-systems/interview-lib": "workspace:^",
     "clsx": "^2.1.1",
     "markdown-it": "^14.1.0",

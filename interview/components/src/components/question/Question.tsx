@@ -1,76 +1,67 @@
 import { Button, Group, Stack } from "@mantine/core"
-import { Schema, UserResponse } from "@open-event-systems/interview-lib"
-import { makeFormState } from "../../state/form.js"
-import { useContext, useMemo, useState } from "react"
-import { ObjectField } from "../fields/object/ObjectField.js"
-import { FieldContextProvider } from "../fields/context.js"
+import { UserResponse } from "@open-event-systems/interview-lib"
+import { ComponentType, useCallback, useContext, useMemo } from "react"
 import { InterviewComponentProps } from "../types.js"
 import clsx from "clsx"
 import { InterviewContext } from "../interview/Context.js"
+import { Schema } from "@open-event-systems/input-lib"
+import { Form, FormFieldsProps } from "@open-event-systems/input-components"
 import { Markdown } from "../markdown/Markdown.js"
 
 export type QuestionProps = InterviewComponentProps & {
-  schema: Schema
+  className?: string
+  schema: Schema<"object">
   initialData?: UserResponse
+  fieldsComponent?: ComponentType<FormFieldsProps>
 }
 
 export const Question = (props: QuestionProps) => {
-  const { schema, initialData, children } = props
+  const {
+    schema,
+    initialData,
+    className,
+    contentComponent: ContentComponent,
+    fieldsComponent = Form.Fields,
+  } = props
+  const FieldsComponent = fieldsComponent
 
   const context = useContext(InterviewContext)
-  const [state] = useState(() => makeFormState(schema, initialData))
   const showControls = useMemo(() => !hasButtons(schema), [schema])
 
-  const componentProps = useMemo(
-    () => ({
-      Title() {
-        return state.schema.title
-      },
-      Content() {
-        return (
+  const ChildComponent = useCallback(
+    ({ schema, ...other }: FormFieldsProps) => {
+      return (
+        <ContentComponent
+          title={schema.title || "Question"}
+          controls={
+            showControls ? (
+              <Group preventGrowOverflow={false} justify="flex-end">
+                <Button type="submit" variant="filled">
+                  Next
+                </Button>
+              </Group>
+            ) : undefined
+          }
+        >
           <Stack className={clsx("Question-content")}>
-            <Markdown>{state.schema.description}</Markdown>
-            <ObjectField autoFocus />
+            <Markdown>{schema.description}</Markdown>
+            <FieldsComponent schema={schema} {...other} />
           </Stack>
-        )
-      },
-      Controls() {
-        if (!showControls) {
-          return null
-        } else {
-          return (
-            <Group preventGrowOverflow={false} justify="flex-end">
-              <Button type="submit" variant="filled">
-                Next
-              </Button>
-            </Group>
-          )
-        }
-      },
-    }),
-    [],
+        </ContentComponent>
+      )
+    },
+    [showControls, ContentComponent],
   )
 
-  const updatedContext = {
-    ...context,
-    onSubmit: (userResponse?: UserResponse) => {
-      if (userResponse) {
-        context.onSubmit(userResponse)
-      } else {
-        state.setTouched([])
-        if (state.validationResult.success) {
-          context.onSubmit(state.validationResult.value as UserResponse)
-        }
-      }
-    },
-  }
-
   return (
-    <InterviewContext.Provider value={updatedContext}>
-      <FieldContextProvider state={state} schema={state.schema}>
-        {children(componentProps)}
-      </FieldContextProvider>
-    </InterviewContext.Provider>
+    <Form
+      schema={schema}
+      className={clsx("Question-root", className)}
+      initialValues={initialData}
+      onSubmit={context.onSubmit}
+      autoFocus
+      fieldsComponent={ChildComponent}
+    />
   )
 }
 
@@ -78,7 +69,7 @@ const hasButtons = (schema: Schema) => {
   const properties = schema.properties ?? {}
   for (const key of Object.keys(properties)) {
     const propSchema = properties[key]
-    if (propSchema["x-component"] == "buttons") {
+    if (propSchema["x-type"] == "button") {
       return true
     }
   }
