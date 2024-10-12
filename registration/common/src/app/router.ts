@@ -1,8 +1,10 @@
 import { AppContextValue } from "#src/app/context.js"
+import { adminEventRoute, adminRoute } from "#src/app/routes/admin.js"
 import { authRoute } from "#src/app/routes/auth.js"
 import { deviceAuthAuthorizeRoute } from "#src/app/routes/device/authorize.js"
 import { deviceAuthRoute } from "#src/app/routes/device/device.js"
 import { rootRoute } from "#src/app/routes/index.js"
+import { registrationSearchRoute } from "#src/app/routes/registration/search.js"
 import {
   addRegistrationRoute,
   cartRoute,
@@ -53,6 +55,9 @@ export const makeRouter = (ctx: AppContextValue) => {
             changeRegistrationRoute,
           ]),
           accessCodeRoute,
+        ]),
+        adminRoute.addChildren([
+          adminEventRoute.addChildren([registrationSearchRoute]),
         ]),
       ]),
     ]),

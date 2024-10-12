@@ -10,6 +10,7 @@ import {
 } from "@open-event-systems/interview-lib"
 import { QueryClient } from "@tanstack/react-query"
 import { Config } from "#src/types.js"
+import { RegistrationAPI } from "#src/features/registration/types.js"
 
 export interface AppContextValue {
   config: Config
@@ -21,6 +22,7 @@ export interface AppContextValue {
   cartAPI: CartAPI
   selfServiceAPI: SelfServiceAPI
   paymentAPI: PaymentAPI
+  registrationAPI: RegistrationAPI
 }
 
 export const AppContext = createOptionalContext<AppContextValue>()

@@ -21,6 +21,8 @@ import wretch from "wretch"
 
 import "@open-event-systems/interview-components/styles.scss"
 import "../styles.scss"
+import { createRegistrationAPI } from "#src/features/registration/api.js"
+import { RegistrationAPIContext } from "#src/features/registration/queries.js"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -44,6 +46,7 @@ const App = ({ config }: { config: Config }) => {
       interviewAPI: makeInterviewAPI(),
       interviewStore: InterviewRecordLocalStorage.load(),
       selfServiceAPI: makeSelfServiceAPI(authWretch),
+      registrationAPI: createRegistrationAPI(authWretch),
     }
   })
 
@@ -66,7 +69,9 @@ const App = ({ config }: { config: Config }) => {
             store={ctx.interviewStore}
           >
             <PaymentAPIContext.Provider value={ctx.paymentAPI}>
-              <RouterProvider router={router} />
+              <RegistrationAPIContext.Provider value={ctx.registrationAPI}>
+                <RouterProvider router={router} />
+              </RegistrationAPIContext.Provider>
             </PaymentAPIContext.Provider>
           </InterviewAPIProvider>
         </QueryClientProvider>
