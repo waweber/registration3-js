@@ -1,5 +1,7 @@
 import { AppContextValue } from "#src/app/context.js"
 import { authRoute } from "#src/app/routes/auth.js"
+import { deviceAuthAuthorizeRoute } from "#src/app/routes/device/authorize.js"
+import { deviceAuthRoute } from "#src/app/routes/device/device.js"
 import { rootRoute } from "#src/app/routes/index.js"
 import {
   addRegistrationRoute,
@@ -38,8 +40,10 @@ export const makeRouter = (ctx: AppContextValue) => {
         signInMenuRoute,
         signInEmailRoute,
         webAuthnRegisterRoute,
+        deviceAuthRoute,
       ]),
       authRoute.addChildren([
+        deviceAuthAuthorizeRoute,
         eventsRoute,
         eventRoute.addChildren([
           selfServiceLayoutRoute.addChildren([
