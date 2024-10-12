@@ -61,6 +61,19 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
 
   return (
     <Box className={clsx("InterviewPanel-root", className)} {...other}>
+      <Box className="InterviewPanel-contentCol">
+        <ContentComponent
+          className="InterviewPanel-content"
+          title={!isSmall ? title : undefined}
+          footer={controls}
+          onSubmit={(e) => {
+            e.preventDefault()
+            context.onSubmit()
+          }}
+        >
+          {children}
+        </ContentComponent>
+      </Box>
       <Box className="InterviewPanel-historyCol">
         {isSmall ? (
           <HistorySelector
@@ -82,19 +95,6 @@ export const InterviewPanel = (props: InterviewPanelProps) => {
             />
           </>
         )}
-      </Box>
-      <Box className="InterviewPanel-contentCol">
-        <ContentComponent
-          className="InterviewPanel-content"
-          title={!isSmall ? title : undefined}
-          footer={controls}
-          onSubmit={(e) => {
-            e.preventDefault()
-            context.onSubmit()
-          }}
-        >
-          {children}
-        </ContentComponent>
       </Box>
       <LoadingOverlay visible={context.submitting} />
     </Box>
