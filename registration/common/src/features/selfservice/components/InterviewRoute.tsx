@@ -3,6 +3,7 @@ import { useNavigate, useRouter } from "@tanstack/react-router"
 import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
 import {
   Interview,
+  InterviewContentComponentProps,
   InterviewPanel,
   useInterviewAPI,
 } from "@open-event-systems/interview-components"
@@ -133,6 +134,13 @@ const InterviewPage = ({
     [router, eventId, currentCart.id, interviewId],
   )
 
+  const Component = useCallback(
+    (props: InterviewContentComponentProps) => (
+      <InterviewPanel getHistoryLink={getHistoryLink} {...props} />
+    ),
+    [getHistoryLink],
+  )
+
   return (
     <Interview
       api={interviewAPI}
@@ -142,10 +150,7 @@ const InterviewPage = ({
       onNavigate={onNavigate}
       onUpdate={onUpdate}
       onClose={onClose}
-    >
-      {(renderProps) => (
-        <InterviewPanel getHistoryLink={getHistoryLink} {...renderProps} />
-      )}
-    </Interview>
+      contentComponent={Component}
+    />
   )
 }

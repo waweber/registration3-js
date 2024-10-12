@@ -1,3 +1,9 @@
 .Question-content {
   flex: 1 0 auto;
 }
+
+.Question-root {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}

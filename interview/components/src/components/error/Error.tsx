@@ -1,5 +1,5 @@
 import { Button, Group } from "@mantine/core"
-import { useContext, useMemo } from "react"
+import { useContext } from "react"
 import { InterviewComponentProps } from "../types.js"
 import { InterviewContext } from "../interview/Context.js"
 import { Markdown } from "../markdown/Markdown.js"
@@ -10,29 +10,21 @@ export type ErrorProps = InterviewComponentProps & {
 }
 
 export const Error = (props: ErrorProps) => {
-  const { title, message, children } = props
+  const { title, message, contentComponent: ContentComponent } = props
   const context = useContext(InterviewContext)
 
-  const componentProps = useMemo(
-    () => ({
-      Title() {
-        return title
-      },
-      Content() {
-        return <Markdown>{message}</Markdown>
-      },
-      Controls() {
-        return (
-          <Group preventGrowOverflow={false} justify="flex-end">
-            <Button onClick={() => context.onClose()} variant="outline">
-              Close
-            </Button>
-          </Group>
-        )
-      },
-    }),
-    [title, message, context.onClose],
+  return (
+    <ContentComponent
+      title={title}
+      controls={
+        <Group preventGrowOverflow={false} justify="flex-end">
+          <Button onClick={() => context.onClose()} variant="outline">
+            Close
+          </Button>
+        </Group>
+      }
+    >
+      <Markdown>{message}</Markdown>
+    </ContentComponent>
   )
-
-  return children(componentProps)
 }

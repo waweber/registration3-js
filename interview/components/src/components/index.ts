@@ -1,6 +1,5 @@
 export * from "./content/Content.js"
 export * from "./error/Error.js"
-export * from "./fields/index.js"
 export * from "./history/HistoryPanel.js"
 export * from "./history/HistorySelector.js"
 export * from "./interview/Interview.js"

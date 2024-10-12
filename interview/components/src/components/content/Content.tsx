@@ -10,7 +10,7 @@ import clsx from "clsx"
 import { ComponentPropsWithoutRef, ReactNode } from "react"
 
 export type ContentProps = BoxProps &
-  Omit<ComponentPropsWithoutRef<"form">, "title"> & {
+  Omit<ComponentPropsWithoutRef<"div">, "title"> & {
     classNames?: {
       root?: string
       header?: string
@@ -36,11 +36,7 @@ export const Content = (props: ContentProps) => {
   } = useProps("Content", {}, props)
 
   return (
-    <Box
-      component="form"
-      className={clsx("Content-root", className, classes?.root)}
-      {...other}
-    >
+    <Box className={clsx("Content-root", className, classes?.root)} {...other}>
       <Box className={clsx("Content-header", classes?.header)}>
         {title && (
           <Title
