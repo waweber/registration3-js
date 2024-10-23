@@ -3,4 +3,5 @@ packages:
   - input/components
   - interview/lib
   - interview/components
+  - registration/lib
   - registration/common

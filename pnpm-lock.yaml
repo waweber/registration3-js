@@ -370,6 +370,27 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
 
+  registration/lib:
+    devDependencies:
+      "@open-event-systems/interview-lib":
+        specifier: link:../../interview/lib
+        version: link:../../interview/lib
+      "@tanstack/react-query":
+        specifier: ^5.51.15
+        version: 5.51.15(react@18.3.1)
+      "@types/react":
+        specifier: ^18.3.3
+        version: 18.3.3
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+      wretch:
+        specifier: ^2.9.0
+        version: 2.9.0
+
 packages:
   "@adobe/css-tools@4.4.0":
     resolution:
