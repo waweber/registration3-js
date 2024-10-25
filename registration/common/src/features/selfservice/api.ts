@@ -86,10 +86,10 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
         .get()
         .json()
     },
-    async completeInterview(state) {
+    async completeInterview(response) {
       return await wretch
-        .url(`/self-service/add-to-cart`)
-        .json({ state: state })
+        .url(response.target, true)
+        .json({ state: response.state })
         .post()
         .json()
     },
@@ -148,7 +148,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
       return {
         state: `${interviewId}-0`,
         completed: false,
-        update_url: "",
+        target: "",
       }
     },
     async completeInterview() {

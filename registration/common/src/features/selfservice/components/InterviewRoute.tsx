@@ -100,7 +100,7 @@ const InterviewPage = ({
   const onUpdate = useCallback(
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
-        const res = await selfService.completeInterview(record.response.state)
+        const res = await selfService.completeInterview(record.response)
         navigate({
           to: cartRoute.to,
           params: {

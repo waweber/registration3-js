@@ -43,7 +43,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       title: "Example Question",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "1",
         content: {
           type: "question",
@@ -80,7 +80,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       prev: "1",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "1-error",
         content: {
           type: "error",
@@ -94,7 +94,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       prev: "1",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "2",
         content: {
           type: "exit",

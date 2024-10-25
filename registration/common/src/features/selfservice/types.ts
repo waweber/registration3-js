@@ -1,4 +1,7 @@
-import { InterviewResponse } from "@open-event-systems/interview-lib"
+import {
+  CompleteInterviewResponse,
+  InterviewResponse,
+} from "@open-event-systems/interview-lib"
 import { Cart } from "../cart/types.js"
 
 export type Event = {
@@ -40,6 +43,6 @@ export type SelfServiceAPI = {
     registrationId?: string | null,
     accessCode?: string | null,
   ): Promise<InterviewResponse>
-  completeInterview(state: string): Promise<Cart>
+  completeInterview(response: CompleteInterviewResponse): Promise<Cart>
   checkAccessCode(eventId: string, accessCode: string): Promise<boolean>
 }
