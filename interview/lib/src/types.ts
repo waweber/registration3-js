@@ -2,18 +2,18 @@ import { JSONType, Schema } from "@open-event-systems/input-lib"
 
 export type InterviewResponse =
   | IncompleteInterviewResponse
-  | CompletedInterviewResponse
+  | CompleteInterviewResponse
 
 export type IncompleteInterviewResponse = Readonly<{
   state: string
   completed: false
-  update_url: string
+  target: string
   content?: InterviewContent
 }>
 
-export type CompletedInterviewResponse = Readonly<{
+export type CompleteInterviewResponse = Readonly<{
   state: string
-  target?: string
+  target: string
   completed: true
 }>
 

@@ -7,7 +7,11 @@ import {
   InterviewResponseRecord,
   getErrorResponse,
 } from "@open-event-systems/interview-lib"
-import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
+import {
+  createRoute,
+  lazyRouteComponent,
+  notFound,
+} from "@tanstack/react-router"
 
 export const cartRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
@@ -23,7 +27,7 @@ export const cartRoute = createRoute({
       cartQueries.currentCart(eventId),
     )
     const registrations = await queryClient.fetchQuery(
-      selfServiceQueries.registrations(eventId),
+      selfServiceQueries.registrations(eventId, currentCart.id),
     )
 
     const [pricingResult, paymentOptions] = await Promise.all([
@@ -49,42 +53,17 @@ export const cartRoute = createRoute({
 
 export const addRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
-  path: "cart/add/$interviewId",
-  async loader({ context, params, location }) {
-    const { queryClient, interviewStore } = context
-    const { eventId, interviewId } = params
+  path: "cart/add",
+  async loader({ context, location }) {
+    const { queryClient } = context
     const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
     const stateId = hashParams.get("s")
-
     const queries = getCartQueryOptions(context)
 
     if (stateId) {
       return await queryClient.fetchQuery(queries.interviewRecord(stateId))
     } else {
-      const currentCart = await queryClient.fetchQuery(
-        queries.currentCart(eventId),
-      )
-      try {
-        const initialRecord = await queryClient.fetchQuery({
-          ...queries.initialInterviewRecord(
-            eventId,
-            currentCart.id,
-            interviewId,
-            null,
-            accessCode,
-          ),
-        })
-        return initialRecord
-      } catch (e) {
-        if (isResponseError(e)) {
-          // a hack...
-          const errResp = getErrorResponse(new Date().toISOString(), e.status)
-          return interviewStore.add(errResp)
-        } else {
-          throw e
-        }
-      }
+      throw notFound()
     }
   },
   component: lazyRouteComponent(
@@ -95,12 +74,10 @@ export const addRegistrationRoute = createRoute({
 
 export const changeRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
-  path: "cart/change/$registrationId/$interviewId",
-  async loader({ context, params, location }) {
-    const { queryClient, interviewStore } = context
-    const { eventId, interviewId, registrationId } = params
+  path: "cart/change",
+  async loader({ context, location }) {
+    const { queryClient } = context
     const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
     const stateId = hashParams.get("s")
 
     const queries = getCartQueryOptions(context)
@@ -108,28 +85,7 @@ export const changeRegistrationRoute = createRoute({
     if (stateId) {
       return await queryClient.fetchQuery(queries.interviewRecord(stateId))
     } else {
-      const currentCart = await queryClient.fetchQuery(
-        queries.currentCart(eventId),
-      )
-      try {
-        return await queryClient.fetchQuery(
-          queries.initialInterviewRecord(
-            eventId,
-            currentCart.id,
-            interviewId,
-            registrationId,
-            accessCode,
-          ),
-        )
-      } catch (e) {
-        if (isResponseError(e)) {
-          // a hack...
-          const errResp = getErrorResponse(new Date().toISOString(), e.status)
-          return interviewStore.add(errResp)
-        } else {
-          throw e
-        }
-      }
+      throw notFound()
     }
   },
   component: lazyRouteComponent(

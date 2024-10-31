@@ -50,7 +50,7 @@ class InterviewAPIImpl {
     }
 
     const fetchFunc = this.fetchFunc ?? window.fetch
-    const res = await fetchFunc(response.update_url, {
+    const res = await fetchFunc(response.target, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export const getErrorResponse = (
   return {
     state: `${prevState}-error`,
     completed: false,
-    update_url: "",
+    target: "",
     content: {
       type: "error",
       title: title,

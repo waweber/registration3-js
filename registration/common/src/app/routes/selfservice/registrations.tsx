@@ -47,7 +47,7 @@ export const selfServiceRegistrationsRoute = createRoute({
 
     const [pricingResult, registrations] = await Promise.all([
       queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
-      queryClient.fetchQuery(queries.registrations(eventId)),
+      queryClient.fetchQuery(queries.registrations(eventId, currentCart.id)),
     ])
 
     return {

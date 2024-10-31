@@ -135,7 +135,7 @@ const fetchInterviewResponse = async (
   const resp = await api.update({
     completed: false,
     state: state,
-    update_url: updateUrl,
+    target: updateUrl,
   })
   return store.add(resp)
 }

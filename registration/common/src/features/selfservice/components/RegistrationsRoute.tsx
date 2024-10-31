@@ -6,6 +6,7 @@ import { RegistrationList } from "#src/features/selfservice/components/index.js"
 import {
   useInterviewOptionsDialog,
   useRegistrations,
+  useSelfService,
 } from "#src/features/selfservice/hooks.js"
 import {
   useCartPricingResult,
@@ -44,11 +45,16 @@ export const Registrations = ({
   accessCode?: string | null
 }) => {
   const navigate = useNavigate()
-  const registrations = useRegistrations(event.id, accessCode)
   const [currentCart] = useCurrentCart(event.id)
+  const registrations = useRegistrations(event.id, currentCart.id, accessCode)
   const currentPricingResult = useCartPricingResult(currentCart.id)
+  const selfServiceAPI = useSelfService()
 
-  const interviewOptions = useInterviewOptionsDialog(event.id, accessCode)
+  const interviewOptions = useInterviewOptionsDialog(
+    event.id,
+    currentCart.id,
+    accessCode,
+  )
 
   const changedRegistrations = getChangedRegistrations() ?? []
   const changedRegistrationsRef = useRef(changedRegistrations)
@@ -84,14 +90,14 @@ export const Registrations = ({
           menuItems: r.change_options?.map((o) => ({
             label: o.title,
             onClick: () => {
-              navigate({
-                to: changeRegistrationRoute.to,
-                hash: accessCode ? `a=${accessCode}` : undefined,
-                params: {
-                  eventId: event.id,
-                  registrationId: r.id,
-                  interviewId: o.id,
-                },
+              selfServiceAPI.startInterview(o.url).then((res) => {
+                navigate({
+                  to: changeRegistrationRoute.to,
+                  hash: `s=${res.state}`,
+                  params: {
+                    eventId: event.id,
+                  },
+                })
               })
             },
           })),
