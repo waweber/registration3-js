@@ -1,6 +1,13 @@
 import { authRoute } from "#src/app/routes/auth.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
+import {
+  getCurrentCartQueryOptions,
+  getPricingResultQueryOptions,
+} from "@open-event-systems/registration-lib/cart"
+import {
+  getSelfServiceAccessCodeCheckQueryOptions,
+  getSelfServiceEventsQueryOptions,
+  getSelfServiceRegistrationsQueryOptions,
+} from "@open-event-systems/registration-lib/selfservice"
 import {
   createRoute,
   lazyRouteComponent,
@@ -13,8 +20,8 @@ export const eventRoute = createRoute({
   async loader({ context, params }) {
     const { eventId } = params
     const { queryClient, selfServiceAPI } = context
-    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
-    const events = await queryClient.fetchQuery(selfServiceQueries.events)
+    const options = getSelfServiceEventsQueryOptions(selfServiceAPI)
+    const events = await queryClient.fetchQuery(options)
 
     const event = events.get(eventId)
     if (!event) {
@@ -37,17 +44,27 @@ export const selfServiceRegistrationsRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
   path: "/",
   async loader({ context, params }) {
-    const { selfServiceAPI, queryClient } = context
+    const { selfServiceAPI, cartAPI, currentCartStore, queryClient } = context
     const { eventId } = params
-    const queries = getSelfServiceQueryOptions(selfServiceAPI)
-    const cartQueries = getCartQueryOptions(context)
     const currentCart = await queryClient.fetchQuery(
-      cartQueries.currentCart(eventId),
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
     )
-
     const [pricingResult, registrations] = await Promise.all([
-      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
-      queryClient.fetchQuery(queries.registrations(eventId, currentCart.id)),
+      queryClient.fetchQuery(
+        getPricingResultQueryOptions(cartAPI, currentCart.id),
+      ),
+      queryClient.fetchQuery(
+        getSelfServiceRegistrationsQueryOptions(
+          selfServiceAPI,
+          eventId,
+          currentCart.id,
+        ),
+      ),
     ])
 
     return {
@@ -69,14 +86,25 @@ export const accessCodeRoute = createRoute({
   getParentRoute: () => eventRoute,
   path: "access-code/$accessCode",
   async loader({ context, params }) {
-    const { selfServiceAPI, queryClient } = context
+    const { selfServiceAPI, cartAPI, currentCartStore, queryClient } = context
     const { eventId, accessCode } = params
-    const queries = getSelfServiceQueryOptions(selfServiceAPI)
-    const cartQueries = getCartQueryOptions(context)
 
     const [checkResult, currentCart] = await Promise.all([
-      queryClient.fetchQuery(queries.accessCodeCheck(eventId, accessCode)),
-      queryClient.fetchQuery(cartQueries.currentCart(eventId)),
+      queryClient.fetchQuery(
+        getSelfServiceAccessCodeCheckQueryOptions(
+          selfServiceAPI,
+          eventId,
+          accessCode,
+        ),
+      ),
+      queryClient.fetchQuery(
+        getCurrentCartQueryOptions(
+          cartAPI,
+          currentCartStore,
+          queryClient,
+          eventId,
+        ),
+      ),
     ])
 
     if (!checkResult) {
@@ -84,8 +112,17 @@ export const accessCodeRoute = createRoute({
     }
 
     const [pricingResult, registrations] = await Promise.all([
-      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
-      queryClient.fetchQuery(queries.registrations(eventId, accessCode)),
+      queryClient.fetchQuery(
+        getPricingResultQueryOptions(cartAPI, currentCart.id),
+      ),
+      queryClient.fetchQuery(
+        getSelfServiceRegistrationsQueryOptions(
+          selfServiceAPI,
+          eventId,
+          currentCart.id,
+          accessCode,
+        ),
+      ),
     ])
 
     return {

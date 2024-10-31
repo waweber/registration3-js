@@ -2,56 +2,75 @@ import {
   addRegistrationRoute,
   changeRegistrationRoute,
 } from "#src/app/routes/selfservice/cart.js"
-import {
-  accessCodeRoute,
-  eventRoute,
-} from "#src/app/routes/selfservice/registrations.js"
+import { accessCodeRoute } from "#src/app/routes/selfservice/registrations.js"
 import { FullPageMenuLayout, Title } from "#src/components/index.js"
 import AccessCodeOptions from "#src/features/selfservice/components/access-code/AccessCodeOptions.js"
+import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
+import {
+  getInterviewStateQueryOptions,
+  useInterviewAPI,
+  useInterviewStore,
+} from "@open-event-systems/registration-lib/interview"
+import {
+  useSelfServiceAPI,
+  useSelfServiceRegistrations,
+} from "@open-event-systems/registration-lib/selfservice"
+import { useQueryClient } from "@tanstack/react-query"
 
 export const AccessCodeRoute = () => {
   const { eventId, accessCode } = accessCodeRoute.useParams()
-  const selfService = accessCodeRoute.useLoaderData()
+  const [currentCart] = useCurrentCart(eventId)
+  const selfServiceAPI = useSelfServiceAPI()
+  const interviewAPI = useInterviewAPI()
+  const interviewStore = useInterviewStore()
+  const registrations = useSelfServiceRegistrations(
+    eventId,
+    currentCart.id,
+    accessCode,
+  )
   const navigate = accessCodeRoute.useNavigate()
+  const queryClient = useQueryClient()
 
   return (
     <FullPageMenuLayout>
       <Title title="Access Code" subtitle="View and manage registrations">
         <AccessCodeOptions
-          options={selfService.registrations.add_options?.map((o) => ({
-            id: o.id,
+          options={registrations.add_options?.map((o) => ({
+            id: o.url,
             title: o.title,
           }))}
-          changeOptions={selfService.registrations.registrations.map((r) => ({
+          changeOptions={registrations.registrations.map((r) => ({
             registrationId: r.id,
             title: r.title || "Registration",
             options:
               r.change_options?.map((o) => ({
-                id: o.id,
+                id: o.url,
                 title: o.title,
               })) ?? [],
           }))}
-          onSelect={({ id, registrationId }) => {
-            if (registrationId) {
-              navigate({
-                to: changeRegistrationRoute.to,
-                params: {
-                  eventId: eventId,
-                  interviewId: id,
-                  registrationId: registrationId,
-                },
-                hash: `a=${accessCode}`,
+          onSelect={({ id: url }) => {
+            selfServiceAPI
+              .startInterview(url)
+              .then((res) => interviewAPI.update(res))
+              .then((res) => {
+                const record = interviewStore.add(res)
+                queryClient.setQueryData(
+                  getInterviewStateQueryOptions(
+                    interviewAPI,
+                    interviewStore,
+                    "",
+                    record.response.state,
+                  ).queryKey,
+                  record,
+                )
+                navigate({
+                  to: changeRegistrationRoute.to,
+                  params: {
+                    eventId: eventId,
+                  },
+                  hash: `s=${res.state}`,
+                })
               })
-            } else {
-              navigate({
-                to: addRegistrationRoute.to,
-                params: {
-                  eventId: eventId,
-                  interviewId: id,
-                },
-                hash: `a=${accessCode}`,
-              })
-            }
           }}
         />
       </Title>

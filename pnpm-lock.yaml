@@ -245,6 +245,9 @@ importers:
       "@open-event-systems/interview-lib":
         specifier: workspace:^
         version: link:../../interview/lib
+      "@open-event-systems/registration-lib":
+        specifier: workspace:^
+        version: link:../lib
       "@simplewebauthn/browser":
         specifier: ^10.0.0
         version: 10.0.0
@@ -373,7 +376,7 @@ importers:
   registration/lib:
     devDependencies:
       "@open-event-systems/interview-lib":
-        specifier: link:../../interview/lib
+        specifier: workspace:^
         version: link:../../interview/lib
       "@tanstack/react-query":
         specifier: ^5.51.15

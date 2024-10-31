@@ -2,11 +2,12 @@ import { eventsRoute } from "#src/app/routes/selfservice/events.js"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { FullPageMenuLayout } from "#src/components/index.js"
 import { Card, NavLink, Space } from "@mantine/core"
+import { useSelfServiceEvents } from "@open-event-systems/registration-lib/selfservice"
 import { IconChevronRight } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 
 export const EventsRoute = () => {
-  const events = eventsRoute.useLoaderData()
+  const events = useSelfServiceEvents()
   return (
     <FullPageMenuLayout>
       <FullPageMenuLayout.Content title="Choose Event">

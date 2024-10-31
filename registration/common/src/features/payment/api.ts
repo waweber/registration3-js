@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react"
 import { Wretch } from "wretch"
 import { queryStringAddon } from "wretch/addons"
-import { CartAPI } from "#src/features/cart/index.js"
 import { NotFoundError } from "#src/utils.js"
 import {
   PaymentAPI,
@@ -11,6 +10,7 @@ import {
 } from "#src/features/payment/index.js"
 
 import { UseQueryOptions } from "@tanstack/react-query"
+import { CartAPI } from "@open-event-systems/registration-lib/cart"
 
 export const getPaymentQueryOptions = (paymentAPI: PaymentAPI) => ({
   paymentMethods: (cartId: string): UseQueryOptions<PaymentMethod[]> => ({

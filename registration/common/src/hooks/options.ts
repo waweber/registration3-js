@@ -31,7 +31,7 @@ export const useOptionsDialog = ({
       } else {
         onShow && onShow()
       }
-    }, [options?.length, disableAutoselect, onSelect, onShow]),
+    }, [options, disableAutoselect, onSelect, onShow]),
     select: useCallback(
       (id) => {
         onSelect && onSelect(id)

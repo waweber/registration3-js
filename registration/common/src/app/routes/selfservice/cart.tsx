@@ -1,12 +1,12 @@
 import { selfServiceLayoutRoute } from "#src/app/routes/selfservice/registrations.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
 import { getPaymentQueryOptions } from "#src/features/payment/index.js"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
-import { isResponseError } from "#src/utils.js"
+import { getDefaultUpdateURL } from "#src/utils.js"
 import {
-  InterviewResponseRecord,
-  getErrorResponse,
-} from "@open-event-systems/interview-lib"
+  getCurrentCartQueryOptions,
+  getPricingResultQueryOptions,
+} from "@open-event-systems/registration-lib/cart"
+import { getInterviewStateQueryOptions } from "@open-event-systems/registration-lib/interview"
+import { getSelfServiceRegistrationsQueryOptions } from "@open-event-systems/registration-lib/selfservice"
 import {
   createRoute,
   lazyRouteComponent,
@@ -17,21 +17,36 @@ export const cartRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
   path: "cart",
   async loader({ context, params }) {
-    const { queryClient, selfServiceAPI, paymentAPI } = context
+    const {
+      queryClient,
+      selfServiceAPI,
+      cartAPI,
+      currentCartStore,
+      paymentAPI,
+    } = context
     const { eventId } = params
-    const cartQueries = getCartQueryOptions(context)
-    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
     const paymentQueries = getPaymentQueryOptions(paymentAPI)
 
     const currentCart = await queryClient.fetchQuery(
-      cartQueries.currentCart(eventId),
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
     )
     const registrations = await queryClient.fetchQuery(
-      selfServiceQueries.registrations(eventId, currentCart.id),
+      getSelfServiceRegistrationsQueryOptions(
+        selfServiceAPI,
+        eventId,
+        currentCart.id,
+      ),
     )
 
     const [pricingResult, paymentOptions] = await Promise.all([
-      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
+      queryClient.fetchQuery(
+        getPricingResultQueryOptions(cartAPI, currentCart.id),
+      ),
       queryClient.fetchQuery(paymentQueries.paymentMethods(currentCart.id)),
     ])
 
@@ -55,13 +70,19 @@ export const addRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
   path: "cart/add",
   async loader({ context, location }) {
-    const { queryClient } = context
+    const { queryClient, interviewAPI, interviewStore } = context
     const hashParams = new URLSearchParams(location.hash)
     const stateId = hashParams.get("s")
-    const queries = getCartQueryOptions(context)
 
     if (stateId) {
-      return await queryClient.fetchQuery(queries.interviewRecord(stateId))
+      return await queryClient.fetchQuery(
+        getInterviewStateQueryOptions(
+          interviewAPI,
+          interviewStore,
+          getDefaultUpdateURL(),
+          stateId,
+        ),
+      )
     } else {
       throw notFound()
     }
@@ -76,14 +97,19 @@ export const changeRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
   path: "cart/change",
   async loader({ context, location }) {
-    const { queryClient } = context
+    const { queryClient, interviewAPI, interviewStore } = context
     const hashParams = new URLSearchParams(location.hash)
     const stateId = hashParams.get("s")
 
-    const queries = getCartQueryOptions(context)
-
     if (stateId) {
-      return await queryClient.fetchQuery(queries.interviewRecord(stateId))
+      return await queryClient.fetchQuery(
+        getInterviewStateQueryOptions(
+          interviewAPI,
+          interviewStore,
+          getDefaultUpdateURL(),
+          stateId,
+        ),
+      )
     } else {
       throw notFound()
     }

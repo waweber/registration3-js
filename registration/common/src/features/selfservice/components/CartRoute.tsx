@@ -14,7 +14,6 @@ import {
 import { IconPlus, IconShoppingCartCheck } from "@tabler/icons-react"
 import {
   Link,
-  createRoute,
   useLocation,
   useNavigate,
   useRouter,
@@ -23,13 +22,10 @@ import {
   getChangedRegistrations,
   setChangedRegistrations,
 } from "#src/features/selfservice/components/RegistrationsRoute.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
 import { Cart as CartView } from "#src/features/cart/components/Cart.js"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
 import {
   PaymentContext,
   PaymentResult,
-  getPaymentQueryOptions,
   usePayment,
   usePaymentAPI,
   usePaymentMethods,
@@ -41,24 +37,23 @@ import {
   Spacer,
   Title,
 } from "#src/components/index.js"
-import {
-  useCartPricingResult,
-  useStickyCurrentCart,
-} from "#src/features/cart/hooks.js"
 import { useInterviewOptionsDialog } from "#src/features/selfservice/hooks.js"
 import { useApp } from "#src/hooks/app.js"
-import {
-  Cart,
-  CartConflictError,
-  CartConflictResult,
-  CartPricingResult,
-} from "#src/features/cart/types.js"
 import { CartRegistration } from "#src/features/cart/components/CartRegistration.js"
 import { LineItem } from "#src/features/cart/components/LineItem.js"
 import { Modifier } from "#src/features/cart/components/Modifier.js"
 import { isResponseError } from "#src/utils.js"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { cartRoute } from "#src/app/routes/selfservice/cart.js"
+import {
+  Cart,
+  CartConflictError,
+  CartConflictResult,
+  CartPricingResult,
+  useCartPricingResult,
+  useRemoveFromCart,
+  useStickyCurrentCart,
+} from "@open-event-systems/registration-lib/cart"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -108,7 +103,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
 
   const pricingResult = useCartPricingResult(currentCart.id)
 
-  const interviewOptions = useInterviewOptionsDialog(eventId)
+  const interviewOptions = useInterviewOptionsDialog(eventId, currentCart.id)
 
   const showCheckout = pricingResult.registrations.length > 0
 
@@ -116,7 +111,6 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
     <>
       {pricingResult.registrations.length > 0 ? (
         <CartPricingResultComponent
-          eventId={eventId}
           cartId={currentCart.id}
           setCurrentCart={(c) => {
             setCurrentCart(c, true)
@@ -129,7 +123,11 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
       <Grid justify="space-between">
         {interviewOptions.options.length > 0 && (
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
-            <CartAddButton eventId={eventId} showCheckout={showCheckout} />
+            <CartAddButton
+              eventId={eventId}
+              cartId={currentCart.id}
+              showCheckout={showCheckout}
+            />
           </Grid.Col>
         )}
         {showCheckout && (
@@ -156,32 +154,14 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
 }
 
 const CartPricingResultComponent = ({
-  eventId,
   cartId,
   setCurrentCart,
 }: {
-  eventId: string
   cartId: string
   setCurrentCart: (cart: Cart) => void
 }) => {
-  const { cartAPI } = useApp()
   const pricingResult = useCartPricingResult(cartId)
-
-  const removeFromCart = useMutation({
-    mutationKey: ["self-service", "events", eventId, "carts", cartId],
-    async mutationFn({
-      cartId,
-      registrationId,
-    }: {
-      cartId: string
-      registrationId: string
-    }) {
-      return await cartAPI.removeRegistrationFromCart(cartId, registrationId)
-    },
-    onSuccess(data) {
-      setCurrentCart(data)
-    },
-  })
+  const removeFromCart = useRemoveFromCart(cartId)
 
   return (
     <CurrencyContext.Provider value={pricingResult.currency}>
@@ -191,9 +171,10 @@ const CartPricingResultComponent = ({
             key={reg.id}
             name={reg.name}
             onRemove={() => {
-              removeFromCart.mutate({
-                cartId: cartId,
-                registrationId: reg.id,
+              removeFromCart.mutate(reg.id, {
+                onSuccess(cart) {
+                  setCurrentCart(cart)
+                },
               })
             }}
           >
@@ -217,12 +198,14 @@ const CartPricingResultComponent = ({
 
 const CartAddButton = ({
   eventId,
+  cartId,
   showCheckout,
 }: {
   eventId: string
+  cartId: string
   showCheckout?: boolean
 }) => {
-  const interviewOptions = useInterviewOptionsDialog(eventId)
+  const interviewOptions = useInterviewOptionsDialog(eventId, cartId)
   return (
     <Button
       fullWidth

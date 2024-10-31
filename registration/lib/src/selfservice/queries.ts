@@ -37,3 +37,16 @@ export const getSelfServiceRegistrationsQueryOptions = (
     },
   }
 }
+
+export const getSelfServiceAccessCodeCheckQueryOptions = (
+  selfServiceAPI: SelfServiceAPI,
+  eventId: string,
+  accessCode: string,
+): UseSuspenseQueryOptions<boolean> => {
+  return {
+    queryKey: ["events", eventId, "access-codes", accessCode, "check"],
+    async queryFn() {
+      return await selfServiceAPI.checkAccessCode(eventId, accessCode)
+    },
+  }
+}

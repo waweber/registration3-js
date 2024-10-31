@@ -3,7 +3,6 @@ import { PaymentModal } from "./PaymentModal.js"
 import { useCallback, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Button, Stack } from "@mantine/core"
-import { makeMockCartAPI } from "#src/features/cart/index.js"
 import {
   PaymentAPIContext,
   PaymentContext,
@@ -12,6 +11,7 @@ import {
   usePayment,
   usePaymentAPI,
 } from "#src/features/payment/index.js"
+import { makeMockCartAPI } from "@open-event-systems/registration-lib/cart"
 
 const meta: Meta<typeof PaymentModal> = {
   component: PaymentModal,

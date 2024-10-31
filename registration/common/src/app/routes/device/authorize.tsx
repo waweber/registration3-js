@@ -1,5 +1,4 @@
 import { authRoute } from "#src/app/routes/auth.js"
-import { isResponseError } from "#src/utils.js"
 import {
   createRoute,
   isNotFound,

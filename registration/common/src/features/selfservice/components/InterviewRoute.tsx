@@ -5,20 +5,27 @@ import {
   Interview,
   InterviewContentComponentProps,
   InterviewPanel,
-  useInterviewAPI,
 } from "@open-event-systems/interview-components"
 import { Skeleton } from "@mantine/core"
 import { useQueryClient } from "@tanstack/react-query"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { Title } from "#src/components/index.js"
-import { useStickyCurrentCart } from "#src/features/cart/hooks.js"
-import { useApp } from "#src/hooks/app.js"
 import {
   addRegistrationRoute,
   cartRoute,
   changeRegistrationRoute,
 } from "#src/app/routes/selfservice/cart.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
+import {
+  getPricingResultQueryOptions,
+  useCartAPI,
+  useStickyCurrentCart,
+} from "@open-event-systems/registration-lib/cart"
+import { useSelfServiceAPI } from "@open-event-systems/registration-lib/selfservice"
+import {
+  getInterviewStateQueryOptions,
+  useInterviewAPI,
+  useInterviewStore,
+} from "@open-event-systems/registration-lib/interview"
 
 export const AddRegistrationRoute = () => {
   const { eventId } = addRegistrationRoute.useParams()
@@ -62,11 +69,11 @@ const InterviewPage = ({
   const [currentCart, setCurrentCart] = useStickyCurrentCart(eventId)
   const navigate = useNavigate()
   const router = useRouter()
-  const appCtx = useApp()
-  const { selfServiceAPI: selfService } = appCtx
+  const cartAPI = useCartAPI()
+  const selfServiceAPI = useSelfServiceAPI()
+  const interviewAPI = useInterviewAPI()
+  const interviewStore = useInterviewStore()
   const queryClient = useQueryClient()
-  const [interviewAPI, interviewStore] = useInterviewAPI()
-  const cartQueryOptions = getCartQueryOptions(appCtx)
 
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
 
@@ -90,7 +97,7 @@ const InterviewPage = ({
   const onUpdate = useCallback(
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
-        const res = await selfService.completeInterview(record.response)
+        const res = await selfServiceAPI.completeInterview(record.response)
         if (res == null) {
           navigate({
             to: selfServiceRegistrationsRoute.to,
@@ -99,18 +106,26 @@ const InterviewPage = ({
             },
           })
         } else {
+          await queryClient.fetchQuery(
+            getPricingResultQueryOptions(cartAPI, res.id),
+          )
           navigate({
             to: cartRoute.to,
             params: {
               eventId: eventId,
             },
           })
+          setCurrentCart(res)
         }
-        setCurrentCart(res)
       } else {
         setLatestRecordId(record.response.state)
         queryClient.setQueryData(
-          cartQueryOptions.interviewRecord(record.response.state).queryKey,
+          getInterviewStateQueryOptions(
+            interviewAPI,
+            interviewStore,
+            "",
+            record.response.state,
+          ).queryKey,
           record,
         )
         navigate({
@@ -118,7 +133,15 @@ const InterviewPage = ({
         })
       }
     },
-    [navigate, currentCart.id, eventId],
+    [
+      navigate,
+      currentCart.id,
+      eventId,
+      selfServiceAPI,
+      queryClient,
+      interviewAPI,
+      interviewStore,
+    ],
   )
 
   const getHistoryLink = useCallback(
