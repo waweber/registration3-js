@@ -10,7 +10,6 @@ import {
 import { Skeleton } from "@mantine/core"
 import { useQueryClient } from "@tanstack/react-query"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
 import { Title } from "#src/components/index.js"
 import { useStickyCurrentCart } from "#src/features/cart/hooks.js"
 import { useApp } from "#src/hooks/app.js"
@@ -19,9 +18,10 @@ import {
   cartRoute,
   changeRegistrationRoute,
 } from "#src/app/routes/selfservice/cart.js"
+import { getCartQueryOptions } from "#src/features/cart/api.js"
 
 export const AddRegistrationRoute = () => {
-  const { eventId, interviewId } = addRegistrationRoute.useParams()
+  const { eventId } = addRegistrationRoute.useParams()
 
   return (
     <Title title="New Registration" subtitle="Add a new registration">
@@ -29,7 +29,6 @@ export const AddRegistrationRoute = () => {
         <InterviewPage
           key={eventId}
           eventId={eventId}
-          interviewId={interviewId}
           record={addRegistrationRoute.useLoaderData()}
         />
       </Suspense>
@@ -38,8 +37,7 @@ export const AddRegistrationRoute = () => {
 }
 
 export const ChangeRegistrationRoute = () => {
-  const { eventId, interviewId, registrationId } =
-    changeRegistrationRoute.useParams()
+  const { eventId } = changeRegistrationRoute.useParams()
 
   return (
     <Title title="Change Registration" subtitle="Change a registration">
@@ -47,8 +45,6 @@ export const ChangeRegistrationRoute = () => {
         <InterviewPage
           key={eventId}
           eventId={eventId}
-          interviewId={interviewId}
-          registrationId={registrationId}
           record={changeRegistrationRoute.useLoaderData()}
         />
       </Suspense>
@@ -58,27 +54,21 @@ export const ChangeRegistrationRoute = () => {
 
 const InterviewPage = ({
   eventId,
-  interviewId,
-  registrationId,
   record,
 }: {
   eventId: string
-  interviewId: string
   record: InterviewResponseRecord
-  registrationId?: string
 }) => {
   const [currentCart, setCurrentCart] = useStickyCurrentCart(eventId)
-
   const navigate = useNavigate()
   const router = useRouter()
   const appCtx = useApp()
   const { selfServiceAPI: selfService } = appCtx
   const queryClient = useQueryClient()
-
-  const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
-
   const [interviewAPI, interviewStore] = useInterviewAPI()
   const cartQueryOptions = getCartQueryOptions(appCtx)
+
+  const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
 
   const onNavigate = useCallback(
     (state: string) => {
@@ -101,12 +91,21 @@ const InterviewPage = ({
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
         const res = await selfService.completeInterview(record.response)
-        navigate({
-          to: cartRoute.to,
-          params: {
-            eventId: eventId,
-          },
-        })
+        if (res == null) {
+          navigate({
+            to: selfServiceRegistrationsRoute.to,
+            params: {
+              eventId: eventId,
+            },
+          })
+        } else {
+          navigate({
+            to: cartRoute.to,
+            params: {
+              eventId: eventId,
+            },
+          })
+        }
         setCurrentCart(res)
       } else {
         setLatestRecordId(record.response.state)
@@ -119,19 +118,19 @@ const InterviewPage = ({
         })
       }
     },
-    [navigate, interviewId, registrationId, currentCart.id, eventId],
+    [navigate, currentCart.id, eventId],
   )
 
   const getHistoryLink = useCallback(
     (state: string) => {
       const loc = router.buildLocation({
         to: addRegistrationRoute.to,
-        params: { eventId, interviewId },
+        params: { eventId },
         hash: `s=${state}`,
       })
       return loc.href
     },
-    [router, eventId, currentCart.id, interviewId],
+    [router, eventId, currentCart.id],
   )
 
   const Component = useCallback(

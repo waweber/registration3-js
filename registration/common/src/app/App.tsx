@@ -21,6 +21,7 @@ import wretch from "wretch"
 
 import "@open-event-systems/interview-components/styles.scss"
 import "../styles.scss"
+import { SelfServiceAPIContext } from "#src/features/selfservice/hooks.js"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -66,7 +67,9 @@ const App = ({ config }: { config: Config }) => {
             store={ctx.interviewStore}
           >
             <PaymentAPIContext.Provider value={ctx.paymentAPI}>
-              <RouterProvider router={router} />
+              <SelfServiceAPIContext.Provider value={ctx.selfServiceAPI}>
+                <RouterProvider router={router} />
+              </SelfServiceAPIContext.Provider>
             </PaymentAPIContext.Provider>
           </InterviewAPIProvider>
         </QueryClientProvider>

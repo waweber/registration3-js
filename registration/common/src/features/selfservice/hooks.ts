@@ -47,12 +47,13 @@ export const useEvent = (eventId: string): Event => {
 
 export const useRegistrations = (
   eventId: string,
+  cartId: string,
   accessCode?: string | null,
 ): RegistrationListResponse => {
   const { selfServiceAPI: api } = useApp()
   const queries = getSelfServiceQueryOptions(api)
   const query = useSuspenseQuery({
-    ...queries.registrations(eventId, accessCode),
+    ...queries.registrations(eventId, cartId, accessCode),
   })
   return query.data
 }
@@ -84,13 +85,15 @@ export type InterviewOptionsDialogHook = {
 
 export const useInterviewOptionsDialog = (
   eventId: string,
+  cartId: string,
   accessCode?: string | null,
   opts?: Pick<UseOptionsDialogOptions, "disableAutoselect">,
 ): InterviewOptionsDialogHook => {
   const loc = useLocation()
   const navigate = useNavigate()
   const router = useRouter()
-  const registrations = useRegistrations(eventId, accessCode)
+  const registrations = useRegistrations(eventId, cartId, accessCode)
+  const selfServiceAPI = useSelfService()
   const options = registrations.add_options ?? []
 
   const opened = loc.state.showInterviewStateDialog
@@ -109,21 +112,22 @@ export const useInterviewOptionsDialog = (
   }, [])
 
   const onSelect = useCallback(
-    (id: string) => {
-      navigate({
-        to: addRegistrationRoute.to,
-        hash: accessCode ? `a=${accessCode}` : undefined,
-        params: {
-          eventId: eventId,
-          interviewId: id,
-        },
+    (url: string) => {
+      selfServiceAPI.startInterview(url).then((res) => {
+        navigate({
+          to: addRegistrationRoute.to,
+          hash: `s=${res.state}`,
+          params: {
+            eventId: eventId,
+          },
+        })
       })
     },
     [eventId],
   )
 
   const hook = useOptionsDialog({
-    options: options.map((o) => ({ id: o.id, label: o.title, button: true })),
+    options: options.map((o) => ({ id: o.url, label: o.title, button: true })),
     ...opts,
     onShow,
     onClose,

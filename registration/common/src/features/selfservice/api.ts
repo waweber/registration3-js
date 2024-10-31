@@ -19,6 +19,7 @@ export const getSelfServiceQueryOptions = (api: SelfServiceAPI) => ({
   } as UseQueryOptions<Map<string, Event>>,
   registrations: (
     eventId: string,
+    cartId: string,
     accessCode?: string | null,
   ): UseQueryOptions<RegistrationListResponse> => ({
     queryKey: [
@@ -26,10 +27,10 @@ export const getSelfServiceQueryOptions = (api: SelfServiceAPI) => ({
       "events",
       eventId,
       "registrations",
-      { accessCode: accessCode || null },
+      { cartId: cartId, accessCode: accessCode || null },
     ],
     async queryFn() {
-      return await api.listRegistrations(eventId, accessCode)
+      return await api.listRegistrations(eventId, cartId, accessCode)
     },
   }),
   accessCodeCheck: (
@@ -48,8 +49,10 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
     async listEvents() {
       return await wretch.url("/self-service/events").get().json()
     },
-    async listRegistrations(eventId, accessCode) {
-      const query: Record<string, string> = {}
+    async listRegistrations(eventId, cartId, accessCode) {
+      const query: Record<string, string> = {
+        cart_id: cartId,
+      }
       if (accessCode) {
         query["access_code"] = accessCode
       }
@@ -60,38 +63,21 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
         .get()
         .json()
     },
-    async startInterview(
-      eventId,
-      cartId,
-      interviewId,
-      registrationId,
-      accessCode,
-    ) {
-      const query: Record<string, string> = {
-        cart_id: cartId,
-      }
-
-      if (registrationId) {
-        query["registration_id"] = registrationId
-      }
-
-      if (accessCode) {
-        query["access_code"] = accessCode
-      }
-
-      return await wretch
-        .url(`/self-service/events/${eventId}/interviews/${interviewId}`)
-        .addon(queryStringAddon)
-        .query(query)
-        .get()
-        .json()
+    async startInterview(url) {
+      return await wretch.url(url, true).get().json()
     },
     async completeInterview(response) {
-      return await wretch
+      const res = await wretch
         .url(response.target, true)
         .json({ state: response.state })
         .post()
-        .json()
+        .res()
+
+      if (res.status == 204) {
+        return null
+      } else {
+        return await res.json()
+      }
     },
     async checkAccessCode(eventId, accessCode) {
       const res = await wretch
@@ -121,7 +107,7 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
       description: "Standard registration.",
       change_options: [
         {
-          id: "upgrade",
+          url: "upgrade",
           title: "Upgrade",
         },
       ],
@@ -138,15 +124,15 @@ export const makeMockSelfServiceAPI = (): SelfServiceAPI => {
       return {
         registrations: registrations,
         add_options: [
-          { id: "add-full", title: "Full Weekend" },
-          { id: "add-day", title: "Day Pass" },
+          { url: "add-full", title: "Full Weekend" },
+          { url: "add-day", title: "Day Pass" },
         ],
       }
     },
-    async startInterview(_eventId, _cartId, interviewId) {
+    async startInterview(url) {
       await delay(200)
       return {
-        state: `${interviewId}-0`,
+        state: `${url}-0`,
         completed: false,
         target: "",
       }
