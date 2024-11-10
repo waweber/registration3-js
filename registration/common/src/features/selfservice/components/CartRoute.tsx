@@ -24,14 +24,6 @@ import {
 } from "#src/features/selfservice/components/RegistrationsRoute.js"
 import { Cart as CartView } from "#src/features/cart/components/Cart.js"
 import {
-  PaymentContext,
-  PaymentResult,
-  usePayment,
-  usePaymentAPI,
-  usePaymentMethods,
-  usePaymentMethodsDialog,
-} from "#src/features/payment/index.js"
-import {
   CurrencyContext,
   Options,
   Spacer,
@@ -54,10 +46,25 @@ import {
   useRemoveFromCart,
   useStickyCurrentCart,
 } from "@open-event-systems/registration-lib/cart"
+import {
+  handleConflict,
+  PaymentResult,
+  useCreatePayment,
+  usePayment,
+  usePaymentAPI,
+  usePaymentMethods,
+} from "@open-event-systems/registration-lib/payment"
+import {
+  usePaymentComponent,
+  usePaymentMethodsDialog,
+} from "#src/features/payment/hooks.js"
+import { usePaymentManager } from "@open-event-systems/registration-lib/payment"
+import { PaymentModal } from "#src/features/payment/components/index.js"
+import { useStickyData } from "@open-event-systems/registration-lib/utils"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
-    cartPageDialog?: "paymentMethods" | "payment" | "error"
+    cartModal?: boolean
   }
 }
 
@@ -98,12 +105,59 @@ export const CartRoute = () => {
 const CartComponent = ({ eventId }: { eventId: string }) => {
   const [currentCart, setCurrentCart] = useStickyCurrentCart(eventId)
 
-  const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null)
   const [paymentId, setPaymentId] = useState<string | null>(null)
+  const [stickyPaymentId, disposePaymentId] = useStickyData(paymentId)
+  const [cartError, setCartError] = useState<string | string[] | null>(null)
 
   const pricingResult = useCartPricingResult(currentCart.id)
 
   const interviewOptions = useInterviewOptionsDialog(eventId, currentCart.id)
+  const payment = usePayment(stickyPaymentId)
+  const navigate = cartRoute.useNavigate()
+  const router = useRouter()
+  const loc = useLocation()
+  const completeRef = useRef(false)
+
+  const paymentMethods = usePaymentMethodsDialog({
+    cartId: currentCart.id,
+    onShow() {
+      disposePaymentId()
+      navigate({
+        state: {
+          cartModal: true,
+        },
+      })
+    },
+    onSelect(optionId) {
+      disposePaymentId()
+      if (!loc.state.cartModal) {
+        navigate({
+          state: {
+            cartModal: true,
+          },
+        })
+      }
+      createPayment(optionId)
+        .then((res) => {
+          setPaymentId(res.id)
+        })
+        .catch((err) => {
+          const errInfo = handleConflict(err, pricingResult)
+          setCartError(errInfo)
+        })
+        .catch(() => {
+          setCartError("An error occurred")
+        })
+    },
+  })
+
+  const createPayment = useCreatePayment(currentCart.id)
+
+  useEffect(() => {
+    if (!loc.state.cartModal && completeRef.current) {
+      setCurrentCart(null, true)
+    }
+  }, [loc.state.cartModal])
 
   const showCheckout = pricingResult.registrations.length > 0
 
@@ -132,22 +186,41 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
         )}
         {showCheckout && (
           <Grid.Col span={{ base: 12, xs: 12, sm: "content" }}>
-            <CartCheckoutButton
-              cartId={currentCart.id}
-              setPaymentId={setPaymentId}
-              setPaymentMethodId={setPaymentMethodId}
-            />
+            <CartCheckoutButton onShow={paymentMethods.show} />
           </Grid.Col>
         )}
       </Grid>
-      <CartPageDialog
+      <PaymentModal
         cartId={currentCart.id}
-        eventId={eventId}
-        paymentId={paymentId}
-        paymentMethodId={paymentMethodId}
-        setPaymentMethodId={setPaymentMethodId}
-        setPaymentId={setPaymentId}
-        setCurrentCart={setCurrentCart}
+        methods={paymentMethods.methods}
+        opened={!!loc.state.cartModal}
+        paymentId={stickyPaymentId}
+        onSelectMethod={(method) => {
+          paymentMethods.select(method)
+        }}
+        onComplete={() => {
+          setCurrentCart(null)
+          completeRef.current = true
+          const curChanged = getChangedRegistrations() ?? []
+          setChangedRegistrations([
+            ...curChanged,
+            ...pricingResult.registrations.map((r) => r.id),
+          ])
+        }}
+        onClose={() => {
+          if (payment?.status == "completed") {
+            navigate({
+              to: selfServiceRegistrationsRoute.to,
+              params: {
+                eventId: eventId,
+              },
+              replace: true,
+            })
+          } else {
+            router.history.go(-1)
+          }
+        }}
+        cartError={cartError}
       />
     </>
   )
@@ -218,305 +291,15 @@ const CartAddButton = ({
   )
 }
 
-const CartCheckoutButton = ({
-  cartId,
-  setPaymentId,
-  setPaymentMethodId,
-}: {
-  cartId: string
-  setPaymentId: (id: null) => void
-  setPaymentMethodId: (paymentMethodId: string | null) => void
-}) => {
-  const navigate = useNavigate()
-  const router = useRouter()
-  const paymentMethods = usePaymentMethods(cartId)
-  const paymentMethodsDialog = usePaymentMethodsDialog({
-    cartId,
-    onShow: useCallback(() => {
-      navigate({
-        state: {
-          ...router.history.location.state,
-          cartPageDialog: "paymentMethods",
-        },
-      })
-      router
-    }, []),
-    onSelect: useCallback(
-      (optionId: string) => {
-        setPaymentMethodId(optionId)
-        navigate({
-          state: {
-            ...router.history.location.state,
-            cartPageDialog: "payment",
-          },
-          replace: paymentMethods.length != 1,
-        })
-      },
-      [paymentMethods.length],
-    ),
-  })
+const CartCheckoutButton = ({ onShow }: { onShow: () => void }) => {
   return (
     <Button
       fullWidth
       variant="filled"
       leftSection={<IconShoppingCartCheck />}
-      onClick={() => {
-        setPaymentId(null)
-        paymentMethodsDialog.show()
-      }}
+      onClick={onShow}
     >
       Checkout
     </Button>
   )
-}
-
-const CartPageDialog = ({
-  cartId,
-  eventId,
-  paymentId,
-  paymentMethodId,
-  setPaymentMethodId,
-  setPaymentId,
-  setCurrentCart,
-}: {
-  cartId: string
-  eventId: string
-  paymentId: string | null
-  setPaymentId: (paymentId: string | null) => void
-  paymentMethodId: string | null
-  setPaymentMethodId: (paymentMethodId: string | null) => void
-  setCurrentCart: (cart: Cart | null) => void
-}) => {
-  const loc = useLocation()
-  const navigate = useNavigate()
-  const router = useRouter()
-  const paymentAPI = usePaymentAPI()
-  const queryClient = useQueryClient()
-  const pricingResult = useCartPricingResult(cartId)
-  const [cartError, setCartError] = useState<string[] | null>(null)
-  const canceledRef = useRef(false)
-
-  const createPayment = useMutation({
-    mutationKey: ["carts", cartId, "create-payment"],
-    async mutationFn({ method }: { method: string }) {
-      return await paymentAPI.createPayment(cartId, method)
-    },
-    onSuccess(res) {
-      queryClient.setQueryData(["payments", res.id], res)
-    },
-  })
-
-  const paymentMethods = usePaymentMethods(cartId)
-  const paymentMethodsDialog = usePaymentMethodsDialog({
-    cartId,
-    onSelect: useCallback(
-      (optionId: string) => {
-        setPaymentMethodId(optionId)
-        navigate({
-          state: {
-            ...router.history.location.state,
-            cartPageDialog: "payment",
-          },
-          replace: paymentMethods.length != 1,
-        })
-      },
-      [paymentMethods.length],
-    ),
-    onClose: useCallback(() => {
-      router.history.go(-1)
-    }, []),
-  })
-
-  const paymentQuery = useQuery<PaymentResult>({
-    queryKey: ["payments", paymentId],
-    enabled: false,
-  })
-
-  const payment = usePayment({
-    paymentId,
-    result: paymentQuery.data,
-    onClose: useCallback(() => {
-      if (paymentQuery.data?.status == "completed") {
-        navigate({
-          to: selfServiceRegistrationsRoute.to,
-          params: {
-            eventId: eventId,
-          },
-        })
-      } else {
-        canceledRef.current = true
-        router.history.go(-1)
-      }
-    }, [eventId, paymentQuery.data?.status]),
-    onError: useCallback((e: unknown) => {
-      if (isResponseError(e) && e.status == 409) {
-        const errors = handleConflict(e, pricingResult)
-        setCartError(errors)
-        navigate({
-          state: {
-            ...router.history.location.state,
-            cartPageDialog: "error",
-          },
-          replace: true,
-        })
-      }
-    }, []),
-  })
-
-  const dialogTypeState = loc.state.cartPageDialog
-  const dialogTypeRef = useRef(dialogTypeState)
-
-  if (dialogTypeState) {
-    dialogTypeRef.current = dialogTypeState
-  }
-
-  const dialogType = dialogTypeState ?? dialogTypeRef.current
-
-  useEffect(() => {
-    if (dialogTypeState == "payment" && paymentMethodId && !paymentId) {
-      createPayment
-        .mutateAsync({ method: paymentMethodId })
-        .then((res) => {
-          canceledRef.current = false
-          setPaymentId(res.id)
-        })
-        .catch((e) => {
-          if (isResponseError(e) && e.status == 409) {
-            const errors = handleConflict(e, pricingResult)
-            setCartError(errors)
-            navigate({
-              state: {
-                ...router.history.location.state,
-                cartPageDialog: "error",
-              },
-              replace: true,
-            })
-          }
-        })
-    }
-  }, [dialogTypeState, paymentMethodId, paymentId, createPayment.mutateAsync])
-
-  useEffect(() => {
-    if (payment.result?.status == "completed") {
-      setCurrentCart(null)
-      const curChanged = getChangedRegistrations() ?? []
-      setChangedRegistrations([
-        ...curChanged,
-        ...pricingResult.registrations.map((r) => r.id),
-      ])
-    }
-  }, [payment.result?.status])
-
-  useEffect(() => {
-    if (
-      !dialogTypeState &&
-      payment.result?.status == "pending" &&
-      !canceledRef.current
-    ) {
-      canceledRef.current = true
-      payment
-        .cancel()
-        .catch(() => null)
-        .then(() => {
-          setPaymentId(null)
-        })
-    }
-  }, [dialogTypeState, payment.result?.status])
-
-  let title
-  let content
-
-  if (dialogType == "paymentMethods") {
-    title = "Payment"
-    content = (
-      <Options
-        options={paymentMethodsDialog.options}
-        onSelect={(optionId) => paymentMethodsDialog.select(optionId)}
-      />
-    )
-  } else if (dialogType == "payment") {
-    title = "Payment"
-    content = (
-      <PaymentContext.Provider value={payment}>
-        <payment.Component>
-          {(renderProps) => (
-            <>
-              <Stack>
-                {renderProps.content}
-                {payment.error && (
-                  <Text span c="red" size="sm">
-                    {payment.error}
-                  </Text>
-                )}
-                {renderProps.controls && (
-                  <Group justify="flex-end">{renderProps.controls}</Group>
-                )}
-              </Stack>
-              <LoadingOverlay visible={payment.submitting} />
-            </>
-          )}
-        </payment.Component>
-      </PaymentContext.Provider>
-    )
-  } else if (dialogType == "error") {
-    title = "Error"
-    content = (
-      <Stack>
-        <Text>
-          There are errors with this cart:
-          <ul>{cartError?.map((e, i) => <li key={i}>{e}</li>)}</ul>
-        </Text>
-        <Button
-          variant="outline"
-          fullWidth
-          onClick={() => paymentMethodsDialog.close()}
-        >
-          Close
-        </Button>
-      </Stack>
-    )
-  }
-
-  return (
-    <Modal
-      title={title}
-      centered
-      opened={!!loc.state.cartPageDialog}
-      onClose={() => {
-        if (dialogType == "payment") {
-          payment.close()
-        } else {
-          paymentMethodsDialog.close()
-        }
-      }}
-    >
-      {content}
-    </Modal>
-  )
-}
-
-const handleConflict = (e: unknown, pricingResult: CartPricingResult) => {
-  if (!isResponseError(e) || e.status != 409) {
-    throw e
-  }
-
-  const errorResp = e.json as CartConflictError
-
-  return errorResp.results.map((r) =>
-    formatErrorForRegistration(r, pricingResult),
-  )
-}
-
-const formatErrorForRegistration = (
-  result: CartConflictResult,
-  pricingResult: CartPricingResult,
-) => {
-  const reg = pricingResult.registrations.find((r) => r.id == result.change.id)
-  const name = reg?.name ?? ""
-
-  if (result.errors.includes("version")) {
-    return `The registration for ${name} has changed. Please remove it and make your changes again.`
-  } else {
-    return `The registration for ${name} cannot be included in this cart.`
-  }
 }

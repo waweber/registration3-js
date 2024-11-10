@@ -3,10 +3,6 @@ import { AuthStore } from "#src/api/auth.js"
 import { createAuthAPI } from "#src/api/authApi.js"
 import { AppContext, AppContextValue } from "#src/app/context.js"
 import { makeRouter } from "#src/app/router.js"
-import {
-  PaymentAPIContext,
-  makePaymentAPI,
-} from "#src/features/payment/index.js"
 import { useSetupAuth } from "#src/hooks/auth.js"
 import { InterviewRecordLocalStorage } from "#src/interview/store.js"
 import { Config } from "#src/types.js"
@@ -32,6 +28,10 @@ import {
   InterviewAPIProvider,
   InterviewStoreProvider,
 } from "@open-event-systems/registration-lib/interview"
+import {
+  makePaymentAPI,
+  PaymentAPIProvider,
+} from "@open-event-systems/registration-lib/payment"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -77,11 +77,11 @@ const App = ({ config }: { config: Config }) => {
             <InterviewStoreProvider value={ctx.interviewStore}>
               <CartAPIProvider value={ctx.cartAPI}>
                 <CurrentCartStoreProvider value={ctx.currentCartStore}>
-                  <PaymentAPIContext.Provider value={ctx.paymentAPI}>
+                  <PaymentAPIProvider value={ctx.paymentAPI}>
                     <SelfServiceAPIProvider value={ctx.selfServiceAPI}>
                       <RouterProvider router={router} />
                     </SelfServiceAPIProvider>
-                  </PaymentAPIContext.Provider>
+                  </PaymentAPIProvider>
                 </CurrentCartStoreProvider>
               </CartAPIProvider>
             </InterviewStoreProvider>

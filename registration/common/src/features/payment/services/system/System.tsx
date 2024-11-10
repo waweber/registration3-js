@@ -1,24 +1,25 @@
-import { Button, Skeleton, Text, TextInput } from "@mantine/core"
-import { useCallback, useState } from "react"
-import {
-  PaymentServiceComponentProps,
-  usePaymentContext,
-} from "#src/features/payment/index.js"
-import { Currency } from "#src/components/index.js"
+import { Button, Skeleton, Text } from "@mantine/core"
+import { useCallback } from "react"
+import { PaymentServiceComponentProps } from "#src/features/payment/index.js"
 import {
   PaymentCloseButton,
   PaymentComplete,
 } from "#src/features/payment/components/index.js"
+import { usePaymentManagerContext } from "@open-event-systems/registration-lib/payment"
 
 export type SystemPaymentRequestBody = Record<string, never>
 export type SystemPaymentResultBody = Record<string, never>
 
-declare module "#src/features/payment/types.js" {
-  interface PaymentRequestBodyMap {
+declare module "@open-event-systems/registration-lib/payment" {
+  export interface PaymentServiceMap {
+    system: "system"
+  }
+
+  export interface PaymentRequestBodyMap {
     system: SystemPaymentRequestBody
   }
 
-  interface PaymentResultBodyMap {
+  export interface PaymentResultBodyMap {
     system: SystemPaymentResultBody
   }
 }
@@ -26,8 +27,8 @@ declare module "#src/features/payment/types.js" {
 export const SystemPaymentComponent = ({
   children,
 }: PaymentServiceComponentProps) => {
-  const ctx = usePaymentContext<"system">()
-  const { result, submitting, setSubmitting, update } = ctx
+  const ctx = usePaymentManagerContext<"system">()
+  const { payment, submitting, setSubmitting, update } = ctx
 
   const doUpdate = useCallback(() => {
     if (submitting) {
@@ -45,9 +46,9 @@ export const SystemPaymentComponent = ({
   let content
   let controls
 
-  if (!result) {
+  if (!payment) {
     content = <Skeleton h={36} />
-  } else if (result.status == "completed") {
+  } else if (payment.status == "completed") {
     content = <PaymentComplete />
     controls = <PaymentCloseButton />
   } else {

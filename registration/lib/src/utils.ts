@@ -1,4 +1,4 @@
-import { Context, createContext, useContext } from "react"
+import { Context, createContext, useCallback, useContext, useRef } from "react"
 
 /**
  * Make a version of an API mock that adds a delay to all promises.
@@ -141,4 +141,29 @@ export const useRequiredContext = <T>(ctx: Context<T | null>): T => {
     throw new Error("Required context not provided")
   }
   return val
+}
+
+/**
+ * Hook that falls back to the last non-nullish value.
+ */
+export const useStickyData = <T>(
+  value?: T | null | undefined,
+): readonly [T | null, () => void] => {
+  const ref = useRef<T | null | undefined>(value)
+  let retVal: T | null | undefined
+
+  if (value != null) {
+    // update value when non-null
+    ref.current = value
+    retVal = value
+  } else {
+    // use the last non-null value when null
+    retVal = ref.current
+  }
+
+  const dispose = useCallback(() => {
+    ref.current = null
+  }, [])
+
+  return [retVal ?? null, dispose]
 }

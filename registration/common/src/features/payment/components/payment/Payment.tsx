@@ -1,8 +1,6 @@
 import { Box, Button, ButtonProps, Skeleton, Text } from "@mantine/core"
-import {
-  PaymentServiceComponentProps,
-  usePaymentContext,
-} from "#src/features/payment/index.js"
+import { PaymentServiceComponentProps } from "#src/features/payment/index.js"
+import { usePaymentManagerContext } from "@open-event-systems/registration-lib/payment"
 
 export const PaymentPlaceholder = ({
   children,
@@ -19,7 +17,7 @@ export const PaymentPlaceholder = ({
 export const PaymentComplete = () => <Text span>Your payment is complete.</Text>
 
 export const PaymentCloseButton = (props: ButtonProps) => {
-  const { close } = usePaymentContext()
+  const { close } = usePaymentManagerContext()
   return (
     <Button onClick={() => close()} variant="outline" {...props}>
       Close

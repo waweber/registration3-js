@@ -2,10 +2,10 @@ import {
   PaymentCloseButton,
   PaymentComplete,
 } from "#src/features/payment/components/index.js"
-import { usePaymentContext } from "#src/features/payment/hooks.js"
 import { SquareCardComponent } from "#src/features/payment/services/square/Card.js"
 import { PaymentServiceComponentProps } from "#src/features/payment/types.js"
 import { getErrorMessage } from "#src/utils.js"
+import { usePaymentManagerContext } from "@open-event-systems/registration-lib/payment"
 import { Card, Payments } from "@square/web-payments-sdk-types"
 import { Suspense, useCallback } from "react"
 
@@ -23,7 +23,11 @@ export type SquarePaymentResultBody = {
   currency: string
 }
 
-declare module "#src/features/payment/types.js" {
+declare module "@open-event-systems/registration-lib/payment" {
+  export interface PaymentServiceMap {
+    square: "square"
+  }
+
   interface PaymentRequestBodyMap {
     square: SquarePaymentRequestBody
   }
@@ -36,12 +40,12 @@ declare module "#src/features/payment/types.js" {
 export const SquarePaymentComponent = ({
   children,
 }: PaymentServiceComponentProps) => {
-  const ctx = usePaymentContext<"square">()
-  const { result, submitting, setSubmitting, update, setError } = ctx
+  const ctx = usePaymentManagerContext<"square">()
+  const { payment, submitting, setSubmitting, update, setError } = ctx
 
   const onSubmit = useCallback(
     async (card: Card, payments: Payments) => {
-      if (!result || submitting) {
+      if (!payment || submitting) {
         return
       }
 
@@ -61,9 +65,9 @@ export const SquarePaymentComponent = ({
         }
 
         const verifyRes = await payments.verifyBuyer(token, {
-          amount: result.body.total_price_str,
+          amount: payment.body.total_price_str,
           billingContact: {},
-          currencyCode: result.body.currency,
+          currencyCode: payment.body.currency,
           intent: "CHARGE",
         })
 
@@ -78,16 +82,16 @@ export const SquarePaymentComponent = ({
         setSubmitting(false)
       }
     },
-    [result, submitting],
+    [payment, submitting],
   )
 
-  if (!result) {
+  if (!payment) {
     return (
       <SquareCardComponent.Placeholder>
         {children}
       </SquareCardComponent.Placeholder>
     )
-  } else if (result.status == "completed") {
+  } else if (payment.status == "completed") {
     return children({
       content: <PaymentComplete />,
       controls: <PaymentCloseButton />,
@@ -101,7 +105,7 @@ export const SquarePaymentComponent = ({
           </SquareCardComponent.Placeholder>
         }
       >
-        <SquareCardComponent body={result.body} onSubmit={onSubmit}>
+        <SquareCardComponent body={payment.body} onSubmit={onSubmit}>
           {children}
         </SquareCardComponent>
       </Suspense>

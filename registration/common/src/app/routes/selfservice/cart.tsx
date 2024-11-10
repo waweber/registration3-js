@@ -1,11 +1,11 @@
 import { selfServiceLayoutRoute } from "#src/app/routes/selfservice/registrations.js"
-import { getPaymentQueryOptions } from "#src/features/payment/index.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
 import {
   getCurrentCartQueryOptions,
   getPricingResultQueryOptions,
 } from "@open-event-systems/registration-lib/cart"
 import { getInterviewStateQueryOptions } from "@open-event-systems/registration-lib/interview"
+import { getPaymentMethodsQueryOptions } from "@open-event-systems/registration-lib/payment"
 import { getSelfServiceRegistrationsQueryOptions } from "@open-event-systems/registration-lib/selfservice"
 import {
   createRoute,
@@ -25,7 +25,6 @@ export const cartRoute = createRoute({
       paymentAPI,
     } = context
     const { eventId } = params
-    const paymentQueries = getPaymentQueryOptions(paymentAPI)
 
     const currentCart = await queryClient.fetchQuery(
       getCurrentCartQueryOptions(
@@ -47,7 +46,9 @@ export const cartRoute = createRoute({
       queryClient.fetchQuery(
         getPricingResultQueryOptions(cartAPI, currentCart.id),
       ),
-      queryClient.fetchQuery(paymentQueries.paymentMethods(currentCart.id)),
+      queryClient.fetchQuery(
+        getPaymentMethodsQueryOptions(paymentAPI, currentCart.id),
+      ),
     ])
 
     return {

@@ -1,4 +1,3 @@
-import { PaymentAPI } from "#src/features/payment/index.js"
 import { AuthStore } from "#src/api/auth.js"
 import { AuthAPI } from "#src/api/types.js"
 import { createOptionalContext } from "#src/utils.js"
@@ -13,6 +12,7 @@ import {
   CurrentCartStore,
 } from "@open-event-systems/registration-lib/cart"
 import { SelfServiceAPI } from "@open-event-systems/registration-lib/selfservice"
+import { PaymentAPI } from "@open-event-systems/registration-lib/payment"
 
 export interface AppContextValue {
   config: Config
