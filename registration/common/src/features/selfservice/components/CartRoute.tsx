@@ -1,64 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Suspense, useCallback, useEffect, useRef, useState } from "react"
-import {
-  Anchor,
-  Button,
-  Grid,
-  Group,
-  LoadingOverlay,
-  Modal,
-  Stack,
-  Text,
-  Divider,
-} from "@mantine/core"
+import { Suspense, useEffect, useRef, useState } from "react"
+import { Anchor, Button, Grid, Text, Divider } from "@mantine/core"
 import { IconPlus, IconShoppingCartCheck } from "@tabler/icons-react"
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router"
+import { Link, useLocation, useRouter } from "@tanstack/react-router"
 import {
   getChangedRegistrations,
   setChangedRegistrations,
 } from "#src/features/selfservice/components/RegistrationsRoute.js"
 import { Cart as CartView } from "#src/features/cart/components/Cart.js"
-import {
-  CurrencyContext,
-  Options,
-  Spacer,
-  Title,
-} from "#src/components/index.js"
+import { CurrencyContext, Spacer, Title } from "#src/components/index.js"
 import { useInterviewOptionsDialog } from "#src/features/selfservice/hooks.js"
-import { useApp } from "#src/hooks/app.js"
 import { CartRegistration } from "#src/features/cart/components/CartRegistration.js"
 import { LineItem } from "#src/features/cart/components/LineItem.js"
 import { Modifier } from "#src/features/cart/components/Modifier.js"
-import { isResponseError } from "#src/utils.js"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { cartRoute } from "#src/app/routes/selfservice/cart.js"
 import {
   Cart,
-  CartConflictError,
-  CartConflictResult,
-  CartPricingResult,
   useCartPricingResult,
   useRemoveFromCart,
   useStickyCurrentCart,
 } from "@open-event-systems/registration-lib/cart"
 import {
   handleConflict,
-  PaymentResult,
+  PaymentManagerProvider,
   useCreatePayment,
   usePayment,
-  usePaymentAPI,
-  usePaymentMethods,
+  usePaymentManager,
 } from "@open-event-systems/registration-lib/payment"
-import {
-  usePaymentComponent,
-  usePaymentMethodsDialog,
-} from "#src/features/payment/hooks.js"
-import { usePaymentManager } from "@open-event-systems/registration-lib/payment"
+import { usePaymentMethodsDialog } from "#src/features/payment/hooks.js"
 import { PaymentModal } from "#src/features/payment/components/index.js"
 import { useStickyData } from "@open-event-systems/registration-lib/utils"
 
@@ -117,6 +86,7 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
   const router = useRouter()
   const loc = useLocation()
   const completeRef = useRef(false)
+  const cancelRef = useRef(false)
 
   const paymentMethods = usePaymentMethodsDialog({
     cartId: currentCart.id,
@@ -152,12 +122,58 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
   })
 
   const createPayment = useCreatePayment(currentCart.id)
+  const manager = usePaymentManager({
+    payment: payment,
+    onUpdate(res) {
+      if (res.status == "completed") {
+        setCurrentCart(null)
+        completeRef.current = true
+        const curChanged = getChangedRegistrations() ?? []
+        setChangedRegistrations([
+          ...curChanged,
+          ...pricingResult.registrations.map((r) => r.id),
+        ])
+      }
+    },
+    onClose(manager) {
+      if (manager.payment?.status == "completed") {
+        navigate({
+          to: selfServiceRegistrationsRoute.to,
+          params: {
+            eventId: eventId,
+          },
+          replace: true,
+        })
+      } else {
+        if (manager.payment?.status == "pending") {
+          cancelRef.current = true
+          manager.cancel()
+        }
+        router.history.go(-1)
+      }
+    },
+  })
 
   useEffect(() => {
     if (!loc.state.cartModal && completeRef.current) {
       setCurrentCart(null, true)
     }
   }, [loc.state.cartModal])
+
+  useEffect(() => {
+    if (!loc.state.cartModal) {
+      if (!cancelRef.current && payment?.status == "pending") {
+        manager.cancel()
+        cancelRef.current = true
+      }
+    }
+  }, [loc.state.cartModal, payment?.status, manager.cancel])
+
+  useEffect(() => {
+    if (payment?.status == "pending") {
+      cancelRef.current = false
+    }
+  }, [payment?.status])
 
   const showCheckout = pricingResult.registrations.length > 0
 
@@ -190,38 +206,17 @@ const CartComponent = ({ eventId }: { eventId: string }) => {
           </Grid.Col>
         )}
       </Grid>
-      <PaymentModal
-        cartId={currentCart.id}
-        methods={paymentMethods.methods}
-        opened={!!loc.state.cartModal}
-        paymentId={stickyPaymentId}
-        onSelectMethod={(method) => {
-          paymentMethods.select(method)
-        }}
-        onComplete={() => {
-          setCurrentCart(null)
-          completeRef.current = true
-          const curChanged = getChangedRegistrations() ?? []
-          setChangedRegistrations([
-            ...curChanged,
-            ...pricingResult.registrations.map((r) => r.id),
-          ])
-        }}
-        onClose={() => {
-          if (payment?.status == "completed") {
-            navigate({
-              to: selfServiceRegistrationsRoute.to,
-              params: {
-                eventId: eventId,
-              },
-              replace: true,
-            })
-          } else {
-            router.history.go(-1)
-          }
-        }}
-        cartError={cartError}
-      />
+      <PaymentManagerProvider value={manager}>
+        <PaymentModal
+          cartId={currentCart.id}
+          methods={paymentMethods.methods}
+          opened={!!loc.state.cartModal}
+          onSelectMethod={(method) => {
+            paymentMethods.select(method)
+          }}
+          cartError={cartError}
+        />
+      </PaymentManagerProvider>
     </>
   )
 }
