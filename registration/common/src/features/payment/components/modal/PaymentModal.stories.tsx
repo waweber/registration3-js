@@ -1,13 +1,16 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { PaymentModal } from "./PaymentModal.js"
-import { Suspense, useState } from "react"
+import { Suspense, useCallback, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Button, Stack } from "@mantine/core"
 import {
   makeMockPaymentAPI,
   PaymentAPIProvider,
+  PaymentManager,
+  PaymentManagerProvider,
   useCreatePayment,
   usePayment,
+  usePaymentManager,
 } from "@open-event-systems/registration-lib/payment"
 import { useStickyData } from "@open-event-systems/registration-lib/utils"
 import { usePaymentMethodsDialog } from "#src/features/payment/hooks.js"
@@ -37,7 +40,7 @@ export default meta
 export const Default: StoryObj<typeof PaymentModal> = {
   decorators: [
     (Story) => (
-      <Suspense>
+      <Suspense fallback={<>Loading...</>}>
         <Story />
       </Suspense>
     ),
@@ -61,28 +64,42 @@ export const Default: StoryObj<typeof PaymentModal> = {
       },
     })
 
+    const payment = usePayment(stickyPaymentId)
+
+    const paymentManager = usePaymentManager({
+      payment,
+      onClose: useCallback(
+        (paymentManager: PaymentManager) => {
+          setShow(false)
+          if (paymentManager.payment?.status == "pending") {
+            paymentManager.cancel()
+          }
+        },
+        [setShow],
+      ),
+    })
+
     return (
-      <Stack p="xs">
-        <Button
-          onClick={() => {
-            methods.show()
-            disposePaymentId()
-            setPaymentId(null)
-          }}
-        >
-          Show
-        </Button>
-        <Suspense>
+      <PaymentManagerProvider value={paymentManager}>
+        <Stack p="xs">
+          <Button
+            maw={100}
+            onClick={() => {
+              methods.show()
+              disposePaymentId()
+              setPaymentId(null)
+            }}
+          >
+            Show
+          </Button>
           <PaymentModal
             cartId="cart"
             opened={show}
             methods={methods.methods}
-            onClose={() => setShow(false)}
-            paymentId={stickyPaymentId}
             onSelectMethod={methods.select}
           />
-        </Suspense>
-      </Stack>
+        </Stack>
+      </PaymentManagerProvider>
     )
   },
 }

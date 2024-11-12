@@ -66,21 +66,13 @@ export type PaymentAPI = {
   ): Promise<PaymentResult<S>>
 }
 
-export type PaymentManager<S extends PaymentServiceID = PaymentServiceID> = (
-  | {
-      payment: null
-      update: () => Promise<null>
-      cancel: () => Promise<null>
-    }
-  | {
-      payment: PaymentResult<S> | null
-      update: (body: PaymentRequestBody<S>) => Promise<PaymentResult<S>>
-      cancel: () => Promise<PaymentResult<S>>
-    }
-) & {
+export type PaymentManager<S extends PaymentServiceID = PaymentServiceID> = {
+  payment: PaymentResult<S> | null
   error: string | null
   setError: (error: string | null) => void
   submitting: boolean
   setSubmitting: (submitting: boolean) => void
+  update: (body: PaymentRequestBody<S>) => Promise<PaymentResult<S>>
+  cancel: () => Promise<PaymentResult<S>>
   close: () => void
 }

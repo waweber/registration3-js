@@ -10,71 +10,31 @@ import {
   Text,
 } from "@mantine/core"
 import {
-  PaymentManagerProvider,
   PaymentMethod,
-  usePayment,
-  usePaymentManager,
   usePaymentManagerContext,
 } from "@open-event-systems/registration-lib/payment"
-import { Suspense, useEffect, useRef } from "react"
+import { Suspense } from "react"
 
 export type PaymentModalProps = {
   cartId: string
   methods: PaymentMethod[]
-  paymentId?: string | null
-  opened: boolean
   onSelectMethod?: (method: string) => void
-  onComplete?: () => void
-  onClose?: () => void
   cartError?: string | string[] | null
-} & ModalProps
+} & Omit<ModalProps, "onClose">
 
 export const PaymentModal = (props: PaymentModalProps) => {
-  const {
-    cartId,
-    methods,
-    paymentId,
-    opened,
-    onSelectMethod,
-    onComplete,
-    onClose,
-    cartError,
-    ...other
-  } = props
+  const { cartId, methods, onSelectMethod, cartError, ...other } = props
 
-  const closedRef = useRef(false)
-  const payment = usePayment(paymentId)
-  const manager = usePaymentManager({
-    payment,
-    onComplete: onComplete,
-    onClose: () => {
-      onClose && onClose()
-    },
-  })
+  const manager = usePaymentManagerContext()
 
+  let title = "Payment"
   let content
 
-  if (cartError != null) {
-    if (Array.isArray(cartError)) {
-      content = (
-        <>
-          <span>Checkout cannot be completed:</span>
-          <ul>
-            {cartError.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
-        </>
-      )
-    } else {
-      content = <span>{cartError}</span>
-    }
-  } else if (paymentId || methods.length == 1) {
-    content = (
-      <PaymentManagerProvider value={manager}>
-        <PaymentModal.Payment />
-      </PaymentManagerProvider>
-    )
+  if (cartError) {
+    title = "Error"
+    content = <PaymentModal.Error cartError={cartError} />
+  } else if (manager.payment || methods.length == 1) {
+    content = <PaymentModal.Payment />
   } else {
     content = (
       <PaymentModal.Methods
@@ -84,26 +44,8 @@ export const PaymentModal = (props: PaymentModalProps) => {
     )
   }
 
-  useEffect(() => {
-    if (!opened) {
-      if (!closedRef.current) {
-        manager.cancel()
-      }
-      closedRef.current = false
-    }
-  }, [opened, manager.cancel])
-
   return (
-    <Modal
-      title="Payment"
-      opened={opened}
-      onClose={() => {
-        closedRef.current = true
-        manager.close()
-      }}
-      centered
-      {...other}
-    >
+    <Modal title={title} centered onClose={() => manager.close()} {...other}>
       <Suspense fallback={<PaymentModal.Placeholder />}>{content}</Suspense>
       <LoadingOverlay visible={manager.submitting} />
     </Modal>
@@ -120,12 +62,31 @@ const Placeholder = () => {
 
 PaymentModal.Placeholder = Placeholder
 
+const Error = ({ cartError }: { cartError: string | string[] }) => {
+  if (Array.isArray(cartError)) {
+    return (
+      <>
+        <span>Checkout cannot be completed:</span>
+        <ul>
+          {cartError.map((e, i) => (
+            <li key={i}>{e}</li>
+          ))}
+        </ul>
+      </>
+    )
+  } else {
+    return <span>{cartError}</span>
+  }
+}
+
+PaymentModal.Error = Error
+
 const Methods = ({
   methods,
   onSelect,
 }: {
   methods: PaymentMethod[]
-  onSelect: (optionId: string) => void
+  onSelect: (id: string) => void
 }) => {
   return (
     <Options
