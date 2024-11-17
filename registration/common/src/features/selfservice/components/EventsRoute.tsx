@@ -4,7 +4,10 @@ import { FullPageMenuLayout } from "#src/components/index.js"
 import { Card, NavLink, Space } from "@mantine/core"
 import { useSelfServiceEvents } from "@open-event-systems/registration-lib/selfservice"
 import { IconChevronRight } from "@tabler/icons-react"
-import { Link } from "@tanstack/react-router"
+import { createLink } from "@tanstack/react-router"
+
+// workaround for some type inference issues
+const _Link = createLink(NavLink)
 
 export const EventsRoute = () => {
   const events = useSelfServiceEvents()
@@ -13,11 +16,11 @@ export const EventsRoute = () => {
       <FullPageMenuLayout.Content title="Choose Event">
         <Card.Section>
           {Array.from(events.values(), (e) => (
-            <NavLink
+            <_Link
               key={e.id}
               label={e.title}
-              component={Link}
               from={eventsRoute.fullPath}
+              component={NavLink}
               to={selfServiceRegistrationsRoute.to}
               params={{
                 eventId: e.id,

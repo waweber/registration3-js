@@ -8,6 +8,7 @@ import {
   PaymentAPIProvider,
   PaymentManager,
   PaymentManagerProvider,
+  PaymentServiceID,
   useCreatePayment,
   usePayment,
   usePaymentManager,
@@ -66,10 +67,10 @@ export const Default: StoryObj<typeof PaymentModal> = {
 
     const payment = usePayment(stickyPaymentId)
 
-    const paymentManager = usePaymentManager({
+    const paymentManager = usePaymentManager<PaymentServiceID>({
       payment,
       onClose: useCallback(
-        (paymentManager: PaymentManager) => {
+        (paymentManager: PaymentManager<PaymentServiceID>) => {
           setShow(false)
           if (paymentManager.payment?.status == "pending") {
             paymentManager.cancel()

@@ -5,14 +5,14 @@ import {
   CurrentCartStore,
 } from "#src/cart/types.js"
 import { catchNotFound } from "#src/utils.js"
-import { QueryClient, UseQueryOptions } from "@tanstack/react-query"
+import { QueryClient, UseSuspenseQueryOptions } from "@tanstack/react-query"
 
 export const getCurrentCartQueryOptions = (
   cartAPI: CartAPI,
   currentCartStore: CurrentCartStore,
   queryClient: QueryClient,
   eventId: string,
-): UseQueryOptions<Cart> => {
+): UseSuspenseQueryOptions<Cart> => {
   return {
     queryKey: ["self-service", "carts", "current", { eventId }],
     async queryFn() {
@@ -36,7 +36,7 @@ export const getCurrentCartQueryOptions = (
 export const getPricingResultQueryOptions = (
   cartAPI: CartAPI,
   cartId: string,
-): UseQueryOptions<CartPricingResult> => {
+): UseSuspenseQueryOptions<CartPricingResult> => {
   return {
     queryKey: ["carts", cartId, "pricing-result"],
     async queryFn() {
