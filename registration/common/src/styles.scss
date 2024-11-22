@@ -1,5 +1,6 @@
-@import "./components/layout/styles.scss";
-@import "./components/logo/Logo.scss";
-@import "./features/cart/styles.scss";
-@import "./features/payment/styles.scss";
-@import "./features/selfservice/styles.scss";
+@use "./components/layout/styles.scss";
+@use "./components/logo/Logo.scss";
+@use "./features/cart/styles.scss" as cartStyles;
+@use "./features/payment/styles.scss" as paymentStyles;
+@use "./features/selfservice/styles.scss" as selfServiceStyles;
+@use "./features/admin/styles.scss" as adminStyles;

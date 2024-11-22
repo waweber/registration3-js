@@ -32,6 +32,11 @@ import {
   makePaymentAPI,
   PaymentAPIProvider,
 } from "@open-event-systems/registration-lib/payment"
+import {
+  makeMockRegistrationAPI,
+  makeRegistrationAPI,
+  RegistrationAPIProvider,
+} from "@open-event-systems/registration-lib/registration"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -56,6 +61,7 @@ const App = ({ config }: { config: Config }) => {
       interviewAPI: makeInterviewAPI(),
       interviewStore: InterviewRecordLocalStorage.load(),
       selfServiceAPI: makeSelfServiceAPI(authWretch),
+      registrationAPI: makeRegistrationAPI(authWretch),
     }
   })
 
@@ -79,7 +85,9 @@ const App = ({ config }: { config: Config }) => {
                 <CurrentCartStoreProvider value={ctx.currentCartStore}>
                   <PaymentAPIProvider value={ctx.paymentAPI}>
                     <SelfServiceAPIProvider value={ctx.selfServiceAPI}>
-                      <RouterProvider router={router} />
+                      <RegistrationAPIProvider value={ctx.registrationAPI}>
+                        <RouterProvider router={router} />
+                      </RegistrationAPIProvider>
                     </SelfServiceAPIProvider>
                   </PaymentAPIProvider>
                 </CurrentCartStoreProvider>

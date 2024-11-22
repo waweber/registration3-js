@@ -1,0 +1,21 @@
+.AppShellLayout-header {
+  display: grid;
+  grid-template:
+    "button title user" minmax(1rem, 1fr)
+    / auto minmax(1rem, 1fr) auto;
+  gap: var(--mantine-spacing-xs);
+  align-items: center;
+  padding: 0 var(--mantine-spacing-xs);
+}
+
+.AppShellLayout-button {
+  grid-area: button;
+}
+
+.AppShellLayout-title {
+  grid-area: title;
+}
+
+.AppShellLayout-user {
+  grid-area: user;
+}

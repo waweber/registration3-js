@@ -18,6 +18,7 @@
     "./payment": "./dist/src/payment/index.js",
     "./interview": "./dist/src/interview/index.js",
     "./selfservice": "./dist/src/selfservice/index.js",
+    "./registration": "./dist/src/registration/index.js",
     "./utils": "./dist/src/utils.js"
   },
   "imports": {

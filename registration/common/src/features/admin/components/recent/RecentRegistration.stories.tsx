@@ -1,8 +1,8 @@
 import { RecentRegistration } from "#src/features/admin/components/recent/RecentRegistration.js"
 import { Meta, StoryObj } from "@storybook/react"
-import "./RecentRegistration.scss"
 import { Grid } from "@mantine/core"
 import { MouseEvent } from "react"
+import "./RecentRegistration.scss"
 
 const meta: Meta<typeof RecentRegistration> = {
   component: RecentRegistration,
@@ -16,6 +16,7 @@ export const Default: StoryObj<typeof RecentRegistration> = {
     name: "Example Person",
     number: 1234,
     nickname: "Badge Name",
+    description: "Pick up badge",
   },
   render(args) {
     return (
@@ -43,6 +44,7 @@ export const Multi: StoryObj<typeof RecentRegistration> = {
             name="Example Registration"
             nickname="Badge Name"
             number={1234}
+            description="Pick up badge"
             href="#"
             onClick={onClick}
           />
@@ -53,6 +55,7 @@ export const Multi: StoryObj<typeof RecentRegistration> = {
             name="Example Registration"
             nickname="Badge Name"
             number={86}
+            description="Pick up badge"
             href="#"
             onClick={onClick}
           />
@@ -63,6 +66,7 @@ export const Multi: StoryObj<typeof RecentRegistration> = {
             name="Example Registration"
             nickname="Badge Name"
             number={2437}
+            description="Sign forms"
             href="#"
             onClick={onClick}
           />
@@ -74,6 +78,7 @@ export const Multi: StoryObj<typeof RecentRegistration> = {
             nickname="Badge Name"
             href="#"
             number={488}
+            description="Pick up badge"
             onClick={onClick}
           />
         </Grid.Col>
@@ -83,6 +88,7 @@ export const Multi: StoryObj<typeof RecentRegistration> = {
             nickname="Badge Name"
             href="#"
             number={207}
+            description="Pick up badge"
             onClick={onClick}
           />
         </Grid.Col>

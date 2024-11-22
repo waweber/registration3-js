@@ -1,13 +1,4 @@
-import {
-  Anchor,
-  AnchorProps,
-  Box,
-  Divider,
-  Paper,
-  PaperProps,
-  useProps,
-} from "@mantine/core"
-import { ReactNode } from "@tanstack/react-router"
+import { Anchor, AnchorProps, Paper, PaperProps, useProps } from "@mantine/core"
 import clsx from "clsx"
 import {
   ComponentPropsWithoutRef,
@@ -21,6 +12,7 @@ export type RecentRegistrationProps = {
   name?: string | null
   number?: number | null
   nickname?: string | null
+  description?: string | null
   href?: string | null
   onClick?: (e: MouseEvent) => void
 } & PaperProps
@@ -31,6 +23,7 @@ export const RecentRegistration = (props: RecentRegistrationProps) => {
     name,
     number,
     nickname,
+    description,
     href,
     onClick,
     className,
@@ -59,6 +52,11 @@ export const RecentRegistration = (props: RecentRegistrationProps) => {
         </RegLink>
         <RegLink className="RecentRegistration-number">{number}</RegLink>
         <RegLink className="RecentRegistration-nickname">{nickname}</RegLink>
+        {description && (
+          <RegLink className="RecentRegistration-description">
+            {description}
+          </RegLink>
+        )}
       </HrefContext.Provider>
     </Paper>
   )

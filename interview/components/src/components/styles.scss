@@ -1,6 +1,6 @@
-@import "./question/Question.scss";
-@import "./error/Error.scss";
-@import "./content/Content.scss";
+@use "./question/Question.scss";
+@use "./error/Error.scss";
+@use "./content/Content.scss";
 
-@import "./history/HistoryPanel.scss";
-@import "./interview/InterviewPanel.scss";
+@use "./history/HistoryPanel.scss";
+@use "./interview/InterviewPanel.scss";

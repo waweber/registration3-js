@@ -3,6 +3,7 @@
   grid-template:
     "id name" auto
     "number nickname" auto
+    "description description" auto
     / auto minmax(1rem, 1fr);
   align-items: baseline;
 }
@@ -49,4 +50,14 @@
   text-wrap: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.RecentRegistration-description {
+  grid-area: description;
+  padding: var(--mantine-spacing-xs);
+  font-size: var(--mantine-font-size-sm);
+}
+
+.RecentRegistration-root > a.RecentRegistration-description {
+  color: var(--mantine-color-gray-text);
 }
