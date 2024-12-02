@@ -16,6 +16,10 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         args.all = "true"
       }
 
+      if (options?.check_in_id != null) {
+        args.check_in_id = options.check_in_id
+      }
+
       if (options?.before) {
         args.before_date = options.before[0]
         args.before_id = options.before[1]
@@ -25,12 +29,6 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         .url(`/events/${eventId}/registrations`)
         .addon(queryStringAddon)
         .query(args)
-        .get()
-        .json()
-    },
-    async listRegistrationsByCheckInId(eventId) {
-      return await wretch
-        .url(`/events/${eventId}/registrations/by-check-in-id`)
         .get()
         .json()
     },

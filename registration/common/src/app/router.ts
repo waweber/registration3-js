@@ -7,6 +7,8 @@ import {
 import {
   adminRegistrationRoute,
   adminRegistrationsRoute,
+  checkInRegistrationRoute,
+  checkInRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { authRoute } from "#src/app/routes/auth.js"
 import { deviceAuthAuthorizeRoute } from "#src/app/routes/device/authorize.js"
@@ -67,6 +69,7 @@ export const makeRouter = (ctx: AppContextValue) => {
           adminEventRoute.addChildren([
             adminEventIndexRoute,
             adminRegistrationsRoute.addChildren([adminRegistrationRoute]),
+            checkInRegistrationsRoute.addChildren([checkInRegistrationRoute]),
           ]),
         ]),
       ]),

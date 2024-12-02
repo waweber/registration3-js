@@ -1,12 +1,8 @@
 import { RegistrationAPIContext } from "#src/registration/providers.js"
+import { getRegistrationSearchQueryOptions } from "#src/registration/queries.js"
 import {
-  getRegistrationsByCheckInIdQueryOptions,
-  getRegistrationSearchQueryOptions,
-} from "#src/registration/queries.js"
-import {
-  Registration,
   RegistrationAPI,
-  RegistrationCheckInInfo,
+  RegistrationResponse,
   RegistrationSearchOptions,
 } from "#src/registration/types.js"
 import { useRequiredContext } from "#src/utils.js"
@@ -14,7 +10,6 @@ import {
   InfiniteData,
   useInfiniteQuery,
   UseInfiniteQueryResult,
-  useSuspenseQuery,
 } from "@tanstack/react-query"
 
 export const useRegistrationAPI = (): RegistrationAPI =>
@@ -25,7 +20,7 @@ export const useRegistrationSearch = (
   query?: string,
   options?: RegistrationSearchOptions,
   enabled = false,
-): UseInfiniteQueryResult<InfiniteData<Registration[]>> => {
+): UseInfiniteQueryResult<InfiniteData<RegistrationResponse[]>> => {
   const queryOpts = getRegistrationSearchQueryOptions(eventId, query, options)
   return useInfiniteQuery({
     ...queryOpts,
@@ -35,8 +30,10 @@ export const useRegistrationSearch = (
 
 export const useRegistrationsByCheckInId = (
   eventId: string,
-): RegistrationCheckInInfo[] => {
-  const opts = getRegistrationsByCheckInIdQueryOptions(eventId)
-  const query = useSuspenseQuery(opts)
-  return query.data
+): RegistrationResponse[] => {
+  const opts = getRegistrationSearchQueryOptions(eventId, undefined, {
+    check_in_id: "",
+  })
+  const query = useInfiniteQuery(opts)
+  return query.data?.pages[0] ?? []
 }
