@@ -23,6 +23,11 @@ export type Registration = {
   email?: string | null
 }
 
+export type RegistrationResponse = {
+  registration: Registration
+  summary?: string | null
+}
+
 export type RegistrationCheckInInfo = {
   registration: Registration
   check_in_status: string | null
@@ -31,6 +36,7 @@ export type RegistrationCheckInInfo = {
 export type RegistrationSearchOptions = {
   all?: boolean
   before?: readonly [string, string]
+  check_in_id?: string | null
 }
 
 export type RegistrationAPI = {
@@ -38,9 +44,6 @@ export type RegistrationAPI = {
     eventId: string,
     query?: string,
     options?: RegistrationSearchOptions,
-  ): Promise<Registration[]>
-  listRegistrationsByCheckInId(
-    eventId: string,
-  ): Promise<RegistrationCheckInInfo[]>
-  readRegistration(eventId: string, id: string): Promise<Registration>
+  ): Promise<RegistrationResponse[]>
+  readRegistration(eventId: string, id: string): Promise<RegistrationResponse>
 }

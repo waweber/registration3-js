@@ -18,3 +18,21 @@ export const adminRegistrationRoute = createRoute({
     "RegistrationsRoute",
   ),
 })
+
+export const checkInRegistrationsRoute = createRoute({
+  getParentRoute: () => adminEventRoute,
+  path: "check-in",
+  component: lazyRouteComponent(
+    () => import("#src/features/admin/components/CheckInRegistrationsRoute.js"),
+    "CheckInRegistrationsRoute",
+  ),
+})
+
+export const checkInRegistrationRoute = createRoute({
+  getParentRoute: () => checkInRegistrationsRoute,
+  path: "$registrationId",
+  component: lazyRouteComponent(
+    () => import("#src/features/admin/components/CheckInRegistrationsRoute.js"),
+    "CheckInRegistrationsRoute",
+  ),
+})

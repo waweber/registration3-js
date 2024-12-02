@@ -2,11 +2,18 @@ import {
   adminEventIndexRoute,
   adminEventRoute,
 } from "#src/app/routes/admin/admin.js"
-import { adminRegistrationsRoute } from "#src/app/routes/admin/registrations.js"
+import {
+  adminRegistrationsRoute,
+  checkInRegistrationsRoute,
+} from "#src/app/routes/admin/registrations.js"
 import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { AppShellLayout } from "#src/components/layout/app-shell/AppShellLayout.js"
 import { SCOPE, Scope } from "#src/features/auth/scope.js"
-import { IconLayoutDashboard, IconUsers } from "@tabler/icons-react"
+import {
+  IconCheckupList,
+  IconLayoutDashboard,
+  IconUsers,
+} from "@tabler/icons-react"
 import { ReactNode } from "react"
 
 export type AdminNavEntry = Readonly<{
@@ -57,6 +64,21 @@ const adminNavEntries: { readonly [key: string]: AdminNavEntry } = {
         }}
         replace={replace}
         leftSection={<IconUsers />}
+      />
+    ),
+  },
+  checkIn: {
+    hasPermission: (scope) => scope.includes(SCOPE.admin),
+    link: (eventId, replace) => (
+      <AppShellLayout.NavLink
+        key="checkIn"
+        label="Check In"
+        to={checkInRegistrationsRoute.to}
+        params={{
+          eventId: eventId,
+        }}
+        replace={replace}
+        leftSection={<IconCheckupList />}
       />
     ),
   },
