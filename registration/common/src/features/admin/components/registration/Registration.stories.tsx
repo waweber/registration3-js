@@ -51,7 +51,16 @@ export const Default: StoryObj<typeof RegistrationComponent> = {
     },
   ],
   args: {
-    w: 500,
+    w: 525,
+    actions: [
+      { id: "change", label: "Change" },
+      { id: "upgrade", label: "Upgrade" },
+    ],
+    summary: "Registration summary",
+    displayData: [
+      ["Extra 1", "Value 1"],
+      ["Extra 2", "Yes"],
+    ],
   },
   render(args) {
     const [reg, setReg] = useState<Registration>(() => ({
@@ -60,15 +69,18 @@ export const Default: StoryObj<typeof RegistrationComponent> = {
       status: "pending",
       version: 1,
       date_created: "2020-01-01T00:00:00-05:00",
+      date_updated: "2020-01-05T12:30:00-05:00",
       first_name: "Example",
       last_name: "Person",
       email: "test@example.net",
       nickname: "Example",
       number: 100,
+      notes: "Example Notes\n\n*Example Notes*",
     }))
 
     return (
       <RegistrationComponent
+        {...args}
         registration={reg}
         onComplete={() => {
           setReg({ ...reg, status: "created" })

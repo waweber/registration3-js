@@ -1,20 +1,17 @@
-import { adminEventRoute, adminRoute } from "#src/app/routes/admin/admin.js"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
-import { Title, useTitle } from "#src/components/index.js"
+import { adminEventRoute } from "#src/app/routes/admin/admin.js"
+import { AlertProvider, useTitle } from "#src/components/index.js"
 import { AppShellLayout } from "#src/components/layout/app-shell/AppShellLayout.js"
 import { getAdminNavEntries } from "#src/features/admin/components/adminEntries.js"
-import { SCOPE, Scope } from "#src/features/auth/scope.js"
+import { Scope } from "#src/features/auth/scope.js"
 import { useAuth } from "#src/hooks/auth.js"
-import { NavLink } from "@mantine/core"
 import {
-  createLink,
   Outlet,
   useLocation,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router"
 import { observer } from "mobx-react-lite"
-import { ReactNode, useMemo } from "react"
+import { useMemo } from "react"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -38,24 +35,26 @@ export const AdminRoute = observer(() => {
   const [title] = useTitle()
 
   return (
-    <AppShellLayout
-      menuOpened={opened}
-      onOpen={() => {
-        navigate({
-          state: {
-            ...loc.state,
-            appShellMenuOpened: true,
-          },
-        })
-      }}
-      onClose={() => {
-        router.history.go(-1)
-      }}
-      title={title}
-      links={entries}
-    >
-      <Outlet />
-    </AppShellLayout>
+    <AlertProvider>
+      <AppShellLayout
+        menuOpened={opened}
+        onOpen={() => {
+          navigate({
+            state: {
+              ...loc.state,
+              appShellMenuOpened: true,
+            },
+          })
+        }}
+        onClose={() => {
+          router.history.go(-1)
+        }}
+        title={title}
+        links={entries}
+      >
+        <Outlet />
+      </AppShellLayout>
+    </AlertProvider>
   )
 })
 

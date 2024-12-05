@@ -25,6 +25,10 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         args.before_id = options.before[1]
       }
 
+      if (options?.summary) {
+        args.summary = "true"
+      }
+
       return await wretch
         .url(`/events/${eventId}/registrations`)
         .addon(queryStringAddon)
@@ -37,6 +41,20 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         .url(`/events/${eventId}/registrations/${id}`)
         .get()
         .json()
+    },
+    async completeRegistration(eventId, id) {
+      await wretch
+        .url(`/events/${eventId}/registrations/${id}/complete`)
+        .put()
+        .json()
+      return await this.readRegistration(eventId, id)
+    },
+    async cancelRegistration(eventId, id) {
+      await wretch
+        .url(`/events/${eventId}/registrations/${id}/cancel`)
+        .put()
+        .json()
+      return await this.readRegistration(eventId, id)
     },
   }
 }

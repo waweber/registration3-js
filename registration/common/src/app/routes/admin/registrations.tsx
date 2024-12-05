@@ -11,11 +11,11 @@ export const adminRegistrationsRoute = createRoute({
 })
 
 export const adminRegistrationRoute = createRoute({
-  getParentRoute: () => adminRegistrationsRoute,
-  path: "$registrationId",
+  getParentRoute: () => adminEventRoute,
+  path: "registrations/$registrationId",
   component: lazyRouteComponent(
-    () => import("#src/features/admin/components/RegistrationsRoute.js"),
-    "RegistrationsRoute",
+    () => import("#src/features/admin/components/RegistrationRoute.js"),
+    "RegistrationRoute",
   ),
 })
 

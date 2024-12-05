@@ -21,22 +21,27 @@ export type Registration = {
   preferred_name?: string | null
   nickname?: string | null
   email?: string | null
+
+  notes?: string | null
+}
+
+export type RegistrationListResponseItem = {
+  registration: Registration
+  summary?: string | null
 }
 
 export type RegistrationResponse = {
   registration: Registration
   summary?: string | null
-}
-
-export type RegistrationCheckInInfo = {
-  registration: Registration
-  check_in_status: string | null
+  display_data?: (readonly [string, string])[] | null
+  change_options?: { url: string; title: string }[] | null
 }
 
 export type RegistrationSearchOptions = {
   all?: boolean
   before?: readonly [string, string]
   check_in_id?: string | null
+  summary?: boolean
 }
 
 export type RegistrationAPI = {
@@ -44,6 +49,11 @@ export type RegistrationAPI = {
     eventId: string,
     query?: string,
     options?: RegistrationSearchOptions,
-  ): Promise<RegistrationResponse[]>
+  ): Promise<RegistrationListResponseItem[]>
   readRegistration(eventId: string, id: string): Promise<RegistrationResponse>
+  completeRegistration(
+    eventId: string,
+    id: string,
+  ): Promise<RegistrationResponse>
+  cancelRegistration(eventId: string, id: string): Promise<RegistrationResponse>
 }

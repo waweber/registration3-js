@@ -6,13 +6,8 @@ import {
   NavLinkProps,
   Title,
 } from "@mantine/core"
-import { createLink, LinkComponentProps } from "@tanstack/react-router"
-import {
-  ComponentPropsWithoutRef,
-  ForwardedRef,
-  forwardRef,
-  ReactNode,
-} from "react"
+import { createLink } from "@tanstack/react-router"
+import { ComponentPropsWithoutRef, forwardRef, ReactNode } from "react"
 
 import "./AppShellLayout.scss"
 

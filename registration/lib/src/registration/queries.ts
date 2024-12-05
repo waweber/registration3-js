@@ -7,6 +7,7 @@ import {
   InfiniteData,
   QueryKey,
   UseInfiniteQueryOptions,
+  UseSuspenseQueryOptions,
 } from "@tanstack/react-query"
 
 export const getRegistrationSearchQueryOptions = (
@@ -47,6 +48,19 @@ export const getRegistrationSearchQueryOptions = (
         : null,
     placeholderData: (prev) => {
       return prev
+    },
+  }
+}
+
+export const getRegistrationQueryOptions = (
+  eventId: string,
+  registrationId: string,
+): UseSuspenseQueryOptions<RegistrationResponse> => {
+  const api = useRegistrationAPI()
+  return {
+    queryKey: ["events", eventId, "registrations", registrationId],
+    async queryFn() {
+      return await api.readRegistration(eventId, registrationId)
     },
   }
 }
