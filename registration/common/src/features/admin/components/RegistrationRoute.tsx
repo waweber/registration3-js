@@ -3,6 +3,7 @@ import {
   adminRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { Title } from "#src/components/index.js"
+import { Documents } from "#src/features/admin/components/documents/Documents.js"
 import { AdminInterviewPanel } from "#src/features/admin/components/interview-panel/AdminInterviewPanel.js"
 import { PaymentHistory } from "#src/features/admin/components/payment-history/PaymentHistory.js"
 import { RegistrationComponent } from "#src/features/admin/components/registration/Registration.js"
@@ -21,6 +22,10 @@ import {
   usePaymentAPI,
   useRegistrationPayments,
 } from "@open-event-systems/registration-lib/payment"
+import {
+  useDocumentTypes,
+  useRegistrationDocuments,
+} from "@open-event-systems/registration-lib/print"
 import {
   getRegistrationName,
   useCancelRegistration,
@@ -43,6 +48,8 @@ export const RegistrationRoute = () => {
 
   const reg = useRegistration(eventId, registrationId)
   const payments = useRegistrationPayments(eventId, registrationId)
+  const documentTypes = useDocumentTypes(eventId)
+  const documents = useRegistrationDocuments(eventId, registrationId)
   const complete = useCompleteRegistration(eventId, registrationId)
   const cancel = useCancelRegistration(eventId, registrationId)
   const mutating = useIsMutating({
@@ -115,6 +122,9 @@ export const RegistrationRoute = () => {
               onSelectAction={action}
             />
             {payments.length > 0 && <PaymentHistory results={payments} />}
+            {Object.keys(documents).length > 0 && (
+              <Documents documentTypes={documentTypes} documents={documents} />
+            )}
           </Stack>
         </Grid.Col>
         {record && (

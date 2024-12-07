@@ -40,6 +40,10 @@ import {
   AdminAPIProvider,
   makeAdminAPI,
 } from "@open-event-systems/registration-lib/admin"
+import {
+  makePrintAPI,
+  PrintAPIProvider,
+} from "@open-event-systems/registration-lib/print"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -66,6 +70,7 @@ const App = ({ config }: { config: Config }) => {
       selfServiceAPI: makeSelfServiceAPI(authWretch),
       registrationAPI: makeRegistrationAPI(authWretch),
       adminAPI: makeAdminAPI(authWretch),
+      printAPI: makePrintAPI(authWretch),
     }
   })
 
@@ -91,7 +96,9 @@ const App = ({ config }: { config: Config }) => {
                     <SelfServiceAPIProvider value={ctx.selfServiceAPI}>
                       <AdminAPIProvider value={ctx.adminAPI}>
                         <RegistrationAPIProvider value={ctx.registrationAPI}>
-                          <RouterProvider router={router} />
+                          <PrintAPIProvider value={ctx.printAPI}>
+                            <RouterProvider router={router} />
+                          </PrintAPIProvider>
                         </RegistrationAPIProvider>
                       </AdminAPIProvider>
                     </SelfServiceAPIProvider>
