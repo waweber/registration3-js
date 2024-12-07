@@ -2,13 +2,17 @@ import {
   PaymentAPIContext,
   PaymentManagerContext,
 } from "#src/payment/providers.js"
-import { getPaymentMethodsQueryOptions } from "#src/payment/queries.js"
+import {
+  getPaymentMethodsQueryOptions,
+  getRegistrationPaymentsQueryOptions,
+} from "#src/payment/queries.js"
 import {
   PaymentAPI,
   PaymentManager,
   PaymentMethod,
   PaymentRequestBody,
   PaymentResult,
+  PaymentSearchResult,
   PaymentServiceID,
 } from "#src/payment/types.js"
 import { isResponseError, useRequiredContext } from "#src/utils.js"
@@ -64,6 +68,23 @@ export const usePayment = <S extends PaymentServiceID = PaymentServiceID>(
   })
 
   return query.data ?? null
+}
+
+/**
+ * Get a registration's payments.
+ */
+export const useRegistrationPayments = (
+  eventId: string,
+  registrationId: string,
+): PaymentSearchResult[] => {
+  const paymentAPI = usePaymentAPI()
+  const opts = getRegistrationPaymentsQueryOptions(
+    paymentAPI,
+    eventId,
+    registrationId,
+  )
+  const query = useSuspenseQuery(opts)
+  return query.data
 }
 
 /**

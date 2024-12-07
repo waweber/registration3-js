@@ -4,9 +4,10 @@ import {
 } from "#src/app/routes/admin/registrations.js"
 import { Title } from "#src/components/index.js"
 import { AdminInterviewPanel } from "#src/features/admin/components/interview-panel/AdminInterviewPanel.js"
+import { PaymentHistory } from "#src/features/admin/components/payment-history/PaymentHistory.js"
 import { RegistrationComponent } from "#src/features/admin/components/registration/Registration.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
-import { Grid } from "@mantine/core"
+import { Grid, Paper, Stack } from "@mantine/core"
 import {
   useAdminAPI,
   useUpdateRegistrationFromInterview,
@@ -16,6 +17,10 @@ import {
   useInterviewAPI,
   useInterviewStore,
 } from "@open-event-systems/registration-lib/interview"
+import {
+  usePaymentAPI,
+  useRegistrationPayments,
+} from "@open-event-systems/registration-lib/payment"
 import {
   getRegistrationName,
   useCancelRegistration,
@@ -37,6 +42,7 @@ export const RegistrationRoute = () => {
   const queryClient = useQueryClient()
 
   const reg = useRegistration(eventId, registrationId)
+  const payments = useRegistrationPayments(eventId, registrationId)
   const complete = useCompleteRegistration(eventId, registrationId)
   const cancel = useCancelRegistration(eventId, registrationId)
   const mutating = useIsMutating({
@@ -96,17 +102,20 @@ export const RegistrationRoute = () => {
     <Title title={getRegistrationName(reg.registration)}>
       <Grid>
         <Grid.Col span={{ xs: 12, md: 6 }}>
-          <RegistrationComponent
-            registration={reg.registration}
-            actions={reg.change_options?.map((o) => ({
-              id: o.url,
-              label: o.title,
-            }))}
-            summary={reg.summary}
-            onComplete={() => mutating == 0 && complete()}
-            onCancel={() => mutating == 0 && cancel()}
-            onSelectAction={action}
-          />
+          <Stack>
+            <RegistrationComponent
+              registration={reg.registration}
+              actions={reg.change_options?.map((o) => ({
+                id: o.url,
+                label: o.title,
+              }))}
+              summary={reg.summary}
+              onComplete={() => mutating == 0 && complete()}
+              onCancel={() => mutating == 0 && cancel()}
+              onSelectAction={action}
+            />
+            {payments.length > 0 && <PaymentHistory results={payments} />}
+          </Stack>
         </Grid.Col>
         {record && (
           <Grid.Col span={{ xs: 12, md: 6 }}>
