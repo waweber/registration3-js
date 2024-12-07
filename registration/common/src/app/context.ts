@@ -14,6 +14,7 @@ import {
 import { SelfServiceAPI } from "@open-event-systems/registration-lib/selfservice"
 import { PaymentAPI } from "@open-event-systems/registration-lib/payment"
 import { RegistrationAPI } from "@open-event-systems/registration-lib/registration"
+import { AdminAPI } from "@open-event-systems/registration-lib/admin"
 
 export interface AppContextValue {
   config: Config
@@ -27,6 +28,7 @@ export interface AppContextValue {
   selfServiceAPI: SelfServiceAPI
   paymentAPI: PaymentAPI
   registrationAPI: RegistrationAPI
+  adminAPI: AdminAPI
 }
 
 export const AppContext = createOptionalContext<AppContextValue>()

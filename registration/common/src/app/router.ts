@@ -5,6 +5,7 @@ import {
   adminRoute,
 } from "#src/app/routes/admin/admin.js"
 import {
+  adminChangeRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
   checkInRegistrationRoute,
@@ -68,8 +69,11 @@ export const makeRouter = (ctx: AppContextValue) => {
         adminRoute.addChildren([
           adminEventRoute.addChildren([
             adminEventIndexRoute,
-            adminRegistrationsRoute.addChildren([adminRegistrationRoute]),
-            checkInRegistrationsRoute.addChildren([checkInRegistrationRoute]),
+            adminRegistrationsRoute,
+            adminRegistrationRoute,
+            checkInRegistrationsRoute,
+            checkInRegistrationRoute,
+            adminChangeRegistrationRoute,
           ]),
         ]),
       ]),

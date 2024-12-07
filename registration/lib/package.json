@@ -14,6 +14,7 @@
     "!**/*.test.*"
   ],
   "exports": {
+    "./admin": "./dist/src/admin/index.js",
     "./cart": "./dist/src/cart/index.js",
     "./payment": "./dist/src/payment/index.js",
     "./interview": "./dist/src/interview/index.js",
