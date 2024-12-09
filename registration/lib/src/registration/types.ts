@@ -25,6 +25,11 @@ export type Registration = {
   notes?: string | null
 }
 
+export type RegistrationListResponse = {
+  registrations: RegistrationListResponseItem[]
+  add_options?: { url: string; title: string }[] | null
+}
+
 export type RegistrationListResponseItem = {
   registration: Registration
   summary?: string | null
@@ -49,7 +54,7 @@ export type RegistrationAPI = {
     eventId: string,
     query?: string,
     options?: RegistrationSearchOptions,
-  ): Promise<RegistrationListResponseItem[]>
+  ): Promise<RegistrationListResponse>
   readRegistration(eventId: string, id: string): Promise<RegistrationResponse>
   completeRegistration(
     eventId: string,

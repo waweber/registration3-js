@@ -5,7 +5,7 @@ import {
   adminRoute,
 } from "#src/app/routes/admin/admin.js"
 import {
-  adminChangeRegistrationRoute,
+  adminAddRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
   checkInRegistrationRoute,
@@ -73,7 +73,7 @@ export const makeRouter = (ctx: AppContextValue) => {
             adminRegistrationRoute,
             checkInRegistrationsRoute,
             checkInRegistrationRoute,
-            adminChangeRegistrationRoute,
+            adminAddRegistrationRoute,
           ]),
         ]),
       ]),

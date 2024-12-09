@@ -44,12 +44,12 @@ export const checkInRegistrationRoute = createRoute({
   ),
 })
 
-export const adminChangeRegistrationRoute = createRoute({
+export const adminAddRegistrationRoute = createRoute({
   getParentRoute: () => adminEventRoute,
-  path: "registrations/$registrationId/change",
+  path: "registrations/add",
   component: lazyRouteComponent(
     () => import("#src/features/admin/components/InterviewRoute.js"),
-    "ChangeRegistrationRoute",
+    "AddRegistrationRoute",
   ),
   async loader({ context }): Promise<InterviewResponseRecord> {
     const { queryClient, interviewAPI, interviewStore } = context

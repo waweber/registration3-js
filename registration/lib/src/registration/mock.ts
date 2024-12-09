@@ -6,24 +6,26 @@ const mockDate = new Date().toISOString()
 export const makeMockRegistrationAPI = (): RegistrationAPI => {
   const api: RegistrationAPI = {
     async listRegistrations(eventId, query) {
-      return [
-        {
-          registration: {
-            id: "1",
-            event_id: eventId,
-            status: "created",
-            version: 1,
-            date_created: mockDate,
-            email: "test@example.net",
-            first_name: "Example",
-            last_name: "Person",
-            nickname: "Example",
-            number: 100,
-            check_in_id: "A01",
+      return {
+        registrations: [
+          {
+            registration: {
+              id: "1",
+              event_id: eventId,
+              status: "created",
+              version: 1,
+              date_created: mockDate,
+              email: "test@example.net",
+              first_name: "Example",
+              last_name: "Person",
+              nickname: "Example",
+              number: 100,
+              check_in_id: "A01",
+            },
+            summary: "Pick up badge",
           },
-          summary: "Pick up badge",
-        },
-      ]
+        ],
+      }
     },
     async readRegistration(eventId, id) {
       if (id == "1") {

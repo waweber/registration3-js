@@ -26,42 +26,42 @@ import {
   useInterviewAPI,
   useInterviewStore,
 } from "@open-event-systems/registration-lib/interview"
-import { adminChangeRegistrationRoute } from "#src/app/routes/admin/registrations.js"
+import { adminAddRegistrationRoute } from "#src/app/routes/admin/registrations.js"
 import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
 
-// export const AddRegistrationRoute = () => {
-//   const { eventId } = addRegistrationRoute.useParams()
-
-//   return (
-//     <Title title="New Registration" subtitle="Add a new registration">
-//       <Suspense fallback={<Skeleton h={300} />}>
-//         <InterviewPage
-//           key={eventId}
-//           eventId={eventId}
-//           record={addRegistrationRoute.useLoaderData()}
-//         />
-//       </Suspense>
-//     </Title>
-//   )
-// }
-
-export const ChangeRegistrationRoute = () => {
-  const { eventId } = adminChangeRegistrationRoute.useParams()
-  const t = adminChangeRegistrationRoute.useLoaderData()
+export const AddRegistrationRoute = () => {
+  const { eventId } = adminAddRegistrationRoute.useParams()
 
   return (
-    <Title title="Change Registration" subtitle="Change a registration">
+    <Title title="New Registration" subtitle="Add a new registration">
       <Suspense fallback={<Skeleton h={300} />}>
         <InterviewPage
           key={eventId}
           eventId={eventId}
-          record={adminChangeRegistrationRoute.useLoaderData()}
+          record={adminAddRegistrationRoute.useLoaderData()}
         />
       </Suspense>
     </Title>
   )
 }
+
+// export const ChangeRegistrationRoute = () => {
+//   const { eventId } = adminChangeRegistrationRoute.useParams()
+//   const t = adminChangeRegistrationRoute.useLoaderData()
+
+//   return (
+//     <Title title="Change Registration" subtitle="Change a registration">
+//       <Suspense fallback={<Skeleton h={300} />}>
+//         <InterviewPage
+//           key={eventId}
+//           eventId={eventId}
+//           record={adminChangeRegistrationRoute.useLoaderData()}
+//         />
+//       </Suspense>
+//     </Title>
+//   )
+// }
 
 const InterviewPage = ({
   eventId,

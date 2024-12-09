@@ -1,5 +1,6 @@
 import { useRegistrationAPI } from "#src/registration/hooks.js"
 import {
+  RegistrationListResponse,
   RegistrationResponse,
   RegistrationSearchOptions,
 } from "#src/registration/types.js"
@@ -15,10 +16,10 @@ export const getRegistrationSearchQueryOptions = (
   query?: string,
   options?: RegistrationSearchOptions,
 ): UseInfiniteQueryOptions<
-  RegistrationResponse[],
+  RegistrationListResponse,
   Error,
-  InfiniteData<RegistrationResponse[]>,
-  RegistrationResponse[],
+  InfiniteData<RegistrationListResponse>,
+  RegistrationListResponse,
   QueryKey,
   readonly [string, string] | null
 > => {
@@ -40,10 +41,11 @@ export const getRegistrationSearchQueryOptions = (
     },
     initialPageParam: null,
     getNextPageParam: (prev) =>
-      prev.length > 0
+      prev.registrations.length > 0
         ? [
-            prev[prev.length - 1].registration.date_created,
-            prev[prev.length - 1].registration.id,
+            prev.registrations[prev.registrations.length - 1].registration
+              .date_created,
+            prev.registrations[prev.registrations.length - 1].registration.id,
           ]
         : null,
     placeholderData: (prev) => {

@@ -5,6 +5,7 @@ import {
 } from "#src/registration/queries.js"
 import {
   RegistrationAPI,
+  RegistrationListResponse,
   RegistrationResponse,
   RegistrationSearchOptions,
 } from "#src/registration/types.js"
@@ -26,7 +27,7 @@ export const useRegistrationSearch = (
   query?: string,
   options?: RegistrationSearchOptions,
   enabled = false,
-): UseInfiniteQueryResult<InfiniteData<RegistrationResponse[]>> => {
+): UseInfiniteQueryResult<InfiniteData<RegistrationListResponse>> => {
   const queryOpts = getRegistrationSearchQueryOptions(eventId, query, options)
   return useInfiniteQuery({
     ...queryOpts,
@@ -41,7 +42,7 @@ export const useRegistrationsByCheckInId = (
     check_in_id: "",
   })
   const query = useInfiniteQuery(opts)
-  return query.data?.pages[0] ?? []
+  return query.data?.pages[0].registrations ?? []
 }
 
 export const useRegistration = (
