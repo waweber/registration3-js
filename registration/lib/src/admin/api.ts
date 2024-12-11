@@ -7,11 +7,16 @@ export const makeAdminAPI = (wretch: Wretch): AdminAPI => {
       return await wretch.url(url, true).get().json()
     },
     async completeInterview(response) {
-      await wretch
+      const res = await wretch
         .url(response.target, true)
         .json({ state: response.state })
         .post()
         .res()
+      if (res.status == 204) {
+        return null
+      } else {
+        return await res.json()
+      }
     },
   }
 }

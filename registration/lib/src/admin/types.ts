@@ -1,3 +1,4 @@
+import { RegistrationBatchUpdateResult } from "#src/registration/types.js"
 import {
   CompleteInterviewResponse,
   InterviewResponse,
@@ -5,5 +6,7 @@ import {
 
 export type AdminAPI = {
   startInterview(url: string): Promise<InterviewResponse>
-  completeInterview(response: CompleteInterviewResponse): Promise<void>
+  completeInterview(
+    response: CompleteInterviewResponse,
+  ): Promise<RegistrationBatchUpdateResult | null>
 }

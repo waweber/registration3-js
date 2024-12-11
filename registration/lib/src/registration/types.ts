@@ -49,6 +49,10 @@ export type RegistrationSearchOptions = {
   summary?: boolean
 }
 
+export type RegistrationBatchUpdateResult = {
+  results: Registration[]
+}
+
 export type RegistrationAPI = {
   listRegistrations(
     eventId: string,

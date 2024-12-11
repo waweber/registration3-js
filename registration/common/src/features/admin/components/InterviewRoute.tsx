@@ -26,7 +26,11 @@ import {
   useInterviewAPI,
   useInterviewStore,
 } from "@open-event-systems/registration-lib/interview"
-import { adminAddRegistrationRoute } from "#src/app/routes/admin/registrations.js"
+import {
+  adminAddRegistrationRoute,
+  adminRegistrationRoute,
+  adminRegistrationsRoute,
+} from "#src/app/routes/admin/registrations.js"
 import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
 
@@ -100,7 +104,25 @@ const InterviewPage = ({
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
         const res = await adminAPI.completeInterview(record.response)
-        // TODO
+        if (res == null) {
+          navigate({
+            to: adminRegistrationsRoute.to,
+            params: {
+              eventId,
+            },
+          })
+        } else {
+          for (const r of res.results) {
+            navigate({
+              to: adminRegistrationRoute.to,
+              params: {
+                eventId,
+                registrationId: r.id,
+              },
+            })
+            break
+          }
+        }
       } else {
         setLatestRecordId(record.response.state)
         queryClient.setQueryData(
