@@ -54,6 +54,17 @@ export type PaymentResult<S extends PaymentServiceID = PaymentServiceID> = {
   body: PaymentResultBody<S>
 }
 
+export type PaymentSearchResult = {
+  id: string
+  service_name: string
+  external_id: string
+  receipt_id: string
+  payment_url?: string | null
+  status: PaymentStatus
+  date_created: string
+  date_closed?: string | null
+}
+
 export type PaymentAPI = {
   getPaymentMethods(cartId: string): Promise<PaymentMethod[]>
   createPayment(cartId: string, method: string): Promise<PaymentResult>
@@ -64,6 +75,10 @@ export type PaymentAPI = {
   cancelPayment<S extends PaymentServiceID = PaymentServiceID>(
     paymentId: string,
   ): Promise<PaymentResult<S>>
+  listPayments(
+    eventId: string,
+    registrationId: string,
+  ): Promise<PaymentSearchResult[]>
 }
 
 export type PaymentManager<S extends PaymentServiceID = PaymentServiceID> = {

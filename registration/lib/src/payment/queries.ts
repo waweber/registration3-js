@@ -1,4 +1,8 @@
-import { PaymentAPI, PaymentMethod } from "#src/payment/types.js"
+import {
+  PaymentAPI,
+  PaymentMethod,
+  PaymentSearchResult,
+} from "#src/payment/types.js"
 import { UseSuspenseQueryOptions } from "@tanstack/react-query"
 
 export const getPaymentMethodsQueryOptions = (
@@ -11,5 +15,18 @@ export const getPaymentMethodsQueryOptions = (
       return await paymentAPI.getPaymentMethods(cartId)
     },
     staleTime: 600000,
+  }
+}
+
+export const getRegistrationPaymentsQueryOptions = (
+  paymentAPI: PaymentAPI,
+  eventId: string,
+  registrationId: string,
+): UseSuspenseQueryOptions<PaymentSearchResult[]> => {
+  return {
+    queryKey: ["payments", { eventId, registrationId }],
+    async queryFn() {
+      return await paymentAPI.listPayments(eventId, registrationId)
+    },
   }
 }

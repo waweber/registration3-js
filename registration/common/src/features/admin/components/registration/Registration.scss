@@ -1,0 +1,48 @@
+.AdminRegistration-root {
+  display: grid;
+  grid-template:
+    "number name status ." auto
+    "divider divider divider divider" auto
+    "details details details details" minmax(1rem, 1fr)
+    "divider2 divider2 divider2 divider2" auto
+    "actions actions actions actions" auto
+    / auto auto auto minmax(1rem, 1fr);
+  gap: var(--mantine-spacing-xs);
+}
+
+.AdminRegistration-number {
+  grid-area: number;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-h3-font-size);
+  align-self: baseline;
+}
+
+.AdminRegistration-name {
+  grid-area: name;
+  font-size: var(--mantine-h3-font-size);
+  align-self: baseline;
+}
+
+.AdminRegistration-status {
+  grid-area: status;
+  font-size: var(--mantine-h5-font-size);
+  font-style: italic;
+  align-self: baseline;
+  color: var(--mantine-color-gray-text);
+}
+
+.AdminRegistration-divider {
+  grid-area: divider;
+}
+
+.AdminRegistration-details {
+  grid-area: details;
+}
+
+.AdminRegistration-divider2 {
+  grid-area: divider2;
+}
+
+.AdminRegistration-actions {
+  grid-area: actions;
+}

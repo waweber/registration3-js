@@ -14,10 +14,13 @@
     "!**/*.test.*"
   ],
   "exports": {
+    "./admin": "./dist/src/admin/index.js",
     "./cart": "./dist/src/cart/index.js",
     "./payment": "./dist/src/payment/index.js",
+    "./print": "./dist/src/print/index.js",
     "./interview": "./dist/src/interview/index.js",
     "./selfservice": "./dist/src/selfservice/index.js",
+    "./registration": "./dist/src/registration/index.js",
     "./utils": "./dist/src/utils.js"
   },
   "imports": {

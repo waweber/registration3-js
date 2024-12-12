@@ -32,6 +32,18 @@ import {
   makePaymentAPI,
   PaymentAPIProvider,
 } from "@open-event-systems/registration-lib/payment"
+import {
+  makeRegistrationAPI,
+  RegistrationAPIProvider,
+} from "@open-event-systems/registration-lib/registration"
+import {
+  AdminAPIProvider,
+  makeAdminAPI,
+} from "@open-event-systems/registration-lib/admin"
+import {
+  makePrintAPI,
+  PrintAPIProvider,
+} from "@open-event-systems/registration-lib/print"
 
 const App = ({ config }: { config: Config }) => {
   const [ctx] = useState((): AppContextValue => {
@@ -56,6 +68,9 @@ const App = ({ config }: { config: Config }) => {
       interviewAPI: makeInterviewAPI(),
       interviewStore: InterviewRecordLocalStorage.load(),
       selfServiceAPI: makeSelfServiceAPI(authWretch),
+      registrationAPI: makeRegistrationAPI(authWretch),
+      adminAPI: makeAdminAPI(authWretch),
+      printAPI: makePrintAPI(authWretch),
     }
   })
 
@@ -79,7 +94,13 @@ const App = ({ config }: { config: Config }) => {
                 <CurrentCartStoreProvider value={ctx.currentCartStore}>
                   <PaymentAPIProvider value={ctx.paymentAPI}>
                     <SelfServiceAPIProvider value={ctx.selfServiceAPI}>
-                      <RouterProvider router={router} />
+                      <AdminAPIProvider value={ctx.adminAPI}>
+                        <RegistrationAPIProvider value={ctx.registrationAPI}>
+                          <PrintAPIProvider value={ctx.printAPI}>
+                            <RouterProvider router={router} />
+                          </PrintAPIProvider>
+                        </RegistrationAPIProvider>
+                      </AdminAPIProvider>
                     </SelfServiceAPIProvider>
                   </PaymentAPIProvider>
                 </CurrentCartStoreProvider>

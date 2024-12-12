@@ -25,5 +25,13 @@ export const makePaymentAPI = (wretch: Wretch): PaymentAPI => {
     async cancelPayment(paymentId) {
       return await wretch.url(`/payments/${paymentId}/cancel`).put().json()
     },
+    async listPayments(eventId: string, registrationId: string) {
+      return await wretch
+        .url(`/payments`)
+        .addon(queryStringAddon)
+        .query({ event_id: eventId, registration_id: registrationId })
+        .get()
+        .json()
+    },
   }
 }
