@@ -3,9 +3,10 @@ export const SCOPE = {
   cart: "cart",
   registration: "registration",
   registrationWrite: "registration:write",
-  setEmail: "set-email",
-  setRole: "set-role",
+  setEmail: "auth:set-email",
+  setRole: "auth:set-role",
   admin: "admin",
+  adminWrite: "admin:write",
 } as const
 
 export type Scope = (typeof SCOPE)[keyof typeof SCOPE]
@@ -20,6 +21,7 @@ export const ScopeDescription: {
   setEmail: "Authorize a different user",
   setRole: "Set user role",
   admin: "Admin access",
+  adminWrite: "Update admin settings",
 }
 
 /**

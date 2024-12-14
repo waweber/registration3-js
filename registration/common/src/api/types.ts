@@ -1,7 +1,6 @@
 import { AuthStore } from "#src/api/auth.js"
 import { Scope } from "#src/features/auth/scope.js"
 import { DeviceAuthOptions } from "#src/features/auth/types.js"
-import { Wretch } from "wretch"
 
 export type TokenResponse = {
   access_token: string
