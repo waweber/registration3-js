@@ -28,7 +28,13 @@ export const useRegistrationSearch = (
   options?: RegistrationSearchOptions,
   enabled = false,
 ): UseInfiniteQueryResult<InfiniteData<RegistrationListResponse>> => {
-  const queryOpts = getRegistrationSearchQueryOptions(eventId, query, options)
+  const registrationAPI = useRegistrationAPI()
+  const queryOpts = getRegistrationSearchQueryOptions(
+    registrationAPI,
+    eventId,
+    query,
+    options,
+  )
   return useInfiniteQuery({
     ...queryOpts,
     enabled: enabled,
@@ -38,9 +44,15 @@ export const useRegistrationSearch = (
 export const useRegistrationsByCheckInId = (
   eventId: string,
 ): RegistrationResponse[] => {
-  const opts = getRegistrationSearchQueryOptions(eventId, undefined, {
-    check_in_id: "",
-  })
+  const registrationAPI = useRegistrationAPI()
+  const opts = getRegistrationSearchQueryOptions(
+    registrationAPI,
+    eventId,
+    undefined,
+    {
+      check_in_id: "",
+    },
+  )
   const query = useInfiniteQuery(opts)
   return query.data?.pages[0].registrations ?? []
 }
@@ -49,7 +61,12 @@ export const useRegistration = (
   eventId: string,
   registrationId: string,
 ): RegistrationResponse => {
-  const options = getRegistrationQueryOptions(eventId, registrationId)
+  const registrationAPI = useRegistrationAPI()
+  const options = getRegistrationQueryOptions(
+    registrationAPI,
+    eventId,
+    registrationId,
+  )
   const result = useSuspenseQuery(options)
   return result.data
 }

@@ -1,12 +1,8 @@
-import {
-  adminEventIndexRoute,
-  adminEventRoute,
-} from "#src/app/routes/admin/admin.js"
+import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
 import {
   adminRegistrationsRoute,
   checkInRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { AppShellLayout } from "#src/components/layout/app-shell/AppShellLayout.js"
 import { SCOPE, Scope } from "#src/features/auth/scope.js"
 import {

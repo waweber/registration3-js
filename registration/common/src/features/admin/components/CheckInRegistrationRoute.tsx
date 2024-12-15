@@ -1,13 +1,11 @@
 import {
   adminChangeRegistrationRoute,
-  adminRegistrationRoute,
+  checkInRegistrationRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { Title } from "#src/components/index.js"
 import { Documents } from "#src/features/admin/components/documents/Documents.js"
 import { PaymentHistory } from "#src/features/admin/components/payment-history/PaymentHistory.js"
 import { RegistrationComponent } from "#src/features/admin/components/registration/Registration.js"
-import { SCOPE } from "#src/features/auth/scope.js"
-import { useAuth } from "#src/hooks/auth.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
 import { Stack } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
@@ -16,23 +14,16 @@ import {
   useInterviewAPI,
   useInterviewStore,
 } from "@open-event-systems/registration-lib/interview"
-import { useRegistrationPayments } from "@open-event-systems/registration-lib/payment"
-import {
-  useDocumentTypes,
-  useRegistrationDocuments,
-} from "@open-event-systems/registration-lib/print"
 import {
   getRegistrationName,
-  useCancelRegistration,
-  useCompleteRegistration,
   useRegistration,
 } from "@open-event-systems/registration-lib/registration"
-import { useIsMutating, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
 
-export const RegistrationRoute = () => {
-  const { eventId, registrationId } = adminRegistrationRoute.useParams()
+export const CheckInRegistrationRoute = () => {
+  const { eventId, registrationId } = checkInRegistrationRoute.useParams()
   const api = useAdminAPI()
   const navigate = useNavigate()
   const interviewAPI = useInterviewAPI()
@@ -41,16 +32,6 @@ export const RegistrationRoute = () => {
   const queryClient = useQueryClient()
 
   const reg = useRegistration(eventId, registrationId)
-  const payments = useRegistrationPayments(eventId, registrationId)
-  const documentTypes = useDocumentTypes(eventId)
-  const documents = useRegistrationDocuments(eventId, registrationId)
-  const complete = useCompleteRegistration(eventId, registrationId)
-  const cancel = useCancelRegistration(eventId, registrationId)
-  const mutating = useIsMutating({
-    mutationKey: ["events", eventId, "registrations", registrationId],
-  })
-  const auth = useAuth()
-  const scope = auth.token?.scope.split(" ") || []
 
   const action = useCallback(
     (actionId: string) => {
@@ -103,22 +84,8 @@ export const RegistrationRoute = () => {
             label: o.title,
           }))}
           summary={reg.summary}
-          canComplete={
-            reg.registration.status == "pending" &&
-            scope.includes(SCOPE.registrationWrite)
-          }
-          canCancel={
-            reg.registration.status != "canceled" &&
-            scope.includes(SCOPE.registrationWrite)
-          }
-          onComplete={() => mutating == 0 && complete()}
-          onCancel={() => mutating == 0 && cancel()}
           onSelectAction={action}
         />
-        {payments.length > 0 && <PaymentHistory results={payments} />}
-        {Object.keys(documents).length > 0 && (
-          <Documents documentTypes={documentTypes} documents={documents} />
-        )}
       </Stack>
     </Title>
   )

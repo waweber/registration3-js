@@ -1,5 +1,5 @@
-import { useRegistrationAPI } from "#src/registration/hooks.js"
 import {
+  RegistrationAPI,
   RegistrationListResponse,
   RegistrationResponse,
   RegistrationSearchOptions,
@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-query"
 
 export const getRegistrationSearchQueryOptions = (
+  registrationAPI: RegistrationAPI,
   eventId: string,
   query?: string,
   options?: RegistrationSearchOptions,
@@ -23,7 +24,6 @@ export const getRegistrationSearchQueryOptions = (
   QueryKey,
   readonly [string, string] | null
 > => {
-  const registrationAPI = useRegistrationAPI()
   return {
     queryKey: [
       "events",
@@ -51,18 +51,19 @@ export const getRegistrationSearchQueryOptions = (
     placeholderData: (prev) => {
       return prev
     },
+    staleTime: 5000,
   }
 }
 
 export const getRegistrationQueryOptions = (
+  registrationAPI: RegistrationAPI,
   eventId: string,
   registrationId: string,
 ): UseSuspenseQueryOptions<RegistrationResponse> => {
-  const api = useRegistrationAPI()
   return {
     queryKey: ["events", eventId, "registrations", registrationId],
     async queryFn() {
-      return await api.readRegistration(eventId, registrationId)
+      return await registrationAPI.readRegistration(eventId, registrationId)
     },
   }
 }

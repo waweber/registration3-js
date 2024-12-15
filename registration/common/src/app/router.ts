@@ -2,10 +2,13 @@ import { AppContextValue } from "#src/app/context.js"
 import {
   adminEventIndexRoute,
   adminEventRoute,
+  adminEventsRoute,
+  adminIndexRoute,
   adminRoute,
 } from "#src/app/routes/admin/admin.js"
 import {
   adminAddRegistrationRoute,
+  adminChangeRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
   checkInRegistrationRoute,
@@ -67,6 +70,8 @@ export const makeRouter = (ctx: AppContextValue) => {
           accessCodeRoute,
         ]),
         adminRoute.addChildren([
+          adminIndexRoute,
+          adminEventsRoute,
           adminEventRoute.addChildren([
             adminEventIndexRoute,
             adminRegistrationsRoute,
@@ -74,6 +79,7 @@ export const makeRouter = (ctx: AppContextValue) => {
             checkInRegistrationsRoute,
             checkInRegistrationRoute,
             adminAddRegistrationRoute,
+            adminChangeRegistrationRoute,
           ]),
         ]),
       ]),

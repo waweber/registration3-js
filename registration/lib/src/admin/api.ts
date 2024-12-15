@@ -3,6 +3,9 @@ import { Wretch } from "wretch"
 
 export const makeAdminAPI = (wretch: Wretch): AdminAPI => {
   return {
+    async listEvents() {
+      return await wretch.url("/events").get().json()
+    },
     async startInterview(url: string) {
       return await wretch.url(url, true).get().json()
     },

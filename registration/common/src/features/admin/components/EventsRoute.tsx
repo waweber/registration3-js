@@ -1,8 +1,7 @@
-import { eventsRoute } from "#src/app/routes/selfservice/events.js"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
+import { adminEventRoute } from "#src/app/routes/admin/admin.js"
 import { FullPageMenuLayout } from "#src/components/index.js"
 import { Card, NavLink, NavLinkProps, Space } from "@mantine/core"
-import { useSelfServiceEvents } from "@open-event-systems/registration-lib/selfservice"
+import { useEvents } from "@open-event-systems/registration-lib/admin"
 import { IconChevronRight } from "@tabler/icons-react"
 import { createLink } from "@tanstack/react-router"
 
@@ -12,7 +11,7 @@ const _Link = createLink((props: NavLinkProps) => {
 })
 
 export const EventsRoute = () => {
-  const events = useSelfServiceEvents()
+  const events = useEvents()
   return (
     <FullPageMenuLayout>
       <FullPageMenuLayout.Content title="Choose Event">
@@ -21,8 +20,7 @@ export const EventsRoute = () => {
             <_Link
               key={e.id}
               label={e.title}
-              from={eventsRoute.fullPath}
-              to={selfServiceRegistrationsRoute.to}
+              to={adminEventRoute.to}
               params={{
                 eventId: e.id,
               }}

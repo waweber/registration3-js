@@ -1,6 +1,4 @@
 import {
-  adminRegistrationRoute,
-  adminRegistrationsRoute,
   checkInRegistrationRoute,
   checkInRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
@@ -27,23 +25,26 @@ export const CheckInRegistrationsRoute = () => {
   const navigate = checkInRegistrationsRoute.useNavigate()
   const enterRef = useRef(false)
 
-  const allData = useMemo(
-    () => results.data?.pages.reduce((prev, cur) => [...prev, ...cur], []),
+  const allResults = useMemo(
+    () =>
+      results.data?.pages
+        .map((p) => p.registrations)
+        .reduce((prev, cur) => [...prev, ...cur]),
     [results.data],
   )
 
   useEffect(() => {
-    if (allData?.length == 1 && enterRef.current) {
+    if (allResults?.length == 1 && enterRef.current) {
       navigate({
         to: checkInRegistrationRoute.to,
         params: {
           eventId: eventId,
-          registrationId: allData[0].registration.id,
+          registrationId: allResults[0].registration.id,
         },
       })
     }
     enterRef.current = false
-  }, [allData])
+  }, [allResults])
 
   return (
     <Title title="Registrations">
@@ -60,8 +61,8 @@ export const CheckInRegistrationsRoute = () => {
             enterRef.current = true
           }}
           results={
-            allData
-              ? allData.map((r) => ({
+            allResults
+              ? allResults.map((r) => ({
                   id: r.registration.id,
                   name: getRegistrationName(r.registration),
                   email: r.registration.email,

@@ -1,10 +1,22 @@
 import { AdminAPIContext } from "#src/admin/providers.js"
-import { AdminAPI } from "#src/admin/types.js"
+import { getEventsQueryOptions } from "#src/admin/queries.js"
+import { AdminAPI, Event } from "#src/admin/types.js"
 import { useRequiredContext } from "#src/utils.js"
 import { CompleteInterviewResponse } from "@open-event-systems/interview-lib"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 
 export const useAdminAPI = (): AdminAPI => useRequiredContext(AdminAPIContext)
+
+export const useEvents = (): Map<string, Event> => {
+  const api = useAdminAPI()
+  const opts = getEventsQueryOptions(api)
+  const res = useSuspenseQuery(opts)
+  return res.data
+}
 
 export const useUpdateRegistrationFromInterview = (
   eventId: string,

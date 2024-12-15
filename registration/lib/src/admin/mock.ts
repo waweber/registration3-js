@@ -3,6 +3,16 @@ import { makeMockWithDelay } from "#src/utils.js"
 
 export const makeMockAdminAPI = (): AdminAPI => {
   const api: AdminAPI = {
+    async listEvents() {
+      return [
+        {
+          id: "example-event",
+          title: "Example Event",
+          open: true,
+          visible: true,
+        },
+      ]
+    },
     async startInterview() {
       return {
         completed: true,

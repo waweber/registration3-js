@@ -82,6 +82,8 @@ export const Default: StoryObj<typeof RegistrationComponent> = {
       <RegistrationComponent
         {...args}
         registration={reg}
+        canComplete={reg.status == "pending"}
+        canCancel={reg.status != "canceled"}
         onComplete={() => {
           setReg({ ...reg, status: "created" })
         }}

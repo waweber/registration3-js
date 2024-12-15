@@ -24,6 +24,8 @@ export type RegistrationComponentProps = {
   summary?: string | null
   displayData?: (readonly [string, string])[]
   actions?: { id: string; label: string }[]
+  canComplete?: boolean
+  canCancel?: boolean
   onComplete?: () => void
   onCancel?: () => void
   onSelectAction?: (id: string) => void
@@ -35,6 +37,8 @@ export const RegistrationComponent = (props: RegistrationComponentProps) => {
     summary,
     displayData = [],
     actions,
+    canComplete,
+    canCancel,
     onComplete,
     onCancel,
     onSelectAction,
@@ -42,9 +46,6 @@ export const RegistrationComponent = (props: RegistrationComponentProps) => {
   } = props
 
   const alert = useAlert()
-
-  const canComplete = registration.status == RegistrationStatus.pending
-  const canCancel = registration.status != RegistrationStatus.canceled
 
   const hasActions = canComplete || canCancel || (actions && actions.length > 0)
 

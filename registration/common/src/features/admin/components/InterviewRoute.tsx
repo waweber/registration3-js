@@ -8,19 +8,8 @@ import {
 } from "@open-event-systems/interview-components"
 import { Skeleton } from "@mantine/core"
 import { useQueryClient } from "@tanstack/react-query"
-import { selfServiceRegistrationsRoute } from "#src/app/routes/selfservice/registrations.js"
 import { Title } from "#src/components/index.js"
-import {
-  addRegistrationRoute,
-  cartRoute,
-  changeRegistrationRoute,
-} from "#src/app/routes/selfservice/cart.js"
-import {
-  getPricingResultQueryOptions,
-  useCartAPI,
-  useStickyCurrentCart,
-} from "@open-event-systems/registration-lib/cart"
-import { useSelfServiceAPI } from "@open-event-systems/registration-lib/selfservice"
+import { addRegistrationRoute } from "#src/app/routes/selfservice/cart.js"
 import {
   getInterviewStateQueryOptions,
   useInterviewAPI,
@@ -28,6 +17,7 @@ import {
 } from "@open-event-systems/registration-lib/interview"
 import {
   adminAddRegistrationRoute,
+  adminChangeRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
@@ -50,22 +40,37 @@ export const AddRegistrationRoute = () => {
   )
 }
 
-// export const ChangeRegistrationRoute = () => {
-//   const { eventId } = adminChangeRegistrationRoute.useParams()
-//   const t = adminChangeRegistrationRoute.useLoaderData()
+export const ChangeRegistrationRoute = () => {
+  const { eventId } = adminChangeRegistrationRoute.useParams()
 
-//   return (
-//     <Title title="Change Registration" subtitle="Change a registration">
-//       <Suspense fallback={<Skeleton h={300} />}>
-//         <InterviewPage
-//           key={eventId}
-//           eventId={eventId}
-//           record={adminChangeRegistrationRoute.useLoaderData()}
-//         />
-//       </Suspense>
-//     </Title>
-//   )
-// }
+  return (
+    <Title title="Change Registration" subtitle="Change a registration">
+      <Suspense fallback={<Skeleton h={300} />}>
+        <InterviewPage
+          key={eventId}
+          eventId={eventId}
+          record={adminChangeRegistrationRoute.useLoaderData()}
+        />
+      </Suspense>
+    </Title>
+  )
+}
+
+export const CheckInChangeRegistrationRoute = () => {
+  const { eventId } = adminChangeRegistrationRoute.useParams()
+
+  return (
+    <Title title="Change Registration" subtitle="Change a registration">
+      <Suspense fallback={<Skeleton h={300} />}>
+        <InterviewPage
+          key={eventId}
+          eventId={eventId}
+          record={adminChangeRegistrationRoute.useLoaderData()}
+        />
+      </Suspense>
+    </Title>
+  )
+}
 
 const InterviewPage = ({
   eventId,
