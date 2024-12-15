@@ -51,6 +51,7 @@ export const useRegistrationsByCheckInId = (
     undefined,
     {
       check_in_id: "",
+      summary: true,
     },
   )
   const query = useInfiniteQuery(opts)
