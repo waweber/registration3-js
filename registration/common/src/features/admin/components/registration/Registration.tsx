@@ -74,7 +74,7 @@ export const RegistrationComponent = (props: RegistrationComponentProps) => {
       )}
       <Divider className="AdminRegistration-divider" />
       <Box className="AdminRegistration-details">
-        <Table.ScrollContainer minWidth={500}>
+        <Table.ScrollContainer minWidth={400}>
           <Table>
             <Table.Tbody>
               <Table.Tr>

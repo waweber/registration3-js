@@ -58,10 +58,11 @@ export const CheckInRegistrationsRoute = () => {
           onEnter={(query, options) => {
             setQuery(query)
             setOptions(options)
+            setEnabled(true)
             enterRef.current = true
           }}
           results={
-            allResults
+            allResults && enabled
               ? allResults.map((r) => ({
                   id: r.registration.id,
                   name: getRegistrationName(r.registration),
@@ -90,7 +91,7 @@ export const CheckInRegistrationsRoute = () => {
             })
           }}
         />
-        {results.data == null && !enabled ? (
+        {!enabled ? (
           <>
             <Divider />
             <Text c="dimmed">In Progress</Text>

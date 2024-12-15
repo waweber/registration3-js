@@ -9,7 +9,7 @@ import { RegistrationComponent } from "#src/features/admin/components/registrati
 import { SCOPE } from "#src/features/auth/scope.js"
 import { useAuth } from "#src/hooks/auth.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
-import { Stack } from "@mantine/core"
+import { Grid, Stack } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
 import {
   getInterviewStateQueryOptions,
@@ -95,31 +95,40 @@ export const RegistrationRoute = () => {
 
   return (
     <Title title={getRegistrationName(reg.registration)}>
-      <Stack>
-        <RegistrationComponent
-          registration={reg.registration}
-          actions={reg.change_options?.map((o) => ({
-            id: o.url,
-            label: o.title,
-          }))}
-          summary={reg.summary}
-          canComplete={
-            reg.registration.status == "pending" &&
-            scope.includes(SCOPE.registrationWrite)
-          }
-          canCancel={
-            reg.registration.status != "canceled" &&
-            scope.includes(SCOPE.registrationWrite)
-          }
-          onComplete={() => mutating == 0 && complete()}
-          onCancel={() => mutating == 0 && cancel()}
-          onSelectAction={action}
-        />
-        {payments.length > 0 && <PaymentHistory results={payments} />}
-        {Object.keys(documents).length > 0 && (
-          <Documents documentTypes={documentTypes} documents={documents} />
+      <Grid>
+        <Grid.Col span={{ xs: 12, sm: 12, md: 6, xl: 4 }}>
+          <RegistrationComponent
+            registration={reg.registration}
+            actions={reg.change_options?.map((o) => ({
+              id: o.url,
+              label: o.title,
+            }))}
+            summary={reg.summary}
+            canComplete={
+              reg.registration.status == "pending" &&
+              scope.includes(SCOPE.registrationWrite)
+            }
+            canCancel={
+              reg.registration.status != "canceled" &&
+              scope.includes(SCOPE.registrationWrite)
+            }
+            onComplete={() => mutating == 0 && complete()}
+            onCancel={() => mutating == 0 && cancel()}
+            onSelectAction={action}
+          />
+        </Grid.Col>
+
+        {payments.length > 0 && (
+          <Grid.Col span={{ xs: 12, sm: 12, md: 6, xl: 4 }}>
+            <PaymentHistory results={payments} />
+          </Grid.Col>
         )}
-      </Stack>
+        {Object.keys(documents).length > 0 && (
+          <Grid.Col span={{ xs: 12, sm: 12, md: 6, xl: 4 }}>
+            <Documents documentTypes={documentTypes} documents={documents} />
+          </Grid.Col>
+        )}
+      </Grid>
     </Title>
   )
 }

@@ -9,6 +9,7 @@ import {
 import {
   adminAddRegistrationRoute,
   adminChangeRegistrationRoute,
+  adminCheckInChangeRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
   checkInRegistrationRoute,
@@ -80,6 +81,7 @@ export const makeRouter = (ctx: AppContextValue) => {
             checkInRegistrationRoute,
             adminAddRegistrationRoute,
             adminChangeRegistrationRoute,
+            adminCheckInChangeRegistrationRoute,
           ]),
         ]),
       ]),

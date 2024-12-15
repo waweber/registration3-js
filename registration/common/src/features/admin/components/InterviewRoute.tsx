@@ -1,28 +1,22 @@
-import { Suspense, useCallback, useState } from "react"
-import { useNavigate, useRouter } from "@tanstack/react-router"
-import { InterviewResponseRecord } from "@open-event-systems/interview-lib"
+import { Suspense, useCallback } from "react"
+import { useNavigate } from "@tanstack/react-router"
 import {
-  Interview,
-  InterviewContentComponentProps,
-  InterviewPanel,
-} from "@open-event-systems/interview-components"
+  CompleteInterviewResponse,
+  InterviewResponseRecord,
+} from "@open-event-systems/interview-lib"
 import { Skeleton } from "@mantine/core"
-import { useQueryClient } from "@tanstack/react-query"
 import { Title } from "#src/components/index.js"
-import { addRegistrationRoute } from "#src/app/routes/selfservice/cart.js"
-import {
-  getInterviewStateQueryOptions,
-  useInterviewAPI,
-  useInterviewStore,
-} from "@open-event-systems/registration-lib/interview"
 import {
   adminAddRegistrationRoute,
   adminChangeRegistrationRoute,
+  adminCheckInChangeRegistrationRoute,
   adminRegistrationRoute,
   adminRegistrationsRoute,
+  checkInRegistrationsRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
+import { AdminInterviewPanel } from "#src/features/admin/components/interview-panel/AdminInterviewPanel.js"
 
 export const AddRegistrationRoute = () => {
   const { eventId } = adminAddRegistrationRoute.useParams()
@@ -57,15 +51,16 @@ export const ChangeRegistrationRoute = () => {
 }
 
 export const CheckInChangeRegistrationRoute = () => {
-  const { eventId } = adminChangeRegistrationRoute.useParams()
+  const { eventId } = adminCheckInChangeRegistrationRoute.useParams()
 
   return (
-    <Title title="Change Registration" subtitle="Change a registration">
+    <Title title="Check In" subtitle="Check in a registration">
       <Suspense fallback={<Skeleton h={300} />}>
         <InterviewPage
           key={eventId}
           eventId={eventId}
-          record={adminChangeRegistrationRoute.useLoaderData()}
+          checkIn
+          record={adminCheckInChangeRegistrationRoute.useLoaderData()}
         />
       </Suspense>
     </Title>
@@ -75,19 +70,14 @@ export const CheckInChangeRegistrationRoute = () => {
 const InterviewPage = ({
   eventId,
   record,
+  checkIn,
 }: {
   eventId: string
   record: InterviewResponseRecord
+  checkIn?: boolean
 }) => {
   const navigate = useNavigate()
-  const router = useRouter()
   const adminAPI = useAdminAPI()
-  const interviewAPI = useInterviewAPI()
-  const interviewStore = useInterviewStore()
-  const queryClient = useQueryClient()
-
-  const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
-
   const onNavigate = useCallback(
     (state: string) => {
       navigate({
@@ -104,78 +94,56 @@ const InterviewPage = ({
       },
     })
   }, [navigate, eventId])
-
-  const onUpdate = useCallback(
-    async (record: InterviewResponseRecord) => {
-      if (record.response.completed) {
-        const res = await adminAPI.completeInterview(record.response)
-        if (res == null) {
+  const onComplete = useCallback(
+    async (response: CompleteInterviewResponse) => {
+      const res = await adminAPI.completeInterview(response)
+      if (!res) {
+        if (checkIn) {
+          navigate({
+            to: checkInRegistrationsRoute.to,
+            params: {
+              eventId,
+            },
+          })
+        } else {
           navigate({
             to: adminRegistrationsRoute.to,
             params: {
               eventId,
             },
           })
-        } else {
-          for (const r of res.results) {
+        }
+      } else {
+        for (const reg of res.results) {
+          if (checkIn) {
+            navigate({
+              to: checkInRegistrationsRoute.to,
+              params: {
+                eventId,
+              },
+            })
+          } else {
             navigate({
               to: adminRegistrationRoute.to,
               params: {
                 eventId,
-                registrationId: r.id,
+                registrationId: reg.id,
               },
             })
-            break
           }
+          break
         }
-      } else {
-        setLatestRecordId(record.response.state)
-        queryClient.setQueryData(
-          getInterviewStateQueryOptions(
-            interviewAPI,
-            interviewStore,
-            "",
-            record.response.state,
-          ).queryKey,
-          record,
-        )
-        navigate({
-          hash: `s=${record.response.state}`,
-        })
       }
     },
-    [navigate, eventId, adminAPI, queryClient, interviewAPI, interviewStore],
-  )
-
-  const getHistoryLink = useCallback(
-    (state: string) => {
-      const loc = router.buildLocation({
-        to: addRegistrationRoute.to,
-        params: { eventId },
-        hash: `s=${state}`,
-      })
-      return loc.href
-    },
-    [router, eventId],
-  )
-
-  const Component = useCallback(
-    (props: InterviewContentComponentProps) => (
-      <InterviewPanel getHistoryLink={getHistoryLink} {...props} />
-    ),
-    [getHistoryLink],
+    [adminAPI, eventId, checkIn],
   )
 
   return (
-    <Interview
-      api={interviewAPI}
-      store={interviewStore}
-      latestRecordId={latestRecordId ?? undefined}
+    <AdminInterviewPanel
       recordId={record.response.state}
       onNavigate={onNavigate}
-      onUpdate={onUpdate}
+      onComplete={onComplete}
       onClose={onClose}
-      contentComponent={Component}
     />
   )
 }

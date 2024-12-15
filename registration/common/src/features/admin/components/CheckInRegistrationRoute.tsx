@@ -1,5 +1,6 @@
 import {
   adminChangeRegistrationRoute,
+  adminCheckInChangeRegistrationRoute,
   checkInRegistrationRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { Title } from "#src/components/index.js"
@@ -53,7 +54,7 @@ export const CheckInRegistrationRoute = () => {
           )
 
           navigate({
-            to: adminChangeRegistrationRoute.to,
+            to: adminCheckInChangeRegistrationRoute.to,
             params: {
               eventId,
               registrationId,

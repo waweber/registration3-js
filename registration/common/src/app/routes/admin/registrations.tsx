@@ -6,6 +6,7 @@ import {
   createRoute,
   lazyRouteComponent,
   notFound,
+  redirect,
 } from "@tanstack/react-router"
 import {
   getRegistrationQueryOptions,
@@ -86,15 +87,45 @@ export const checkInRegistrationsRoute = createRoute({
 export const checkInRegistrationRoute = createRoute({
   getParentRoute: () => adminEventRoute,
   path: "check-in/$registrationId",
-  async loader({ params, context }) {
+  async loader({ params, context, cause }) {
     const { eventId, registrationId } = params
-    const { registrationAPI, queryClient } = context
+    const {
+      registrationAPI,
+      interviewAPI,
+      adminAPI,
+      interviewStore,
+      queryClient,
+    } = context
     const opts = getRegistrationQueryOptions(
       registrationAPI,
       eventId,
       registrationId,
     )
     const res = await queryClient.ensureQueryData(opts)
+
+    // auto-start an interview if there is only one
+    if (cause == "enter" && res.change_options?.length == 1) {
+      const opt = res.change_options[0]
+      const startResp = await adminAPI.startInterview(opt.url)
+      const firstResp = await interviewAPI.update(startResp)
+      const record = interviewStore.add(firstResp)
+      const opts = getInterviewStateQueryOptions(
+        interviewAPI,
+        interviewStore,
+        getDefaultUpdateURL(),
+        record.response.state,
+      )
+      queryClient.setQueryData(opts.queryKey, record)
+      throw redirect({
+        to: adminCheckInChangeRegistrationRoute.to,
+        params: {
+          eventId,
+          registrationId,
+        },
+        hash: `s=${record.response.state}`,
+      })
+    }
+
     return res
   },
   component: lazyRouteComponent(
