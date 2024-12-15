@@ -8,12 +8,15 @@ import { RegistrationSearch } from "#src/features/admin/components/search/Regist
 import { Divider, Grid, Stack, Text } from "@mantine/core"
 import {
   getRegistrationName,
+  getRegistrationSearchQueryOptions,
   RegistrationSearchOptions,
+  useRegistrationAPI,
   useRegistrationsByCheckInId,
   useRegistrationSearch,
 } from "@open-event-systems/registration-lib/registration"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "@tanstack/react-router"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 export const CheckInRegistrationsRoute = () => {
   const { eventId } = checkInRegistrationsRoute.useParams()
@@ -23,7 +26,8 @@ export const CheckInRegistrationsRoute = () => {
   const results = useRegistrationSearch(eventId, query, options, enabled)
   const router = useRouter()
   const navigate = checkInRegistrationsRoute.useNavigate()
-  const enterRef = useRef(false)
+  const registrationAPI = useRegistrationAPI()
+  const queryClient = useQueryClient()
 
   const allResults = useMemo(
     () =>
@@ -33,18 +37,33 @@ export const CheckInRegistrationsRoute = () => {
     [results.data],
   )
 
-  useEffect(() => {
-    if (allResults?.length == 1 && enterRef.current) {
-      navigate({
-        to: checkInRegistrationRoute.to,
-        params: {
-          eventId: eventId,
-          registrationId: allResults[0].registration.id,
-        },
-      })
-    }
-    enterRef.current = false
-  }, [allResults])
+  const onEnter = useCallback(
+    async (query: string, options: RegistrationSearchOptions) => {
+      const opts = getRegistrationSearchQueryOptions(
+        registrationAPI,
+        eventId,
+        query,
+        options,
+      )
+      const data = await queryClient.ensureInfiniteQueryData(opts)
+      const allData = data.pages
+        .map((p) => p.registrations)
+        .reduce((p, c) => [...c, ...p])
+      if (allData.length == 1) {
+        navigate({
+          to: checkInRegistrationRoute.to,
+          params: {
+            eventId: eventId,
+            registrationId: allData[0].registration.id,
+          },
+        })
+      }
+      setQuery(query)
+      setOptions(options)
+      setEnabled(true)
+    },
+    [eventId, registrationAPI, queryClient, navigate],
+  )
 
   return (
     <Title title="Registrations">
@@ -55,12 +74,7 @@ export const CheckInRegistrationsRoute = () => {
             setOptions(options)
             setEnabled(true)
           }}
-          onEnter={(query, options) => {
-            setQuery(query)
-            setOptions(options)
-            setEnabled(true)
-            enterRef.current = true
-          }}
+          onEnter={onEnter}
           results={
             allResults && enabled
               ? allResults.map((r) => ({
