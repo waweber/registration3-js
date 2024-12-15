@@ -43,18 +43,16 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         .json()
     },
     async completeRegistration(eventId, id) {
-      await wretch
+      return await wretch
         .url(`/events/${eventId}/registrations/${id}/complete`)
         .put()
         .json()
-      return await this.readRegistration(eventId, id)
     },
     async cancelRegistration(eventId, id) {
-      await wretch
+      return await wretch
         .url(`/events/${eventId}/registrations/${id}/cancel`)
         .put()
         .json()
-      return await this.readRegistration(eventId, id)
     },
   }
 }
