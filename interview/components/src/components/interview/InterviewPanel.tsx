@@ -113,7 +113,8 @@ const getHistoryItems = (
       label={`${i + 1}. ${rec.title || ""}`}
       active={!!current && rec.response.state == current}
       href={getLink ? getLink(rec.response.state) : undefined}
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault()
         onClick && onClick(rec.response.state)
       }}
     />

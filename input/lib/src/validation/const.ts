@@ -22,7 +22,7 @@ export const getConstZodSchema = (
         code: z.ZodIssueCode.invalid_literal,
         expected: constValue,
         received: v,
-        message: "Invalid value",
+        message: v === "" ? "Required" : "Invalid value",
       })
     }
   })
