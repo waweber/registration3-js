@@ -100,6 +100,7 @@ export const RegistrationsRoute = () => {
             allResults
               ? allResults.map((r) => ({
                   id: r.registration.id,
+                  status: r.registration.status,
                   name: getRegistrationName(r.registration),
                   email: r.registration.email,
                   number: r.registration.number,

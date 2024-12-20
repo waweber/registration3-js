@@ -8,7 +8,7 @@ export const getRegistrationName = (registration: Registration): string => {
   const pname = registration.preferred_name?.trim()
   const lname = registration.last_name?.trim()
 
-  const names = [pname, pname && fname ? `(${fname})` : fname, lname].filter(
+  const names = [fname, pname && fname ? `(${pname})` : pname, lname].filter(
     (n): n is string => Boolean(n),
   )
   const name = names.join(" ")

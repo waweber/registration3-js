@@ -10,7 +10,10 @@ import {
   Text,
   TextInput,
 } from "@mantine/core"
-import { RegistrationSearchOptions } from "@open-event-systems/registration-lib/registration"
+import {
+  RegistrationSearchOptions,
+  RegistrationStatus,
+} from "@open-event-systems/registration-lib/registration"
 import { IconSearch } from "@tabler/icons-react"
 import {
   ComponentPropsWithoutRef,
@@ -122,6 +125,7 @@ RegistrationSearch.Filters = RegistrationSearchFilters
 
 export type RegistrationSearchResult = {
   id: string
+  status: RegistrationStatus
   number?: number | null
   name?: string | null
   email?: string | null
@@ -145,6 +149,7 @@ const RegistrationSearchResults = (props: RegistrationSearchResultsProps) => {
             <Table.Th>#</Table.Th>
             <Table.Th>Name</Table.Th>
             <Table.Th>Email</Table.Th>
+            <Table.Th>Status</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -205,6 +210,9 @@ const ResultRow = ({
         <Table.Td>
           <RowLink>{result.email || "-"}</RowLink>
         </Table.Td>
+        <Table.Td>
+          <RowLink>{statusMap[result.status] ?? result.status}</RowLink>
+        </Table.Td>
       </Table.Tr>
     </HrefContext.Provider>
   )
@@ -229,3 +237,9 @@ const HrefContext = createContext<
     (() => string | null | undefined) | null | undefined,
   ]
 >([null, null])
+
+const statusMap: Record<string, string | undefined> = {
+  pending: "Pending",
+  created: "Created",
+  canceled: "Canceled",
+}
