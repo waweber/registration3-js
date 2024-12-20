@@ -39,6 +39,7 @@ export type StringSchemaProps = Readonly<{
   format?: TextFormatType
   "x-minDate"?: string
   "x-maxDate"?: string
+  "x-multiline"?: boolean
 }>
 
 export type NumberSchemaProps = Readonly<{

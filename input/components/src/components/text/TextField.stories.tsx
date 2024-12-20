@@ -43,6 +43,40 @@ export const Default: StoryObj<typeof TextField> = {
   },
 }
 
+const multilineSchema = {
+  type: "object",
+  properties: {
+    field: {
+      type: ["string", "null"],
+      title: "Multiline Field",
+      "x-multiline": true,
+    },
+  },
+  required: ["field"],
+} satisfies Schema<"object">
+
+export const Multiline: StoryObj<typeof TextField> = {
+  decorators: [
+    (Story) => {
+      const form = useSchemaForm(multilineSchema)
+      return (
+        <SchemaFormProvider {...form}>
+          <Story />
+        </SchemaFormProvider>
+      )
+    },
+  ],
+  render(args) {
+    return (
+      <TextField
+        {...args}
+        schema={multilineSchema.properties.field}
+        name="field"
+      />
+    )
+  },
+}
+
 const emailSchema = {
   type: "object",
   properties: {
