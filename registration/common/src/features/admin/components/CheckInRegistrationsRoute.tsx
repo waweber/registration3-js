@@ -9,6 +9,7 @@ import { Divider, Grid, Stack, Text } from "@mantine/core"
 import {
   getRegistrationName,
   getRegistrationSearchQueryOptions,
+  RegistrationListResponseItem,
   RegistrationSearchOptions,
   useRegistrationAPI,
   useRegistrationsByCheckInId,
@@ -49,7 +50,16 @@ export const CheckInRegistrationsRoute = () => {
       const allData = data.pages
         .map((p) => p.registrations)
         .reduce((p, c) => [...c, ...p])
-      if (allData.length == 1) {
+      const exactMatches = getExactMatches(query, allData)
+      if (exactMatches.length == 1) {
+        navigate({
+          to: checkInRegistrationRoute.to,
+          params: {
+            eventId: eventId,
+            registrationId: exactMatches[0].registration.id,
+          },
+        })
+      } else if (allData.length == 1) {
         navigate({
           to: checkInRegistrationRoute.to,
           params: {
@@ -152,5 +162,21 @@ const Recents = ({ eventId }: { eventId: string }) => {
         </Grid.Col>
       ))}
     </Grid>
+  )
+}
+
+const getExactMatches = (
+  query: string,
+  results: RegistrationListResponseItem[],
+) => {
+  const q = query.toLowerCase()
+  return results.filter(
+    (r) =>
+      (r.registration.check_in_id &&
+        r.registration.check_in_id.toLowerCase() == q) ||
+      (r.registration.number != null && String(r.registration.number) == q) ||
+      (r.registration.other_ids &&
+        q &&
+        r.registration.other_ids.map((id) => id.toLowerCase()).includes(q)),
   )
 }

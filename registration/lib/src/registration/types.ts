@@ -14,6 +14,7 @@ export type Registration = {
   date_created: string
   date_updated?: string | null
   check_in_id?: string | null
+  other_ids?: string[]
 
   number?: number | null
   first_name?: string | null
@@ -39,7 +40,7 @@ export type RegistrationResponse = {
   registration: Registration
   summary?: string | null
   display_data?: (readonly [string, string])[] | null
-  change_options?: { url: string; title: string }[] | null
+  change_options?: { url: string; auto: boolean; title: string }[] | null
 }
 
 export type RegistrationSearchOptions = {

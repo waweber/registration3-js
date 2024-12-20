@@ -78,6 +78,10 @@ export const RegistrationComponent = (props: RegistrationComponentProps) => {
           <Table>
             <Table.Tbody>
               <Table.Tr>
+                <Table.Th scope="row">Summary</Table.Th>
+                <Table.Td>{summary}</Table.Td>
+              </Table.Tr>
+              <Table.Tr>
                 <Table.Th scope="row" w="35%">
                   Preferred Name
                 </Table.Th>

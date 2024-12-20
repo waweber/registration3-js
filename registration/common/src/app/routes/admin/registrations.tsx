@@ -103,9 +103,11 @@ export const checkInRegistrationRoute = createRoute({
     )
     const res = await queryClient.ensureQueryData(opts)
 
+    const autoOptions = res.change_options?.filter((o) => o.auto) ?? []
+
     // auto-start an interview if there is only one
-    if (cause == "enter" && res.change_options?.length == 1) {
-      const opt = res.change_options[0]
+    if (cause == "enter" && autoOptions.length == 1) {
+      const opt = autoOptions[0]
       const startResp = await adminAPI.startInterview(opt.url)
       const firstResp = await interviewAPI.update(startResp)
       const record = interviewStore.add(firstResp)
