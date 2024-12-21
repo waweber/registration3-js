@@ -1,11 +1,11 @@
 import { ComponentPropsWithoutRef, Fragment, ReactNode } from "react"
 import clsx from "clsx"
-import { CartPricingResult } from "#src/features/cart/types.js"
 import { format } from "date-fns"
 import { ReceiptRegistration } from "#src/features/receipt/components/Registration.js"
 import { ReceiptLineItem } from "#src/features/receipt/components/LineItem.js"
 import { ReceiptModifier } from "#src/features/receipt/components/Modifier.js"
 import { Currency, CurrencyContext } from "#src/components/index.js"
+import { CartPricingResult } from "@open-event-systems/registration-lib/cart"
 
 export type ReceiptProps = {
   receiptId: string

@@ -1,28 +1,14 @@
-/**
- * For a detailed explanation regarding each configuration property, visit:
- * https://jestjs.io/docs/configuration
- */
+import { createJsWithTsEsmPreset } from "ts-jest"
+const defaultEsmPreset = createJsWithTsEsmPreset()
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
-  clearMocks: true,
-  collectCoverage: true,
-  coverageDirectory: "coverage",
-  coverageProvider: "v8",
-  testEnvironment: "jsdom",
-  preset: "ts-jest/presets/default-esm", // or other ESM presets
+  testEnvironment: "node",
+  ...defaultEsmPreset,
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  transform: {
-    "^.+\\.tsx?$": [
-      "ts-jest",
-      {
-        useESM: true,
-      },
-    ],
-  },
-  rootDir: "src",
+  testPathIgnorePatterns: ["dist"],
 }
 
 export default config

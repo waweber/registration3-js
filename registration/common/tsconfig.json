@@ -6,6 +6,9 @@
     },
     {
       "path": "../../interview/components"
+    },
+    {
+      "path": "../lib"
     }
   ],
   "compilerOptions": {

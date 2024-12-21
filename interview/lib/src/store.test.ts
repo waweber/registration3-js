@@ -6,21 +6,21 @@ test("store create/iterate works", () => {
       response: {
         state: "1",
         completed: false,
-        update_url: "",
+        target: "",
       },
     },
     {
       response: {
         state: "2",
         completed: false,
-        update_url: "",
+        target: "",
       },
     },
     {
       response: {
         state: "3",
         completed: false,
-        update_url: "",
+        target: "",
       },
     },
   ]
@@ -36,7 +36,7 @@ test("store add works", () => {
     {
       state: "1",
       completed: false,
-      update_url: "",
+      target: "",
       content: {
         type: "question",
         schema: {
@@ -93,7 +93,7 @@ test("store get works", () => {
         response: {
           state: "1",
           completed: false,
-          update_url: "",
+          target: "",
         },
       },
     ],
@@ -105,7 +105,7 @@ test("store get works", () => {
     response: {
       state: "1",
       completed: false,
-      update_url: "",
+      target: "",
     },
   })
 })
@@ -117,7 +117,7 @@ test("store saves user response", () => {
         response: {
           state: "1",
           completed: false,
-          update_url: "",
+          target: "",
         },
       },
     ],
@@ -129,7 +129,7 @@ test("store saves user response", () => {
     response: {
       state: "1",
       completed: false,
-      update_url: "",
+      target: "",
     },
     userResponse: { test: true },
   })
@@ -140,7 +140,7 @@ test("store saves user response", () => {
 test("store trims size", () => {
   const store = makeInterviewResponseStore([], 10)
   for (let i = 0; i < 20; i++) {
-    store.add({ state: `${i}`, completed: false, update_url: "" })
+    store.add({ state: `${i}`, completed: false, target: "" })
     const arr = Array.from(store)
     expect(arr.length).toBeLessThanOrEqual(10)
   }

@@ -1,5 +1,5 @@
 import { authRoute } from "#src/app/routes/auth.js"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
+import { getSelfServiceEventsQueryOptions } from "@open-event-systems/registration-lib/selfservice"
 import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
 
 export const eventsRoute = createRoute({
@@ -7,8 +7,8 @@ export const eventsRoute = createRoute({
   path: "/",
   async loader({ context }) {
     const { queryClient, selfServiceAPI } = context
-    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
-    const events = await queryClient.fetchQuery(selfServiceQueries.events)
+    const options = getSelfServiceEventsQueryOptions(selfServiceAPI)
+    const events = await queryClient.fetchQuery(options)
     return events
   },
   component: lazyRouteComponent(

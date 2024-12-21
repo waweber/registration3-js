@@ -1,14 +1,12 @@
 import { Button, Skeleton, TextInput } from "@mantine/core"
 import { useCallback, useState } from "react"
-import {
-  PaymentServiceComponentProps,
-  usePaymentContext,
-} from "#src/features/payment/index.js"
+import { PaymentServiceComponentProps } from "#src/features/payment/index.js"
 import { Currency } from "#src/components/index.js"
 import {
   PaymentCloseButton,
   PaymentComplete,
 } from "#src/features/payment/components/index.js"
+import { usePaymentManagerContext } from "@open-event-systems/registration-lib/payment"
 
 export type MockPaymentRequestBody = {
   card_number: string
@@ -34,8 +32,8 @@ export const MockPaymentComponent = ({
   children,
 }: PaymentServiceComponentProps) => {
   const [cardNo, setCardNo] = useState(() => "")
-  const ctx = usePaymentContext<"mock">()
-  const { result, submitting, setSubmitting, update } = ctx
+  const ctx = usePaymentManagerContext<"mock">()
+  const { payment, submitting, setSubmitting, update } = ctx
 
   const doUpdate = useCallback(() => {
     if (submitting || !cardNo) {
@@ -53,9 +51,9 @@ export const MockPaymentComponent = ({
   let content
   let controls
 
-  if (!result) {
+  if (!payment) {
     content = <Skeleton h={36} />
-  } else if (result.status == "completed") {
+  } else if (payment.status == "completed") {
     content = <PaymentComplete />
     controls = <PaymentCloseButton />
   } else {
@@ -84,8 +82,8 @@ export const MockPaymentComponent = ({
       >
         Pay{" "}
         <Currency
-          code={result.body.currency}
-          amount={result.body.total_price}
+          code={payment.body.currency}
+          amount={payment.body.total_price}
         />
       </Button>
     )

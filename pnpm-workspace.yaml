@@ -1,4 +1,7 @@
 packages:
+  - input/lib
+  - input/components
   - interview/lib
   - interview/components
+  - registration/lib
   - registration/common

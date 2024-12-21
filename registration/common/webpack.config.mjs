@@ -51,15 +51,24 @@ const config = (env, argv) => {
           use: [
             isProd ? MiniCssExtractPlugin.loader : "style-loader",
             "css-loader",
-            "sass-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                api: "modern-compiler",
+              },
+            },
           ],
         },
 
         // assets
         {
-          test: /\.(svg)$/,
+          test: /\.svg$/,
           type: "asset/resource",
           use: "svgo-loader",
+        },
+        {
+          test: /\.wav$/,
+          type: "asset/resource",
         },
       ],
     },

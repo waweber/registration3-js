@@ -1,0 +1,63 @@
+.RecentRegistration-root {
+  display: grid;
+  grid-template:
+    "id name" auto
+    "number nickname" auto
+    "description description" auto
+    / auto minmax(1rem, 1fr);
+  align-items: baseline;
+}
+
+.RecentRegistration-root > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.RecentRegistration-root > a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.RecentRegistration-checkInId {
+  grid-area: id;
+  min-width: calc(var(--mantine-h2-font-size) * 3);
+  font-weight: bold;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-h2-font-size);
+  line-height: var(--mantine-h2-font-size);
+  padding: var(--mantine-spacing-xs);
+}
+
+.RecentRegistration-name {
+  grid-area: name;
+  font-size: var(--mantine-h4-font-size);
+  line-height: var(--mantine-h4-font-size);
+  padding: var(--mantine-spacing-xs);
+}
+
+.RecentRegistration-number {
+  grid-area: number;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: var(--mantine-h4-font-size);
+  line-height: var(--mantine-h4-font-size);
+  padding: var(--mantine-spacing-xs);
+}
+
+.RecentRegistration-nickname {
+  grid-area: nickname;
+  padding: var(--mantine-spacing-xs);
+  min-width: 0;
+  text-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.RecentRegistration-description {
+  grid-area: description;
+  padding: var(--mantine-spacing-xs);
+  font-size: var(--mantine-font-size-sm);
+}
+
+.RecentRegistration-root > a.RecentRegistration-description {
+  color: var(--mantine-color-gray-text);
+}

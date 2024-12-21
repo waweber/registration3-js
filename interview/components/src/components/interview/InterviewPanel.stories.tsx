@@ -8,6 +8,7 @@ import {
 } from "@open-event-systems/interview-lib"
 import { InterviewPanel } from "./InterviewPanel.js"
 import { useState } from "react"
+import { InterviewContentComponentProps } from "../types.js"
 
 const meta: Meta<typeof InterviewPanel> = {
   component: InterviewPanel,
@@ -42,7 +43,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       title: "Example Question",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "1",
         content: {
           type: "question",
@@ -58,8 +59,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
               },
               field_1: {
                 type: "string",
-                "x-type": "select",
-                "x-component": "buttons",
+                "x-type": "button",
                 default: "1",
                 oneOf: [
                   {
@@ -80,7 +80,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       prev: "1",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "1-error",
         content: {
           type: "error",
@@ -94,7 +94,7 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       prev: "1",
       response: {
         completed: false,
-        update_url: "",
+        target: "",
         state: "2",
         content: {
           type: "exit",
@@ -132,10 +132,11 @@ const Example = (props: { recordId: string; latestRecordId: string }) => {
       recordId={recordId}
       latestRecordId={latestRecordId}
       onNavigate={navigate}
-    >
-      {(renderProps) => (
-        <InterviewPanel {...renderProps} p="xs" w="100vw" h="100vh" />
-      )}
-    </Interview>
+      contentComponent={ContentComponent}
+    />
   )
+}
+
+const ContentComponent = (props: InterviewContentComponentProps) => {
+  return <InterviewPanel {...props} p="xs" w="100vw" h="100vh" />
 }

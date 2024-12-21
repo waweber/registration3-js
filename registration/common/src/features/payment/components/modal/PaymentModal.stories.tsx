@@ -1,17 +1,20 @@
 import { Meta, StoryObj } from "@storybook/react"
 import { PaymentModal } from "./PaymentModal.js"
-import { useCallback, useState } from "react"
+import { Suspense, useCallback, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Button, Stack } from "@mantine/core"
-import { makeMockCartAPI } from "#src/features/cart/index.js"
 import {
-  PaymentAPIContext,
-  PaymentContext,
-  PaymentResult,
   makeMockPaymentAPI,
+  PaymentAPIProvider,
+  PaymentManager,
+  PaymentManagerProvider,
+  PaymentServiceID,
+  useCreatePayment,
   usePayment,
-  usePaymentAPI,
-} from "#src/features/payment/index.js"
+  usePaymentManager,
+} from "@open-event-systems/registration-lib/payment"
+import { useStickyData } from "@open-event-systems/registration-lib/utils"
+import { usePaymentMethodsDialog } from "#src/features/payment/hooks.js"
 
 const meta: Meta<typeof PaymentModal> = {
   component: PaymentModal,
@@ -21,13 +24,12 @@ const meta: Meta<typeof PaymentModal> = {
   decorators: [
     (Story) => {
       const [queryClient] = useState(() => new QueryClient())
-      const [cartAPI] = useState(() => makeMockCartAPI())
-      const [paymentAPI] = useState(() => makeMockPaymentAPI(cartAPI))
+      const [paymentAPI] = useState(() => makeMockPaymentAPI())
       return (
         <QueryClientProvider client={queryClient}>
-          <PaymentAPIContext.Provider value={paymentAPI}>
+          <PaymentAPIProvider value={paymentAPI}>
             <Story />
-          </PaymentAPIContext.Provider>
+          </PaymentAPIProvider>
         </QueryClientProvider>
       )
     },
@@ -37,39 +39,68 @@ const meta: Meta<typeof PaymentModal> = {
 export default meta
 
 export const Default: StoryObj<typeof PaymentModal> = {
+  decorators: [
+    (Story) => (
+      <Suspense fallback={<>Loading...</>}>
+        <Story />
+      </Suspense>
+    ),
+  ],
   render() {
-    const paymentAPI = usePaymentAPI()
     const [paymentId, setPaymentId] = useState<string | null>(null)
-    const [payment, setPayment] = useState<PaymentResult | null>(null)
     const [show, setShow] = useState(false)
 
-    const paymentHook = usePayment({
-      paymentId,
-      result: payment,
-      onClose: useCallback(() => {
-        setShow(false)
-      }, []),
+    const createPayment = useCreatePayment("cart")
+    const [stickyPaymentId, disposePaymentId] = useStickyData(paymentId)
+    const methods = usePaymentMethodsDialog({
+      cartId: "cart",
+      onShow() {
+        setShow(true)
+      },
+      onSelect(optionId) {
+        setShow(true)
+        createPayment(optionId).then((res) => {
+          setPaymentId(res.id)
+        })
+      },
     })
-    const { Component } = paymentHook
+
+    const payment = usePayment(stickyPaymentId)
+
+    const paymentManager = usePaymentManager<PaymentServiceID>({
+      payment,
+      onClose: useCallback(
+        (paymentManager: PaymentManager<PaymentServiceID>) => {
+          setShow(false)
+          if (paymentManager.payment?.status == "pending") {
+            paymentManager.cancel()
+          }
+        },
+        [setShow],
+      ),
+    })
 
     return (
-      <Stack p="xs">
-        <Button
-          onClick={() => {
-            setPaymentId("1")
-            setPayment(null)
-            setShow(true)
-            paymentAPI.createPayment("1", "mock").then((p) => setPayment(p))
-          }}
-        >
-          Show
-        </Button>
-        <PaymentContext.Provider value={paymentHook}>
-          <Component>
-            {(renderProps) => <PaymentModal {...renderProps} opened={show} />}
-          </Component>
-        </PaymentContext.Provider>
-      </Stack>
+      <PaymentManagerProvider value={paymentManager}>
+        <Stack p="xs">
+          <Button
+            maw={100}
+            onClick={() => {
+              methods.show()
+              disposePaymentId()
+              setPaymentId(null)
+            }}
+          >
+            Show
+          </Button>
+          <PaymentModal
+            cartId="cart"
+            opened={show}
+            methods={methods.methods}
+            onSelectMethod={methods.select}
+          />
+        </Stack>
+      </PaymentManagerProvider>
     )
   },
 }

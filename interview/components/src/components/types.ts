@@ -3,16 +3,16 @@ import {
   InterviewResponseStore,
   UserResponse,
 } from "@open-event-systems/interview-lib"
-import { ReactNode } from "react"
+import { ComponentType, ReactNode } from "react"
 
-export type InterviewRenderProps = {
-  Title: () => ReactNode
-  Content: () => ReactNode
-  Controls: () => ReactNode
+export type InterviewContentComponentProps = {
+  title?: ReactNode
+  children?: ReactNode
+  controls?: ReactNode
 }
 
 export type InterviewComponentProps = {
-  children: (renderProps: InterviewRenderProps) => ReactNode
+  contentComponent: ComponentType<InterviewContentComponentProps>
 }
 
 export type InterviewComponent = <P>(
@@ -24,7 +24,7 @@ export type InterviewContextValue = Readonly<
     store: InterviewResponseStore
     latestRecordId: string | null
     submitting: boolean
-    onSubmit: (userResponse?: UserResponse) => void
+    onSubmit: (userResponse?: UserResponse) => void | Promise<void>
     onClose: () => void
     onNavigate: (state: string) => void
   } & (

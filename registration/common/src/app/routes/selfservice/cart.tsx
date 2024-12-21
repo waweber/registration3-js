@@ -1,34 +1,54 @@
 import { selfServiceLayoutRoute } from "#src/app/routes/selfservice/registrations.js"
-import { getCartQueryOptions } from "#src/features/cart/api.js"
-import { getPaymentQueryOptions } from "#src/features/payment/index.js"
-import { getSelfServiceQueryOptions } from "#src/features/selfservice/api.js"
-import { isResponseError } from "#src/utils.js"
+import { getDefaultUpdateURL } from "#src/utils.js"
 import {
-  InterviewResponseRecord,
-  getErrorResponse,
-} from "@open-event-systems/interview-lib"
-import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
+  getCurrentCartQueryOptions,
+  getPricingResultQueryOptions,
+} from "@open-event-systems/registration-lib/cart"
+import { getInterviewStateQueryOptions } from "@open-event-systems/registration-lib/interview"
+import { getPaymentMethodsQueryOptions } from "@open-event-systems/registration-lib/payment"
+import { getSelfServiceRegistrationsQueryOptions } from "@open-event-systems/registration-lib/selfservice"
+import {
+  createRoute,
+  lazyRouteComponent,
+  notFound,
+} from "@tanstack/react-router"
 
 export const cartRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
   path: "cart",
   async loader({ context, params }) {
-    const { queryClient, selfServiceAPI, paymentAPI } = context
+    const {
+      queryClient,
+      selfServiceAPI,
+      cartAPI,
+      currentCartStore,
+      paymentAPI,
+    } = context
     const { eventId } = params
-    const cartQueries = getCartQueryOptions(context)
-    const selfServiceQueries = getSelfServiceQueryOptions(selfServiceAPI)
-    const paymentQueries = getPaymentQueryOptions(paymentAPI)
 
     const currentCart = await queryClient.fetchQuery(
-      cartQueries.currentCart(eventId),
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
     )
     const registrations = await queryClient.fetchQuery(
-      selfServiceQueries.registrations(eventId),
+      getSelfServiceRegistrationsQueryOptions(
+        selfServiceAPI,
+        eventId,
+        currentCart.id,
+      ),
     )
 
     const [pricingResult, paymentOptions] = await Promise.all([
-      queryClient.fetchQuery(cartQueries.cartPricingResult(currentCart.id)),
-      queryClient.fetchQuery(paymentQueries.paymentMethods(currentCart.id)),
+      queryClient.fetchQuery(
+        getPricingResultQueryOptions(cartAPI, currentCart.id),
+      ),
+      queryClient.fetchQuery(
+        getPaymentMethodsQueryOptions(paymentAPI, currentCart.id),
+      ),
     ])
 
     return {
@@ -49,42 +69,23 @@ export const cartRoute = createRoute({
 
 export const addRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
-  path: "cart/add/$interviewId",
-  async loader({ context, params, location }) {
-    const { queryClient, interviewStore } = context
-    const { eventId, interviewId } = params
+  path: "cart/add",
+  async loader({ context, location }) {
+    const { queryClient, interviewAPI, interviewStore } = context
     const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
     const stateId = hashParams.get("s")
 
-    const queries = getCartQueryOptions(context)
-
     if (stateId) {
-      return await queryClient.fetchQuery(queries.interviewRecord(stateId))
-    } else {
-      const currentCart = await queryClient.fetchQuery(
-        queries.currentCart(eventId),
+      return await queryClient.fetchQuery(
+        getInterviewStateQueryOptions(
+          interviewAPI,
+          interviewStore,
+          getDefaultUpdateURL(),
+          stateId,
+        ),
       )
-      try {
-        const initialRecord = await queryClient.fetchQuery({
-          ...queries.initialInterviewRecord(
-            eventId,
-            currentCart.id,
-            interviewId,
-            null,
-            accessCode,
-          ),
-        })
-        return initialRecord
-      } catch (e) {
-        if (isResponseError(e)) {
-          // a hack...
-          const errResp = getErrorResponse(new Date().toISOString(), e.status)
-          return interviewStore.add(errResp)
-        } else {
-          throw e
-        }
-      }
+    } else {
+      throw notFound()
     }
   },
   component: lazyRouteComponent(
@@ -95,41 +96,23 @@ export const addRegistrationRoute = createRoute({
 
 export const changeRegistrationRoute = createRoute({
   getParentRoute: () => selfServiceLayoutRoute,
-  path: "cart/change/$registrationId/$interviewId",
-  async loader({ context, params, location }) {
-    const { queryClient, interviewStore } = context
-    const { eventId, interviewId, registrationId } = params
+  path: "cart/change",
+  async loader({ context, location }) {
+    const { queryClient, interviewAPI, interviewStore } = context
     const hashParams = new URLSearchParams(location.hash)
-    const accessCode = hashParams.get("a")
     const stateId = hashParams.get("s")
 
-    const queries = getCartQueryOptions(context)
-
     if (stateId) {
-      return await queryClient.fetchQuery(queries.interviewRecord(stateId))
-    } else {
-      const currentCart = await queryClient.fetchQuery(
-        queries.currentCart(eventId),
+      return await queryClient.fetchQuery(
+        getInterviewStateQueryOptions(
+          interviewAPI,
+          interviewStore,
+          getDefaultUpdateURL(),
+          stateId,
+        ),
       )
-      try {
-        return await queryClient.fetchQuery(
-          queries.initialInterviewRecord(
-            eventId,
-            currentCart.id,
-            interviewId,
-            registrationId,
-            accessCode,
-          ),
-        )
-      } catch (e) {
-        if (isResponseError(e)) {
-          // a hack...
-          const errResp = getErrorResponse(new Date().toISOString(), e.status)
-          return interviewStore.add(errResp)
-        } else {
-          throw e
-        }
-      }
+    } else {
+      throw notFound()
     }
   },
   component: lazyRouteComponent(

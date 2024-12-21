@@ -1,3 +1,4 @@
-@import "./full-page-menu/FullPageMenuLayout.scss";
-@import "./self-service/SelfServiceLayout.scss";
-@import "./simple-message/SimpleMessageLayout.scss";
+@use "./full-page-menu/FullPageMenuLayout.scss";
+@use "./self-service/SelfServiceLayout.scss";
+@use "./simple-message/SimpleMessageLayout.scss";
+@use "./app-shell/AppShellLayout.scss";

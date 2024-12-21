@@ -1,0 +1,43 @@
+{
+  "name": "@open-event-systems/registration-lib",
+  "version": "0.1.0",
+  "description": "Registration API library",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!**/*.test.*"
+  ],
+  "exports": {
+    "./admin": "./dist/src/admin/index.js",
+    "./cart": "./dist/src/cart/index.js",
+    "./payment": "./dist/src/payment/index.js",
+    "./print": "./dist/src/print/index.js",
+    "./interview": "./dist/src/interview/index.js",
+    "./selfservice": "./dist/src/selfservice/index.js",
+    "./registration": "./dist/src/registration/index.js",
+    "./utils": "./dist/src/utils.js"
+  },
+  "imports": {
+    "#src/*.js": "./dist/src/*.js"
+  },
+  "devDependencies": {
+    "@open-event-systems/interview-lib": "workspace:^",
+    "@tanstack/react-query": "^5.60.5",
+    "@types/react": "^18.3.12",
+    "react": "^18.3.1",
+    "typescript": "^5.6.3",
+    "wretch": "^2.11.0"
+  },
+  "peerDependencies": {
+    "@open-event-systems/interview-lib": "workspace:^",
+    "@tanstack/react-query": "^5.51.15",
+    "react": "^18.3.1",
+    "wretch": "^2.9.0"
+  }
+}

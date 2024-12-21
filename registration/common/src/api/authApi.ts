@@ -1,5 +1,12 @@
 import { Wretch, WretchResponse } from "wretch"
-import { AuthAPI, TokenResponse, WebAuthnChallenge } from "./types.js"
+import {
+  AuthAPI,
+  DeviceAuthCheckResponse,
+  DeviceAuthCreateResponse,
+  DeviceAuthErrorResponse,
+  TokenResponse,
+  WebAuthnChallenge,
+} from "./types.js"
 import { formUrlAddon } from "wretch/addons"
 
 export const createAuthAPI = (wretch: Wretch): AuthAPI => {
@@ -88,6 +95,60 @@ export const createAuthAPI = (wretch: Wretch): AuthAPI => {
         })
         .post()
         .json()
+    },
+    async startDeviceAuth() {
+      return await wretch
+        .url("/auth/token")
+        .addon(formUrlAddon)
+        .formUrl({
+          response_type: "device_code",
+        })
+        .post()
+        .json<DeviceAuthCreateResponse>()
+    },
+    async checkDeviceAuth(authStore, userCode) {
+      return await wretch
+        .middlewares([authStore.authMiddleware])
+        .url("/auth/device/check")
+        .json({ user_code: userCode })
+        .post()
+        .json<DeviceAuthCheckResponse>()
+    },
+    async authorizeDevice(authStore, userCode, options) {
+      const now = new Date().getTime()
+      const exp =
+        options.timeLimit != null ? now + options.timeLimit * 3600000 : null
+      const expStr = exp != null ? new Date(exp).toISOString() : null
+      return await wretch
+        .middlewares([authStore.authMiddleware])
+        .url("/auth/device/authorize")
+        .json({
+          user_code: userCode,
+          options: {
+            role: options.role,
+            scope: options.scope,
+            email: options.email,
+            anonymous: options.anonymous,
+            date_expires: expStr,
+            path_length: options.pathLength,
+          },
+        })
+        .post()
+        .res()
+    },
+    async completeDeviceAuth(deviceCode) {
+      return await wretch
+        .url("/auth/token")
+        .addon(formUrlAddon)
+        .formUrl({
+          grant_type: "device_code",
+          code: deviceCode,
+        })
+        .post()
+        .badRequest((err) => {
+          return err.json
+        })
+        .json<TokenResponse | DeviceAuthErrorResponse>()
     },
     async refreshToken(refreshToken) {
       return await wretch

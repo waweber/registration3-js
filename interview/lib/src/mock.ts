@@ -19,7 +19,7 @@ export const makeMockAPI = (
       if (!nextResponse) {
         return {
           completed: false,
-          update_url: "",
+          target: "",
           state: `${response.state}-error`,
           content: {
             title: "Error",

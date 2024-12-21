@@ -1,19 +1,19 @@
-import { Schema } from "./schema/types.js"
+import { JSONType, Schema } from "@open-event-systems/input-lib"
 
 export type InterviewResponse =
   | IncompleteInterviewResponse
-  | CompletedInterviewResponse
+  | CompleteInterviewResponse
 
 export type IncompleteInterviewResponse = Readonly<{
   state: string
   completed: false
-  update_url: string
+  target: string
   content?: InterviewContent
 }>
 
-export type CompletedInterviewResponse = Readonly<{
+export type CompleteInterviewResponse = Readonly<{
   state: string
-  target?: string
+  target: string
   completed: true
 }>
 
@@ -21,7 +21,7 @@ export type InterviewContent = AskResult | ExitResult | ErrorResult
 
 export type AskResult = Readonly<{
   type: "question"
-  schema: Schema
+  schema: Schema<"object">
 }>
 
 export type ExitResult = Readonly<{
@@ -39,10 +39,7 @@ export type ErrorResult = Readonly<{
   description: string
 }>
 
-type JSONScalar = string | number | boolean | null
-type JSON = JSONScalar | JSONScalar[] | { [key: string]: JSON }
-
-export type UserResponse = Readonly<Record<string, JSON>>
+export type UserResponse = Readonly<Record<string, JSONType>>
 
 export type InterviewResponseRecord = Readonly<{
   response: InterviewResponse

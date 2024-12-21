@@ -1,5 +1,5 @@
-import { CartPricingResult } from "#src/features/cart/types.js"
 import { Config } from "#src/types.js"
+import { CartPricingResult } from "@open-event-systems/registration-lib/cart"
 
 export type Receipt = {
   date_closed: string

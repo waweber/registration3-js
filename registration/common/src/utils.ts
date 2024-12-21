@@ -1,3 +1,4 @@
+import config from "#src/config.js"
 import { Context, createContext, useContext } from "react"
 
 export class NotFoundError extends Error {
@@ -100,4 +101,8 @@ export const useRequiredContext = <T>(ctx: Context<T | null>): T => {
     throw new Error("Required context not provided")
   }
   return val
+}
+
+export const getDefaultUpdateURL = () => {
+  return `${config.apiURL}/update-interview`
 }

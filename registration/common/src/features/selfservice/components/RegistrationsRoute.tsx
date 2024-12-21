@@ -3,21 +3,28 @@ import { Button, Grid, Text, Title as MTitle, Divider } from "@mantine/core"
 import { IconPlus } from "@tabler/icons-react"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { RegistrationList } from "#src/features/selfservice/components/index.js"
-import {
-  useInterviewOptionsDialog,
-  useRegistrations,
-} from "#src/features/selfservice/hooks.js"
-import {
-  useCartPricingResult,
-  useCurrentCart,
-} from "#src/features/cart/hooks.js"
-import { Event } from "#src/features/selfservice/types.js"
+import { useInterviewOptionsDialog } from "#src/features/selfservice/hooks.js"
 import { OptionsDialog, Spacer, Title } from "#src/components/index.js"
 import { eventRoute } from "#src/app/routes/selfservice/registrations.js"
 import {
   cartRoute,
   changeRegistrationRoute,
 } from "#src/app/routes/selfservice/cart.js"
+import {
+  Event,
+  useSelfServiceAPI,
+  useSelfServiceRegistrations,
+} from "@open-event-systems/registration-lib/selfservice"
+import {
+  useCartPricingResult,
+  useCurrentCart,
+} from "@open-event-systems/registration-lib/cart"
+import {
+  getInterviewStateQueryOptions,
+  useInterviewAPI,
+  useInterviewStore,
+} from "@open-event-systems/registration-lib/interview"
+import { useQueryClient } from "@tanstack/react-query"
 
 const changedRegistrationsKey = "oes-changed-registrations"
 
@@ -44,11 +51,23 @@ export const Registrations = ({
   accessCode?: string | null
 }) => {
   const navigate = useNavigate()
-  const registrations = useRegistrations(event.id, accessCode)
   const [currentCart] = useCurrentCart(event.id)
+  const registrations = useSelfServiceRegistrations(
+    event.id,
+    currentCart.id,
+    accessCode,
+  )
   const currentPricingResult = useCartPricingResult(currentCart.id)
+  const selfServiceAPI = useSelfServiceAPI()
+  const interviewAPI = useInterviewAPI()
+  const interviewStore = useInterviewStore()
+  const queryClient = useQueryClient()
 
-  const interviewOptions = useInterviewOptionsDialog(event.id, accessCode)
+  const interviewOptions = useInterviewOptionsDialog(
+    event.id,
+    currentCart.id,
+    accessCode,
+  )
 
   const changedRegistrations = getChangedRegistrations() ?? []
   const changedRegistrationsRef = useRef(changedRegistrations)
@@ -84,15 +103,28 @@ export const Registrations = ({
           menuItems: r.change_options?.map((o) => ({
             label: o.title,
             onClick: () => {
-              navigate({
-                to: changeRegistrationRoute.to,
-                hash: accessCode ? `a=${accessCode}` : undefined,
-                params: {
-                  eventId: event.id,
-                  registrationId: r.id,
-                  interviewId: o.id,
-                },
-              })
+              selfServiceAPI
+                .startInterview(o.url)
+                .then((res) => interviewAPI.update(res))
+                .then((res) => {
+                  const record = interviewStore.add(res)
+                  queryClient.setQueryData(
+                    getInterviewStateQueryOptions(
+                      interviewAPI,
+                      interviewStore,
+                      "",
+                      record.response.state,
+                    ).queryKey,
+                    record,
+                  )
+                  navigate({
+                    to: changeRegistrationRoute.to,
+                    hash: `s=${res.state}`,
+                    params: {
+                      eventId: event.id,
+                    },
+                  })
+                })
             },
           })),
         }))}
