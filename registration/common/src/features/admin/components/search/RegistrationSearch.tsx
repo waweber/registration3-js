@@ -129,6 +129,8 @@ export type RegistrationSearchResult = {
   number?: number | null
   name?: string | null
   email?: string | null
+  options?: string[] | null
+  nickname?: string | null
 }
 
 export type RegistrationSearchResultsProps = {
@@ -149,6 +151,8 @@ const RegistrationSearchResults = (props: RegistrationSearchResultsProps) => {
             <Table.Th>#</Table.Th>
             <Table.Th>Name</Table.Th>
             <Table.Th>Email</Table.Th>
+            <Table.Th>Nickname</Table.Th>
+            <Table.Th>Options</Table.Th>
             <Table.Th>Status</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -209,6 +213,12 @@ const ResultRow = ({
         </Table.Td>
         <Table.Td>
           <RowLink>{result.email || "-"}</RowLink>
+        </Table.Td>
+        <Table.Td>
+          <RowLink>{result.nickname || "-"}</RowLink>
+        </Table.Td>
+        <Table.Td>
+          <RowLink>{result.options?.join(", ") || "-"}</RowLink>
         </Table.Td>
         <Table.Td>
           <RowLink>{statusMap[result.status] ?? result.status}</RowLink>

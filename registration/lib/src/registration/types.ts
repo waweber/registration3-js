@@ -22,6 +22,7 @@ export type Registration = {
   preferred_name?: string | null
   nickname?: string | null
   email?: string | null
+  options?: string[] | null
 
   notes?: string | null
 }
