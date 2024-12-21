@@ -16,6 +16,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
 
+import successWav from "../../../../../resources/beep1.wav"
+import errorWav from "../../../../../resources/error1.wav"
+
 export type AdminInterviewPanelProps = {
   recordId?: string | null
   onClose?: () => void
@@ -32,10 +35,14 @@ export const AdminInterviewPanel = (props: AdminInterviewPanelProps) => {
   const interviewStore = useInterviewStore()
   const queryClient = useQueryClient()
 
+  const [successAudio] = useState(() => new Audio(successWav))
+  const [errorAudio] = useState(() => new Audio(errorWav))
+
   const onUpdate = useCallback(
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
         onComplete && (await onComplete(record.response))
+        successAudio.play()
       } else {
         const opts = getInterviewStateQueryOptions(
           interviewAPI,
@@ -46,6 +53,13 @@ export const AdminInterviewPanel = (props: AdminInterviewPanelProps) => {
         queryClient.setQueryData(opts.queryKey, record)
         setLatestRecordId(record.response.state)
         onNavigate(record.response.state)
+
+        if (
+          record.response.content?.type == "error" ||
+          record.response.content?.type == "exit"
+        ) {
+          errorAudio.play()
+        }
       }
     },
     [interviewAPI, interviewStore, queryClient, onNavigate, onComplete],

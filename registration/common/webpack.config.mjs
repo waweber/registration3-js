@@ -62,9 +62,13 @@ const config = (env, argv) => {
 
         // assets
         {
-          test: /\.(svg)$/,
+          test: /\.svg$/,
           type: "asset/resource",
           use: "svgo-loader",
+        },
+        {
+          test: /\.wav$/,
+          type: "asset/resource",
         },
       ],
     },
