@@ -2,11 +2,15 @@ FROM node:22.5.1-alpine3.19 AS build
 RUN npm install --global pnpm
 WORKDIR /build
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY input/lib/package.json input/lib/package.json
+COPY input/components/package.json input/components/package.json
 COPY interview/lib/package.json interview/lib/package.json
 COPY interview/components/package.json interview/components/package.json
+COPY registration/lib/package.json registration/lib/package.json
 COPY registration/common/package.json registration/common/package.json
 RUN pnpm install
 COPY configs/ configs/
+COPY input/ input/
 COPY interview/ interview/
 COPY registration/ registration/
 WORKDIR /build/registration/common
