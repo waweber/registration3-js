@@ -101,7 +101,7 @@ export const checkInRegistrationRoute = createRoute({
       eventId,
       registrationId,
     )
-    const res = await queryClient.ensureQueryData(opts)
+    const res = await queryClient.fetchQuery(opts)
 
     const autoOptions = res.change_options?.filter((o) => o.auto) ?? []
 
