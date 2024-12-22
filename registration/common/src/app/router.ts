@@ -6,6 +6,7 @@ import {
   adminIndexRoute,
   adminRoute,
 } from "#src/app/routes/admin/admin.js"
+import { adminCartRoute } from "#src/app/routes/admin/cart.js"
 import {
   adminAddRegistrationRoute,
   adminChangeRegistrationRoute,
@@ -82,6 +83,7 @@ export const makeRouter = (ctx: AppContextValue) => {
             adminAddRegistrationRoute,
             adminChangeRegistrationRoute,
             adminCheckInChangeRegistrationRoute,
+            adminCartRoute,
           ]),
         ]),
       ]),

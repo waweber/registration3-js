@@ -1,3 +1,4 @@
+import { Cart } from "#src/cart/types.js"
 import { RegistrationBatchUpdateResult } from "#src/registration/types.js"
 import {
   CompleteInterviewResponse,
@@ -25,5 +26,5 @@ export type AdminAPI = {
   startInterview(url: string): Promise<InterviewResponse>
   completeInterview(
     response: CompleteInterviewResponse,
-  ): Promise<RegistrationBatchUpdateResult | null>
+  ): Promise<RegistrationBatchUpdateResult | Cart | null>
 }

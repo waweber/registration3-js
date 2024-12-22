@@ -17,18 +17,27 @@ import {
   getDocumentTypesQueryOptions,
   getRegistrationDocumentsQueryOptions,
 } from "@open-event-systems/registration-lib/print"
+import { getCurrentCartQueryOptions } from "@open-event-systems/registration-lib/cart"
 
 export const adminRegistrationsRoute = createRoute({
   getParentRoute: () => adminEventRoute,
   path: "registrations",
   async loader({ params, context }) {
     const { eventId } = params
-    const { registrationAPI, queryClient } = context
+    const { registrationAPI, cartAPI, currentCartStore, queryClient } = context
+    const currentCart = await queryClient.fetchQuery(
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
+    )
     const opts = getRegistrationSearchQueryOptions(
       registrationAPI,
       eventId,
       "",
-      {},
+      { cart_id: currentCart.id },
     )
     const res = await queryClient.ensureInfiniteQueryData(opts)
     return res

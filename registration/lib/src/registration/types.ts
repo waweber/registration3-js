@@ -49,6 +49,7 @@ export type RegistrationSearchOptions = {
   before?: readonly [string, string]
   check_in_id?: string | null
   summary?: boolean
+  cart_id?: string | null
 }
 
 export type RegistrationBatchUpdateResult = {
@@ -61,10 +62,19 @@ export type RegistrationAPI = {
     query?: string,
     options?: RegistrationSearchOptions,
   ): Promise<RegistrationListResponse>
-  readRegistration(eventId: string, id: string): Promise<RegistrationResponse>
+  readRegistration(
+    eventId: string,
+    id: string,
+    cartId?: string,
+  ): Promise<RegistrationResponse>
   completeRegistration(
     eventId: string,
     id: string,
+    cartId?: string,
   ): Promise<RegistrationResponse>
-  cancelRegistration(eventId: string, id: string): Promise<RegistrationResponse>
+  cancelRegistration(
+    eventId: string,
+    id: string,
+    cartId?: string,
+  ): Promise<RegistrationResponse>
 }
