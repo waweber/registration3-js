@@ -63,6 +63,7 @@ export const CheckInChangeRegistrationRoute = () => {
           eventId={eventId}
           checkIn
           record={adminCheckInChangeRegistrationRoute.useLoaderData()}
+          audio
         />
       </Suspense>
     </Title>
@@ -73,10 +74,12 @@ const InterviewPage = ({
   eventId,
   record,
   checkIn,
+  audio,
 }: {
   eventId: string
   record: InterviewResponseRecord
   checkIn?: boolean
+  audio?: boolean
 }) => {
   const [_, setCurrentCart] = useCurrentCart(eventId)
   const navigate = useNavigate()
@@ -155,6 +158,7 @@ const InterviewPage = ({
       onNavigate={onNavigate}
       onComplete={onComplete}
       onClose={onClose}
+      audio={audio}
     />
   )
 }

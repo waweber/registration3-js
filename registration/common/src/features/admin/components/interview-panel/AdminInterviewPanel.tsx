@@ -24,10 +24,11 @@ export type AdminInterviewPanelProps = {
   onClose?: () => void
   onNavigate: (recordId: string) => void
   onComplete?: (response: CompleteInterviewResponse) => Promise<void> | void
+  audio?: boolean
 }
 
 export const AdminInterviewPanel = (props: AdminInterviewPanelProps) => {
-  const { recordId, onNavigate, onClose, onComplete } = props
+  const { recordId, onNavigate, onClose, onComplete, audio } = props
 
   const [latestRecordId, setLatestRecordId] = useState<string | null>(null)
 
@@ -42,7 +43,9 @@ export const AdminInterviewPanel = (props: AdminInterviewPanelProps) => {
     async (record: InterviewResponseRecord) => {
       if (record.response.completed) {
         onComplete && (await onComplete(record.response))
-        successAudio.play()
+        if (audio) {
+          successAudio.play()
+        }
       } else {
         const opts = getInterviewStateQueryOptions(
           interviewAPI,
@@ -55,14 +58,15 @@ export const AdminInterviewPanel = (props: AdminInterviewPanelProps) => {
         onNavigate(record.response.state)
 
         if (
-          record.response.content?.type == "error" ||
-          record.response.content?.type == "exit"
+          audio &&
+          (record.response.content?.type == "error" ||
+            record.response.content?.type == "exit")
         ) {
           errorAudio.play()
         }
       }
     },
-    [interviewAPI, interviewStore, queryClient, onNavigate, onComplete],
+    [interviewAPI, interviewStore, queryClient, onNavigate, onComplete, audio],
   )
 
   return (
