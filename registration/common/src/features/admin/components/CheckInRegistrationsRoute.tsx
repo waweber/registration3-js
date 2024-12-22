@@ -76,7 +76,7 @@ export const CheckInRegistrationsRoute = () => {
   )
 
   return (
-    <Title title="Registrations">
+    <Title title="Check In">
       <Stack>
         <RegistrationSearch
           onSearch={(query, options) => {

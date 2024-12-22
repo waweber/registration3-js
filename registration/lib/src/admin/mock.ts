@@ -3,6 +3,11 @@ import { makeMockWithDelay } from "#src/utils.js"
 
 export const makeMockAdminAPI = (): AdminAPI => {
   const api: AdminAPI = {
+    async readOverview(eventId, checkedIn, since) {
+      return {
+        count: 100,
+      }
+    },
     async listEvents() {
       return [
         {

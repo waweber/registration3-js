@@ -11,7 +11,16 @@ export type Event = {
   visible: boolean
 }
 
+export type OverviewResponse = {
+  count: number
+}
+
 export type AdminAPI = {
+  readOverview(
+    eventId: string,
+    checkedIn?: boolean,
+    since?: Date,
+  ): Promise<OverviewResponse>
   listEvents(): Promise<Event[]>
   startInterview(url: string): Promise<InterviewResponse>
   completeInterview(
