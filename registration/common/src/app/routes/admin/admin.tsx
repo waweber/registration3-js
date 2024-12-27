@@ -1,13 +1,17 @@
 import { authRoute } from "#src/app/routes/auth.js"
 import { deviceAuthRoute } from "#src/app/routes/device/device.js"
 import { SCOPE } from "#src/features/auth/scope.js"
-import { getEventsQueryOptions } from "@open-event-systems/registration-lib/admin"
+import {
+  getEventOverviewQueryOptions,
+  getEventsQueryOptions,
+} from "@open-event-systems/registration-lib/admin"
 import {
   createRoute,
   lazyRouteComponent,
   notFound,
   redirect,
 } from "@tanstack/react-router"
+import { sub as dateSub } from "date-fns"
 
 export const adminRoute = createRoute({
   getParentRoute: () => authRoute,
@@ -73,7 +77,67 @@ export const adminEventRoute = createRoute({
 export const adminEventIndexRoute = createRoute({
   getParentRoute: () => adminEventRoute,
   path: "/",
-  async loader({ context }) {
-    // TODO: events API
+  async loader({ context, params }) {
+    const now = getNow()
+    const todayDate = getToday()
+    const { adminAPI, queryClient } = context
+    const { eventId } = params
+    const lastFiveMins = getEventOverviewQueryOptions(
+      adminAPI,
+      eventId,
+      true,
+      dateSub(now, { minutes: 5 }),
+    )
+    const lastHalfHour = getEventOverviewQueryOptions(
+      adminAPI,
+      eventId,
+      true,
+      dateSub(now, { minutes: 30 }),
+    )
+    const lastTwoHours = getEventOverviewQueryOptions(
+      adminAPI,
+      eventId,
+      true,
+      dateSub(now, { hours: 2 }),
+    )
+    const today = getEventOverviewQueryOptions(
+      adminAPI,
+      eventId,
+      true,
+      todayDate,
+    )
+    const checkedIn = getEventOverviewQueryOptions(adminAPI, eventId, true)
+    const total = getEventOverviewQueryOptions(adminAPI, eventId)
+
+    await Promise.all([
+      queryClient.ensureQueryData(lastFiveMins),
+      queryClient.ensureQueryData(lastHalfHour),
+      queryClient.ensureQueryData(lastTwoHours),
+      queryClient.ensureQueryData(today),
+      queryClient.ensureQueryData(checkedIn),
+      queryClient.ensureQueryData(total),
+    ])
   },
+  component: lazyRouteComponent(
+    () => import("#src/features/admin/components/OverviewRoute.js"),
+    "OverviewRoute",
+  ),
 })
+
+const getNow = (): Date => {
+  const now = new Date()
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    now.getHours(),
+    now.getMinutes(),
+    0,
+    0,
+  )
+}
+
+const getToday = (): Date => {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+}

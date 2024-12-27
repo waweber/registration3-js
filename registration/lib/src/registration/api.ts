@@ -29,6 +29,10 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         args.summary = "true"
       }
 
+      if (options?.cart_id) {
+        args.cart_id = options.cart_id
+      }
+
       return await wretch
         .url(`/events/${eventId}/registrations`)
         .addon(queryStringAddon)
@@ -36,21 +40,27 @@ export const makeRegistrationAPI = (wretch: Wretch): RegistrationAPI => {
         .get()
         .json()
     },
-    async readRegistration(eventId, id) {
+    async readRegistration(eventId, id, cartId) {
       return await wretch
         .url(`/events/${eventId}/registrations/${id}`)
+        .addon(queryStringAddon)
+        .query({ cart_id: cartId })
         .get()
         .json()
     },
-    async completeRegistration(eventId, id) {
+    async completeRegistration(eventId, id, cartId) {
       return await wretch
         .url(`/events/${eventId}/registrations/${id}/complete`)
+        .addon(queryStringAddon)
+        .query({ cart_id: cartId })
         .put()
         .json()
     },
-    async cancelRegistration(eventId, id) {
+    async cancelRegistration(eventId, id, cartId) {
       return await wretch
         .url(`/events/${eventId}/registrations/${id}/cancel`)
+        .addon(queryStringAddon)
+        .query({ cart_id: cartId })
         .put()
         .json()
     },

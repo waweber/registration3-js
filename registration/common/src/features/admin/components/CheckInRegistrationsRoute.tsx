@@ -76,7 +76,7 @@ export const CheckInRegistrationsRoute = () => {
   )
 
   return (
-    <Title title="Registrations">
+    <Title title="Check In">
       <Stack>
         <RegistrationSearch
           onSearch={(query, options) => {
@@ -93,6 +93,8 @@ export const CheckInRegistrationsRoute = () => {
                   name: getRegistrationName(r.registration),
                   email: r.registration.email,
                   number: r.registration.number,
+                  options: r.registration.options,
+                  nickname: r.registration.nickname,
                 }))
               : undefined
           }

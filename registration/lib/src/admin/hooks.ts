@@ -1,6 +1,9 @@
 import { AdminAPIContext } from "#src/admin/providers.js"
-import { getEventsQueryOptions } from "#src/admin/queries.js"
-import { AdminAPI, Event } from "#src/admin/types.js"
+import {
+  getEventOverviewQueryOptions,
+  getEventsQueryOptions,
+} from "#src/admin/queries.js"
+import { AdminAPI, Event, OverviewResponse } from "#src/admin/types.js"
 import { useRequiredContext } from "#src/utils.js"
 import { CompleteInterviewResponse } from "@open-event-systems/interview-lib"
 import {
@@ -14,6 +17,17 @@ export const useAdminAPI = (): AdminAPI => useRequiredContext(AdminAPIContext)
 export const useEvents = (): Map<string, Event> => {
   const api = useAdminAPI()
   const opts = getEventsQueryOptions(api)
+  const res = useSuspenseQuery(opts)
+  return res.data
+}
+
+export const useEventOverview = (
+  eventId: string,
+  checkedIn?: boolean,
+  since?: Date,
+): OverviewResponse => {
+  const api = useAdminAPI()
+  const opts = getEventOverviewQueryOptions(api, eventId, checkedIn, since)
   const res = useSuspenseQuery(opts)
   return res.data
 }

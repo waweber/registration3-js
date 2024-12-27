@@ -1,3 +1,4 @@
+import { Cart } from "#src/cart/types.js"
 import { RegistrationBatchUpdateResult } from "#src/registration/types.js"
 import {
   CompleteInterviewResponse,
@@ -11,10 +12,19 @@ export type Event = {
   visible: boolean
 }
 
+export type OverviewResponse = {
+  count: number
+}
+
 export type AdminAPI = {
+  readOverview(
+    eventId: string,
+    checkedIn?: boolean,
+    since?: Date,
+  ): Promise<OverviewResponse>
   listEvents(): Promise<Event[]>
   startInterview(url: string): Promise<InterviewResponse>
   completeInterview(
     response: CompleteInterviewResponse,
-  ): Promise<RegistrationBatchUpdateResult | null>
+  ): Promise<RegistrationBatchUpdateResult | Cart | null>
 }

@@ -1,5 +1,25 @@
-import { AdminAPI, Event } from "#src/admin/types.js"
+import { AdminAPI, Event, OverviewResponse } from "#src/admin/types.js"
 import { UseSuspenseQueryOptions } from "@tanstack/react-query"
+
+export const getEventOverviewQueryOptions = (
+  adminAPI: AdminAPI,
+  eventId: string,
+  checkedIn?: boolean,
+  since?: Date,
+): UseSuspenseQueryOptions<OverviewResponse> => {
+  return {
+    queryKey: [
+      "events",
+      eventId,
+      "overview",
+      { checkedIn, since: since?.toISOString() || null },
+    ],
+    async queryFn() {
+      return await adminAPI.readOverview(eventId, checkedIn, since)
+    },
+    staleTime: 60000,
+  }
+}
 
 export const getEventsQueryOptions = (
   adminAPI: AdminAPI,

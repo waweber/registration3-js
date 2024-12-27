@@ -8,6 +8,7 @@ import { RegistrationSearch } from "#src/features/admin/components/search/Regist
 import { getDefaultUpdateURL } from "#src/utils.js"
 import { Select, Stack } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
+import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
 import {
   getInterviewStateQueryOptions,
   useInterviewAPI,
@@ -28,7 +29,10 @@ import { useCallback, useMemo, useState } from "react"
 export const RegistrationsRoute = () => {
   const { eventId } = adminRegistrationsRoute.useParams()
   const [query, setQuery] = useState("")
-  const [options, setOptions] = useState<RegistrationSearchOptions>({})
+  const [currentCart] = useCurrentCart(eventId)
+  const [options, setOptions] = useState<RegistrationSearchOptions>({
+    cart_id: currentCart.id,
+  })
   const results = useRegistrationSearch(eventId, query, options, true)
   const router = useRouter()
   const navigate = adminRegistrationsRoute.useNavigate()
@@ -57,7 +61,7 @@ export const RegistrationsRoute = () => {
         registrationAPI,
         eventId,
         query,
-        options,
+        { cart_id: currentCart.id, ...options },
       )
       const data = await queryClient.ensureInfiniteQueryData(opts)
       const allData = data.pages
@@ -82,9 +86,9 @@ export const RegistrationsRoute = () => {
         })
       }
       setQuery(query)
-      setOptions(options)
+      setOptions({ cart_id: currentCart.id, ...options })
     },
-    [eventId, registrationAPI, queryClient, navigate],
+    [eventId, currentCart.id, registrationAPI, queryClient, navigate],
   )
 
   return (
@@ -93,7 +97,7 @@ export const RegistrationsRoute = () => {
         <RegistrationSearch
           onSearch={(query, options) => {
             setQuery(query)
-            setOptions(options)
+            setOptions({ cart_id: currentCart.id, ...options })
           }}
           onEnter={onEnter}
           results={
@@ -104,6 +108,8 @@ export const RegistrationsRoute = () => {
                   name: getRegistrationName(r.registration),
                   email: r.registration.email,
                   number: r.registration.number,
+                  options: r.registration.options,
+                  nickname: r.registration.nickname,
                 }))
               : undefined
           }

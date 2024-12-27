@@ -104,6 +104,10 @@ export const RegistrationComponent = (props: RegistrationComponentProps) => {
                 <Table.Td>{registration.email}</Table.Td>
               </Table.Tr>
               <Table.Tr>
+                <Table.Th scope="row">Options</Table.Th>
+                <Table.Td>{registration.options?.join(", ")}</Table.Td>
+              </Table.Tr>
+              <Table.Tr>
                 <Table.Th scope="row">Created</Table.Th>
                 <Table.Td>
                   {parseISO(registration.date_created).toLocaleString()}

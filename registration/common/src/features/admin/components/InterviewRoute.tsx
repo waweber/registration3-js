@@ -17,6 +17,8 @@ import {
 import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
 import { AdminInterviewPanel } from "#src/features/admin/components/interview-panel/AdminInterviewPanel.js"
+import { adminCartRoute } from "#src/app/routes/admin/cart.js"
+import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
 
 export const AddRegistrationRoute = () => {
   const { eventId } = adminAddRegistrationRoute.useParams()
@@ -61,6 +63,7 @@ export const CheckInChangeRegistrationRoute = () => {
           eventId={eventId}
           checkIn
           record={adminCheckInChangeRegistrationRoute.useLoaderData()}
+          audio
         />
       </Suspense>
     </Title>
@@ -71,11 +74,14 @@ const InterviewPage = ({
   eventId,
   record,
   checkIn,
+  audio,
 }: {
   eventId: string
   record: InterviewResponseRecord
   checkIn?: boolean
+  audio?: boolean
 }) => {
+  const [_, setCurrentCart] = useCurrentCart(eventId)
   const navigate = useNavigate()
   const adminAPI = useAdminAPI()
   const onNavigate = useCallback(
@@ -113,7 +119,7 @@ const InterviewPage = ({
             },
           })
         }
-      } else {
+      } else if ("results" in res) {
         for (const reg of res.results) {
           if (checkIn) {
             navigate({
@@ -133,9 +139,17 @@ const InterviewPage = ({
           }
           break
         }
+      } else {
+        setCurrentCart(res)
+        navigate({
+          to: adminCartRoute.to,
+          params: {
+            eventId,
+          },
+        })
       }
     },
-    [adminAPI, eventId, checkIn],
+    [adminAPI, eventId, checkIn, setCurrentCart],
   )
 
   return (
@@ -144,6 +158,7 @@ const InterviewPage = ({
       onNavigate={onNavigate}
       onComplete={onComplete}
       onClose={onClose}
+      audio={audio}
     />
   )
 }
