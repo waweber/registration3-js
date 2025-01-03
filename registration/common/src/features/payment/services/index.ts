@@ -22,6 +22,10 @@ const paymentComponents: Record<
     const mock = await import("./mock/Mock.js")
     return { Component: mock.MockPaymentComponent }
   },
+  async suspend() {
+    const suspend = await import("./suspend/Suspend.js")
+    return { Component: suspend.SuspendPaymentComponent }
+  },
   async square() {
     const square = await import("./square/Square.js")
     return { Component: square.SquarePaymentComponent }
