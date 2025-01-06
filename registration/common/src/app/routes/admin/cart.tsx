@@ -7,6 +7,15 @@ import { getPaymentMethodsQueryOptions } from "@open-event-systems/registration-
 import { getRegistrationSearchQueryOptions } from "@open-event-systems/registration-lib/registration"
 import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
 
+export const adminCartSearchRoute = createRoute({
+  getParentRoute: () => adminEventRoute,
+  path: "carts",
+  component: lazyRouteComponent(
+    () => import("#src/features/admin/components/CartSearchRoute.js"),
+    "CartSearchRoute",
+  ),
+})
+
 export const adminCartRoute = createRoute({
   getParentRoute: () => adminEventRoute,
   path: "cart",

@@ -1,3 +1,5 @@
+import { CartData } from "#src/cart/types.js"
+
 export const PAYMENT_STATUS = {
   pending: "pending",
   completed: "completed",
@@ -58,7 +60,9 @@ export type PaymentSearchResult = {
   id: string
   service_name: string
   external_id: string
-  receipt_id: string
+  cart_id: string
+  cart_data: CartData
+  receipt_id?: string | null
   payment_url?: string | null
   status: PaymentStatus
   date_created: string
@@ -77,7 +81,7 @@ export type PaymentAPI = {
   ): Promise<PaymentResult<S>>
   listPayments(
     eventId: string,
-    registrationId: string,
+    options?: { registrationId?: string; suspended?: boolean; q?: string },
   ): Promise<PaymentSearchResult[]>
 }
 

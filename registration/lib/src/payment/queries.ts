@@ -3,7 +3,7 @@ import {
   PaymentMethod,
   PaymentSearchResult,
 } from "#src/payment/types.js"
-import { UseSuspenseQueryOptions } from "@tanstack/react-query"
+import { UseQueryOptions, UseSuspenseQueryOptions } from "@tanstack/react-query"
 
 export const getPaymentMethodsQueryOptions = (
   paymentAPI: PaymentAPI,
@@ -26,7 +26,26 @@ export const getRegistrationPaymentsQueryOptions = (
   return {
     queryKey: ["payments", { eventId, registrationId }],
     async queryFn() {
-      return await paymentAPI.listPayments(eventId, registrationId)
+      return await paymentAPI.listPayments(eventId, { registrationId })
+    },
+  }
+}
+
+export const getCartSearchQuery = (
+  paymentAPI: PaymentAPI,
+  eventId: string,
+  query: string,
+): UseQueryOptions<PaymentSearchResult[]> => {
+  return {
+    queryKey: ["payments", { eventId, suspended: true, query }],
+    async queryFn() {
+      if (!query) {
+        return []
+      }
+      return await paymentAPI.listPayments(eventId, {
+        suspended: true,
+        q: query,
+      })
     },
   }
 }

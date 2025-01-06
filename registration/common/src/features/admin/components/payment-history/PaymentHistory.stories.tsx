@@ -15,6 +15,11 @@ export const Default: StoryObj<typeof PaymentHistory> = {
         service_name: "Mock",
         date_created: "2020-01-01T12:05:00-05:00",
         date_closed: "2020-01-01T12:06:00-05:00",
+        cart_id: "2",
+        cart_data: {
+          event_id: "example-event",
+          registrations: [],
+        },
         external_id: "123",
         receipt_id: "R2",
         status: "completed",
@@ -24,6 +29,11 @@ export const Default: StoryObj<typeof PaymentHistory> = {
         id: "1",
         service_name: "Mock",
         date_created: "2020-01-01T12:00:00-05:00",
+        cart_id: "1",
+        cart_data: {
+          event_id: "example-event",
+          registrations: [],
+        },
         external_id: "120",
         receipt_id: "R1",
         status: "pending",

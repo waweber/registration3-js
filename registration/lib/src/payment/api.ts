@@ -25,11 +25,27 @@ export const makePaymentAPI = (wretch: Wretch): PaymentAPI => {
     async cancelPayment(paymentId) {
       return await wretch.url(`/payments/${paymentId}/cancel`).put().json()
     },
-    async listPayments(eventId: string, registrationId: string) {
+    async listPayments(eventId, options) {
+      const args: Record<string, string> = {
+        event_id: eventId,
+      }
+
+      if (options?.registrationId) {
+        args.registration_id = options.registrationId
+      }
+
+      if (options?.q) {
+        args.q = options.q
+      }
+
+      if (options?.suspended) {
+        args.suspended = "true"
+      }
+
       return await wretch
         .url(`/payments`)
         .addon(queryStringAddon)
-        .query({ event_id: eventId, registration_id: registrationId })
+        .query(args)
         .get()
         .json()
     },

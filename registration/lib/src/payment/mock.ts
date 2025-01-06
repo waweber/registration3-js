@@ -83,6 +83,11 @@ export const makeMockPaymentAPI = (): PaymentAPI => {
           date_created: "2020-01-01T12:00:00-05:00",
           date_closed: "2020-01-01T12:05:00-05:00",
           external_id: "1",
+          cart_id: "1",
+          cart_data: {
+            event_id: "example-event",
+            registrations: [],
+          },
           receipt_id: "R1",
           status: "completed",
         },

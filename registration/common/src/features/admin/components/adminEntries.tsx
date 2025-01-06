@@ -1,5 +1,8 @@
 import { adminEventIndexRoute } from "#src/app/routes/admin/admin.js"
-import { adminCartRoute } from "#src/app/routes/admin/cart.js"
+import {
+  adminCartRoute,
+  adminCartSearchRoute,
+} from "#src/app/routes/admin/cart.js"
 import {
   adminRegistrationsRoute,
   checkInRegistrationsRoute,
@@ -10,6 +13,7 @@ import {
   IconCheckupList,
   IconLayoutDashboard,
   IconShoppingCart,
+  IconShoppingCartSearch,
   IconUsers,
 } from "@tabler/icons-react"
 import { ReactNode } from "react"
@@ -77,6 +81,22 @@ const adminNavEntries: { readonly [key: string]: AdminNavEntry } = {
         }}
         replace={replace}
         leftSection={<IconCheckupList />}
+      />
+    ),
+  },
+  carts: {
+    hasPermission: (scope) =>
+      scope.includes(SCOPE.admin) && scope.includes(SCOPE.registration),
+    link: (eventId, replace) => (
+      <AppShellLayout.NavLink
+        key="carts"
+        label="Cart Search"
+        to={adminCartSearchRoute.to}
+        params={{
+          eventId,
+        }}
+        replace={replace}
+        leftSection={<IconShoppingCartSearch />}
       />
     ),
   },
