@@ -5,7 +5,11 @@ import {
 } from "@open-event-systems/registration-lib/cart"
 import { getPaymentMethodsQueryOptions } from "@open-event-systems/registration-lib/payment"
 import { getRegistrationSearchQueryOptions } from "@open-event-systems/registration-lib/registration"
-import { createRoute, lazyRouteComponent } from "@tanstack/react-router"
+import {
+  createRoute,
+  lazyRouteComponent,
+  redirect,
+} from "@tanstack/react-router"
 
 export const adminCartSearchRoute = createRoute({
   getParentRoute: () => adminEventRoute,
@@ -19,7 +23,7 @@ export const adminCartSearchRoute = createRoute({
 export const adminCartRoute = createRoute({
   getParentRoute: () => adminEventRoute,
   path: "cart",
-  async loader({ context, params }) {
+  async loader({ context, params, location }) {
     const {
       queryClient,
       cartAPI,
@@ -28,6 +32,27 @@ export const adminCartRoute = createRoute({
       paymentAPI,
     } = context
     const { eventId } = params
+
+    const hashParams = new URLSearchParams(location.hash)
+    const cartParam = hashParams.get("c")
+    if (cartParam) {
+      currentCartStore.set(eventId, cartParam)
+      queryClient.invalidateQueries(
+        getCurrentCartQueryOptions(
+          cartAPI,
+          currentCartStore,
+          queryClient,
+          eventId,
+        ),
+      )
+      throw redirect({
+        to: adminCartRoute.to,
+        params: {
+          eventId,
+        },
+        replace: true,
+      })
+    }
 
     const currentCart = await queryClient.fetchQuery(
       getCurrentCartQueryOptions(
