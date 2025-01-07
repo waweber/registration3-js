@@ -61,12 +61,14 @@ export const useRegistrationsByCheckInId = (
 export const useRegistration = (
   eventId: string,
   registrationId: string,
+  cartId?: string | null,
 ): RegistrationResponse => {
   const registrationAPI = useRegistrationAPI()
   const options = getRegistrationQueryOptions(
     registrationAPI,
     eventId,
     registrationId,
+    cartId,
   )
   const result = useSuspenseQuery(options)
   return result.data

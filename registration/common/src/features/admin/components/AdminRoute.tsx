@@ -1,5 +1,6 @@
+import { saveToken } from "#src/api/token.js"
 import { adminEventRoute } from "#src/app/routes/admin/admin.js"
-import { AlertProvider, useTitle } from "#src/components/index.js"
+import { AlertProvider, UserMenu, useTitle } from "#src/components/index.js"
 import { AppShellLayout } from "#src/components/layout/app-shell/AppShellLayout.js"
 import { getAdminNavEntries } from "#src/features/admin/components/adminEntries.js"
 import { Scope } from "#src/features/auth/scope.js"
@@ -51,6 +52,14 @@ export const AdminRoute = observer(() => {
         }}
         title={title}
         links={entries}
+        user={
+          <UserMenu
+            onSignOut={() => {
+              saveToken(null)
+              window.location.reload()
+            }}
+          />
+        }
       >
         <Outlet />
       </AppShellLayout>

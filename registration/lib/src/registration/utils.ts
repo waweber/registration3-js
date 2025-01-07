@@ -3,7 +3,9 @@ import { Registration } from "#src/registration/types.js"
 /**
  * Format the name of a registration.
  */
-export const getRegistrationName = (registration: Registration): string => {
+export const getRegistrationName = (
+  registration: Partial<Registration>,
+): string => {
   const fname = registration.first_name?.trim()
   const pname = registration.preferred_name?.trim()
   const lname = registration.last_name?.trim()

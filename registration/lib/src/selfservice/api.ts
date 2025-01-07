@@ -34,8 +34,9 @@ export const makeSelfServiceAPI = (wretch: Wretch): SelfServiceAPI => {
       const res = await wretch
         .url(`/events/${eventId}/access-codes/${accessCode}/check`)
         .get()
+        .notFound(() => null)
         .res()
-      return res.status == 204
+      return !!res && res.status == 204
     },
   }
 }

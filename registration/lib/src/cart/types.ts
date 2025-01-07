@@ -1,5 +1,18 @@
+import { Registration } from "#src/registration/types.js"
+
 export type Cart = {
   id: string
+}
+
+export type CartData = {
+  event_id: string
+  registrations: CartRegistration[]
+}
+
+export type CartRegistration = {
+  id: string
+  old: Partial<Registration>
+  new: Partial<Registration>
 }
 
 export type CartPricingResult = {

@@ -3,6 +3,7 @@ import {
   PaymentManagerContext,
 } from "#src/payment/providers.js"
 import {
+  getCartSearchQuery,
   getPaymentMethodsQueryOptions,
   getRegistrationPaymentsQueryOptions,
 } from "#src/payment/queries.js"
@@ -85,6 +86,19 @@ export const useRegistrationPayments = (
   )
   const query = useSuspenseQuery(opts)
   return query.data
+}
+
+/**
+ * Search suspended carts.
+ */
+export const useCartSearch = (
+  eventId: string,
+  query: string,
+): PaymentSearchResult[] | undefined => {
+  const paymentAPI = usePaymentAPI()
+  const opts = getCartSearchQuery(paymentAPI, eventId, query)
+  const res = useQuery(opts)
+  return res.data ?? undefined
 }
 
 /**
