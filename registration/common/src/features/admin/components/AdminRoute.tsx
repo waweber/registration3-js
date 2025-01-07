@@ -54,6 +54,7 @@ export const AdminRoute = observer(() => {
         links={entries}
         user={
           <UserMenu
+            userName={auth.token?.email}
             onSignOut={() => {
               saveToken(null)
               window.location.reload()
