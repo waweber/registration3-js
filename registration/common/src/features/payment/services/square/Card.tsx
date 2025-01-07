@@ -1,13 +1,95 @@
 import { Currency } from "#src/components/index.js"
+import {
+  PaymentCloseButton,
+  PaymentComplete,
+} from "#src/features/payment/components/index.js"
 import { SquarePaymentResultBody } from "#src/features/payment/services/square/Square.js"
 import {
   useCard,
   useSquare,
 } from "#src/features/payment/services/square/square.js"
 import { PaymentServiceComponentProps } from "#src/features/payment/types.js"
+import { getErrorMessage } from "#src/utils.js"
 import { Box, Button, Skeleton } from "@mantine/core"
+import { usePaymentManagerContext } from "@open-event-systems/registration-lib/payment"
 import { Card, Payments } from "@square/web-payments-sdk-types"
-import { useCallback, useLayoutEffect } from "react"
+import { Suspense, useCallback, useLayoutEffect } from "react"
+
+export const SquareCardPaymentComponent = ({
+  children,
+}: PaymentServiceComponentProps) => {
+  const ctx = usePaymentManagerContext<"square">()
+  const { payment, submitting, setSubmitting, update, setError } = ctx
+
+  const onSubmit = useCallback(
+    async (card: Card, payments: Payments) => {
+      if (!payment || submitting) {
+        return
+      }
+
+      setError(null)
+      setSubmitting(true)
+      try {
+        const tokenRes = await card.tokenize()
+        const token = tokenRes.token
+        if (tokenRes.errors && tokenRes.errors.length > 0) {
+          setError(tokenRes.errors[0].message)
+          setSubmitting(false)
+          return
+        } else if (!token) {
+          setError("Payment failed")
+          setSubmitting(false)
+          return
+        }
+
+        const verifyRes = await payments.verifyBuyer(token, {
+          amount: payment.body.total_price_str,
+          billingContact: {},
+          currencyCode: payment.body.currency,
+          intent: "CHARGE",
+        })
+
+        await update({
+          source_id: token,
+          verification_token: verifyRes?.token,
+        })
+
+        setSubmitting(false)
+      } catch (e) {
+        setError(getErrorMessage(e))
+        setSubmitting(false)
+      }
+    },
+    [payment, submitting],
+  )
+
+  if (!payment) {
+    return (
+      <SquareCardComponent.Placeholder>
+        {children}
+      </SquareCardComponent.Placeholder>
+    )
+  } else if (payment.status == "completed") {
+    return children({
+      content: <PaymentComplete />,
+      controls: <PaymentCloseButton />,
+    })
+  } else {
+    return (
+      <Suspense
+        fallback={
+          <SquareCardComponent.Placeholder>
+            {children}
+          </SquareCardComponent.Placeholder>
+        }
+      >
+        <SquareCardComponent body={payment.body} onSubmit={onSubmit}>
+          {children}
+        </SquareCardComponent>
+      </Suspense>
+    )
+  }
+}
 
 export const SquareCardComponent = ({
   body,
