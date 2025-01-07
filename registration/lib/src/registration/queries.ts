@@ -59,11 +59,22 @@ export const getRegistrationQueryOptions = (
   registrationAPI: RegistrationAPI,
   eventId: string,
   registrationId: string,
+  cartId?: string | null,
 ): UseSuspenseQueryOptions<RegistrationResponse> => {
   return {
-    queryKey: ["events", eventId, "registrations", registrationId],
+    queryKey: [
+      "events",
+      eventId,
+      "registrations",
+      registrationId,
+      { cartId: cartId || null },
+    ],
     async queryFn() {
-      return await registrationAPI.readRegistration(eventId, registrationId)
+      return await registrationAPI.readRegistration(
+        eventId,
+        registrationId,
+        cartId || undefined,
+      )
     },
   }
 }

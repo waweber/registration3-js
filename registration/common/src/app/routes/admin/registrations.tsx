@@ -53,11 +53,27 @@ export const adminRegistrationRoute = createRoute({
   path: "registrations/$registrationId",
   async loader({ params, context }) {
     const { eventId, registrationId } = params
-    const { registrationAPI, paymentAPI, printAPI, queryClient } = context
+    const {
+      registrationAPI,
+      cartAPI,
+      currentCartStore,
+      paymentAPI,
+      printAPI,
+      queryClient,
+    } = context
+    const currentCart = await queryClient.fetchQuery(
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
+    )
     const regOpts = getRegistrationQueryOptions(
       registrationAPI,
       eventId,
       registrationId,
+      currentCart.id,
     )
     const paymentOpts = getRegistrationPaymentsQueryOptions(
       paymentAPI,

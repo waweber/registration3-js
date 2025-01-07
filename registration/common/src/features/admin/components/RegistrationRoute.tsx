@@ -11,6 +11,7 @@ import { useAuth } from "#src/hooks/auth.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
 import { Grid, Stack } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
+import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
 import {
   getInterviewStateQueryOptions,
   useInterviewAPI,
@@ -39,8 +40,9 @@ export const RegistrationRoute = () => {
   const interviewStore = useInterviewStore()
   const adminAPI = useAdminAPI()
   const queryClient = useQueryClient()
+  const [currentCart] = useCurrentCart(eventId)
 
-  const reg = useRegistration(eventId, registrationId)
+  const reg = useRegistration(eventId, registrationId, currentCart.id)
   const payments = useRegistrationPayments(eventId, registrationId)
   const documentTypes = useDocumentTypes(eventId)
   const documents = useRegistrationDocuments(eventId, registrationId)
