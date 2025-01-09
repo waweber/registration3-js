@@ -119,12 +119,25 @@ export const checkInRegistrationRoute = createRoute({
       interviewAPI,
       adminAPI,
       interviewStore,
+      cartAPI,
+      currentCartStore,
       queryClient,
     } = context
+
+    const currentCart = await queryClient.fetchQuery(
+      getCurrentCartQueryOptions(
+        cartAPI,
+        currentCartStore,
+        queryClient,
+        eventId,
+      ),
+    )
+
     const opts = getRegistrationQueryOptions(
       registrationAPI,
       eventId,
       registrationId,
+      currentCart.id,
     )
     const res = await queryClient.fetchQuery(opts)
 
