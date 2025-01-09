@@ -150,6 +150,19 @@ const withPreprocess = (
   const trimStrings = (v: unknown) => (typeof v == "string" ? v.trim() : v)
   const strToNull = (v: unknown) =>
     v === "" && isType(schema, "null") ? null : v
+  const strToNum = (v: unknown) => {
+    if (
+      typeof v == "string" &&
+      v &&
+      (isType(schema, "number") || isType(schema, "integer"))
+    ) {
+      const n = parseFloat(v.trim())
+      if (!isNaN(n)) {
+        return n
+      }
+    }
+    return v
+  }
   const stripUndefProps = (v: unknown) => {
     if (!v || typeof v != "object" || Array.isArray(v)) {
       return v
@@ -166,7 +179,7 @@ const withPreprocess = (
     return newObj
   }
 
-  return [stripUndefProps, strToNull, trimStrings].reduce(
+  return [strToNum, stripUndefProps, strToNull, trimStrings].reduce(
     (p, c) => z.preprocess(c, p),
     zs,
   )
