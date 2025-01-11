@@ -1,6 +1,12 @@
-import { NumberInput, NumberInputProps, useProps } from "@mantine/core"
+import {
+  NumberInput,
+  NumberInputProps,
+  TextInputProps,
+  useProps,
+} from "@mantine/core"
 import { FieldProps } from "../../types.js"
 import { useFormContext } from "react-hook-form"
+import { useError } from "../../hooks.js"
 
 export type NumberFieldProps = NumberInputProps & FieldProps
 
@@ -13,6 +19,7 @@ export const NumberField = (props: NumberFieldProps) => {
 
   const { register, setValue } = useFormContext()
   const registerProps = register(name)
+  const error = useError(name)
 
   return (
     <NumberInput
@@ -20,11 +27,12 @@ export const NumberField = (props: NumberFieldProps) => {
         root: "NumberField-root",
       }}
       label={schema.title}
-      inputMode={schema["x-inputMode"] as NumberInputProps["inputMode"]}
+      inputMode={schema["x-inputMode"] as TextInputProps["inputMode"]}
       autoComplete={schema["x-autoComplete"]}
       {...registerProps}
       min={schema.minimum}
       max={schema.maximum}
+      error={error}
       onChange={(v) => {
         setValue(name, v)
       }}

@@ -32,7 +32,7 @@ export const UserMenu = (props: UserMenuProps) => {
   return (
     <Menu position="bottom-end" {...other}>
       <Menu.Target>
-        <Anchor component="button" size="sm">
+        <Anchor className="UserMenu-button" component="button" size="sm">
           {userName ?? "Guest"}
         </Anchor>
       </Menu.Target>

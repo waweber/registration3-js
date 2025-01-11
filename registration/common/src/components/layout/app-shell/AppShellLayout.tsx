@@ -1,5 +1,6 @@
 import {
   AppShell,
+  Box,
   Burger,
   Button,
   NavLink,
@@ -8,8 +9,6 @@ import {
 } from "@mantine/core"
 import { createLink } from "@tanstack/react-router"
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from "react"
-
-import "./AppShellLayout.scss"
 
 declare module "@tanstack/react-router" {
   interface HistoryState {
@@ -59,9 +58,7 @@ export const AppShellLayout = (props: AppShellLayoutProps) => {
         <Title className="AppShellLayout-title" order={3} component="h1">
           {title}
         </Title>
-        <Button className="AppShellLayout-user" variant="transparent">
-          {user}
-        </Button>
+        <Box className="AppShellLayout-userButton">{user}</Box>
       </AppShell.Header>
       <AppShell.Navbar>{links}</AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>

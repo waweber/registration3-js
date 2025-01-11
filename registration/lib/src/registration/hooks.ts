@@ -1,3 +1,4 @@
+import { useCurrentCart } from "#src/cart/hooks.js"
 import { RegistrationAPIContext } from "#src/registration/providers.js"
 import {
   getRegistrationQueryOptions,
@@ -80,6 +81,7 @@ export const useCompleteRegistration = (
 ): (() => Promise<RegistrationResponse>) => {
   const api = useRegistrationAPI()
   const queryClient = useQueryClient()
+  const [currentCart] = useCurrentCart(eventId)
   const mutation = useMutation({
     mutationKey: [
       "events",
@@ -89,11 +91,17 @@ export const useCompleteRegistration = (
       "complete",
     ],
     async mutationFn() {
-      return api.completeRegistration(eventId, registrationId)
+      return api.completeRegistration(eventId, registrationId, currentCart.id)
     },
     onSuccess(data) {
       queryClient.setQueryData(
-        ["events", eventId, "registrations", registrationId],
+        [
+          "events",
+          eventId,
+          "registrations",
+          registrationId,
+          { cartId: currentCart.id },
+        ],
         data,
       )
     },
@@ -107,14 +115,21 @@ export const useCancelRegistration = (
 ): (() => Promise<RegistrationResponse>) => {
   const api = useRegistrationAPI()
   const queryClient = useQueryClient()
+  const [currentCart] = useCurrentCart(eventId)
   const mutation = useMutation({
     mutationKey: ["events", eventId, "registrations", registrationId, "cancel"],
     async mutationFn() {
-      return api.cancelRegistration(eventId, registrationId)
+      return api.cancelRegistration(eventId, registrationId, currentCart.id)
     },
     onSuccess(data) {
       queryClient.setQueryData(
-        ["events", eventId, "registrations", registrationId],
+        [
+          "events",
+          eventId,
+          "registrations",
+          registrationId,
+          { cartId: currentCart.id },
+        ],
         data,
       )
     },
