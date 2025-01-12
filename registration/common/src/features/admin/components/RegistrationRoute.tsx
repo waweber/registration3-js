@@ -9,7 +9,7 @@ import { RegistrationComponent } from "#src/features/admin/components/registrati
 import { SCOPE } from "#src/features/auth/scope.js"
 import { useAuth } from "#src/hooks/auth.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
-import { Grid, Stack } from "@mantine/core"
+import { Grid } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
 import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
 import {

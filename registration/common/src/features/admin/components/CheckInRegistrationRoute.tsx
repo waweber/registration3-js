@@ -1,15 +1,13 @@
 import {
-  adminChangeRegistrationRoute,
   adminCheckInChangeRegistrationRoute,
   checkInRegistrationRoute,
 } from "#src/app/routes/admin/registrations.js"
 import { Title } from "#src/components/index.js"
-import { Documents } from "#src/features/admin/components/documents/Documents.js"
-import { PaymentHistory } from "#src/features/admin/components/payment-history/PaymentHistory.js"
 import { RegistrationComponent } from "#src/features/admin/components/registration/Registration.js"
 import { getDefaultUpdateURL } from "#src/utils.js"
 import { Stack } from "@mantine/core"
 import { useAdminAPI } from "@open-event-systems/registration-lib/admin"
+import { useCurrentCart } from "@open-event-systems/registration-lib/cart"
 import {
   getInterviewStateQueryOptions,
   useInterviewAPI,
@@ -31,8 +29,9 @@ export const CheckInRegistrationRoute = () => {
   const interviewStore = useInterviewStore()
   const adminAPI = useAdminAPI()
   const queryClient = useQueryClient()
+  const [currentCart] = useCurrentCart(eventId)
 
-  const reg = useRegistration(eventId, registrationId)
+  const reg = useRegistration(eventId, registrationId, currentCart.id)
 
   const action = useCallback(
     (actionId: string) => {
